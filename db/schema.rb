@@ -355,6 +355,7 @@ ActiveRecord::Schema.define(version: 20171010025614) do
     t.integer "favourites_count", default: 0, null: false
     t.integer "reblogs_count", default: 0, null: false
     t.string "language"
+    t.text "full_status_text", default: "", null: false
     t.bigint "conversation_id"
     t.boolean "local"
     t.bigint "account_id", null: false

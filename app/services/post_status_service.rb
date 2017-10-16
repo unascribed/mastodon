@@ -6,6 +6,7 @@ class PostStatusService < BaseService
   # @param [String] text Message
   # @param [Status] in_reply_to Optional status to reply to
   # @param [Hash] options
+  # @option [Boolean] :monologuing Store full status text locally, truncate for others
   # @option [Boolean] :sensitive
   # @option [String] :visibility
   # @option [String] :spoiler_text
@@ -19,11 +20,18 @@ class PostStatusService < BaseService
       return Status.find(existing_id) if existing_id
     end
 
+    full_text_markdown = ''
+    if options[:monologuing]
+      full_text_markdown = text
+      text = truncate_status(text)
+    end
+
     media  = validate_media!(options[:media_ids])
     status = nil
 
     ApplicationRecord.transaction do
       status = account.statuses.create!(text: text,
+                                        full_status_text: full_text_markdown,
                                         thread: in_reply_to,
                                         sensitive: options[:sensitive],
                                         spoiler_text: options[:spoiler_text] || '',
@@ -31,6 +39,7 @@ class PostStatusService < BaseService
                                         language: LanguageDetector.instance.detect(text, account),
                                         application: options[:application])
 
+      insert_status_link(status, account) if options[:monologuing]
       attach_media(status, media)
     end
 
@@ -51,6 +60,23 @@ class PostStatusService < BaseService
   end
 
   private
+
+  def truncate_status(text)
+    cutoff = text.index("\n")
+
+    return text[0, cutoff] unless cutoff.nil? || cutoff > 400
+    return text[0, 400] + "\u2026" unless text.length <= 400
+    text
+  end
+
+  def insert_status_link(status, account)
+    text = status.text
+    protocol = ENV['LOCAL_HTTPS'] == 'true' ? 'https' : 'http'
+
+    text += "\n\n"
+    text += "View the full post: #{protocol}://#{Rails.configuration.x.local_domain}/@#{account.username}/#{status.id}/"
+    status.update(text: text)
+  end
 
   def validate_media!(media_ids)
     return if media_ids.blank? || !media_ids.is_a?(Enumerable)

@@ -73,6 +73,18 @@ RSpec.describe PostStatusService do
     expect(status.language).to eq 'en'
   end
 
+  it 'automatically truncates statuses in monologue mode' do
+    account = Fabricate(:account)
+    text = 'Fifty twisty status sentences, all eerily alike.\n\n' * 50
+
+    status = subject.call(account, text, nil, monologuing: true)
+
+    expect(status).to be_persisted
+    expect(status.text).to_not eq text
+    expect(status.text.length).to be <= 500
+    expect(status.full_status_text).to eq text
+  end
+
   it 'processes mentions' do
     mention_service = double(:process_mentions_service)
     allow(mention_service).to receive(:call)
