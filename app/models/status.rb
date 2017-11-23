@@ -271,9 +271,7 @@ class Status < ApplicationRecord
   def prepare_contents
     text&.strip!
     spoiler_text&.strip!
-
     full_status_text&.strip!
-    self.full_status_text = emojify(full_status_text)
   end
 
   def set_reblog
