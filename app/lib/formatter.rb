@@ -22,12 +22,13 @@ class Formatter
     end
   end
 
-  def markdown_format(status)
+  def markdown_format(status, options = {})
     html_r = MarkdownFormatRenderer.new(escape_html: true, safe_links_only: true)
     markdown = Redcarpet::Markdown.new(html_r, autolink: true, space_after_headers: true, no_intra_emphasis: true, strikethrough: true)
 
     html = status.full_status_text
     html = markdown.render(html)
+    html = encode_custom_emojis(html, status.emojis) if options[:custom_emojify]
 
     linkable_accounts = status.mentions.map(&:account)
     linkable_accounts << status.account
