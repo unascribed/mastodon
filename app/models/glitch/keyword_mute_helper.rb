@@ -1,6 +1,6 @@
 require 'htmlentities'
 
-class Glitch::FilterHelper
+class Glitch::KeywordMuteHelper
   include ActionView::Helpers::SanitizeHelper
 
   attr_reader :text_matcher
