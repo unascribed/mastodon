@@ -26,6 +26,6 @@ class Glitch::KeywordMuteHelper
   end
 
   def prepare_text(text)
-    entity_decoder.decode(strip_tags(text))
+    entity_decoder.decode(strip_tags(text)).tap { |x| puts x }
   end
 end
