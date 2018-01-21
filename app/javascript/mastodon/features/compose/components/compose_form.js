@@ -223,11 +223,11 @@ export default class ComposeForm extends ImmutablePureComponent {
             <SpoilerButtonContainer />
             <MonologueButtonContainer />
           </div>
-          <div className='character-counter__wrapper'><CharacterCounter max={500} text={characterCounter} /></div>
+          <div className='character-counter__wrapper'>{characterCounter}</div>
         </div>
 
         <div className='compose-form__publish'>
-          <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || length(text) > 500 || (text.length !== 0 && text.trim().length === 0) || disableSubmitButton} block /></div>
+          <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || disableSubmitButton} block /></div>
         </div>
       </div>
     );
