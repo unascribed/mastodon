@@ -19,6 +19,7 @@ import {
   COMPOSE_SENSITIVITY_CHANGE,
   COMPOSE_SPOILERNESS_CHANGE,
   COMPOSE_SPOILER_TEXT_CHANGE,
+  COMPOSE_MONOLOGUING_CHANGE,
   COMPOSE_VISIBILITY_CHANGE,
   COMPOSE_COMPOSING_CHANGE,
   COMPOSE_EMOJI_INSERT,
@@ -38,6 +39,7 @@ const initialState = ImmutableMap({
   sensitive: false,
   spoiler: false,
   spoiler_text: '',
+  monologuing: false,
   privacy: null,
   text: '',
   focusDate: null,
@@ -71,6 +73,7 @@ function clearAll(state) {
     map.set('text', '');
     map.set('spoiler', false);
     map.set('spoiler_text', '');
+    map.set('monologuing', false);
     map.set('is_submitting', false);
     map.set('in_reply_to', null);
     map.set('privacy', state.get('default_privacy'));
@@ -185,6 +188,10 @@ export default function compose(state = initialState, action) {
   case COMPOSE_SPOILER_TEXT_CHANGE:
     return state
       .set('spoiler_text', action.text)
+      .set('idempotencyKey', uuid());
+  case COMPOSE_MONOLOGUING_CHANGE:
+    return state
+      .set('monologuing', !state.get('monologuing'))
       .set('idempotencyKey', uuid());
   case COMPOSE_VISIBILITY_CHANGE:
     return state

@@ -9,6 +9,45 @@ class Formatter
 
   include ActionView::Helpers::TextHelper
 
+  class MarkdownFormatRenderer < Redcarpet::Render::HTML
+    def autolink(link, link_type)
+      return link unless link_type == :url && link[0..3] == 'http' && link[6] == '/'
+      prefix = link.match(/\Ahttps?:\/\/(www\.)?/).to_s
+      text   = link[prefix.length, 30]
+      suffix = link[prefix.length + 30..-1]
+      cutoff = link[prefix.length..-1].length > 30
+
+      span = "<span class=\"invisible\">#{prefix}</span><span class=\"#{cutoff ? 'ellipsis' : ''}\">#{text}</span><span class=\"invisible\">#{suffix}</span>"
+      "<a href=\"#{link}\" rel=\"nofollow noopener\" target=\"_blank\">#{span}</a>"
+    end
+  end
+
+  def markdown_format(status, options = {})
+    html_r = MarkdownFormatRenderer.new(escape_html: true, safe_links_only: true)
+    markdown = Redcarpet::Markdown.new(html_r, autolink: true, space_after_headers: true, no_intra_emphasis: true, strikethrough: true)
+
+    html = status.full_status_text
+    html = markdown.render(html)
+    html = encode_custom_emojis(html, status.emojis) if options[:custom_emojify]
+
+    linkable_accounts = status.mentions.map(&:account)
+    linkable_accounts << status.account
+
+    entities = Extractor.extract_hashtags_with_indices(html, check_url_overlap: false) +
+               Extractor.extract_mentions_or_lists_with_indices(html)
+    entities = Extractor.remove_overlapping_entities(entities)
+
+    html = rewrite(html.dup, entities, encode: false) do |entity|
+      if entity[:hashtag]
+        link_to_hashtag(entity)
+      elsif entity[:screen_name]
+        link_to_mention(entity, linkable_accounts)
+      end
+    end
+
+    html.html_safe # rubocop:disable Rails/OutputSafety
+  end
+
   def format(status, **options)
     if status.reblog?
       prepend_reblog = status.reblog.account.acct
@@ -160,19 +199,29 @@ class Formatter
 
     last_index = entities.reduce(0) do |index, entity|
       indices = entity.respond_to?(:indices) ? entity.indices : entity[:indices]
-      result << encode(chars[index...indices.first].join)
+
+      result << if options[:encode]
+                  encode(chars[index...indices.first].join)
+                else
+                  chars[index...indices.first].join
+                end
+
       result << yield(entity)
       indices.last
     end
 
-    result << encode(chars[last_index..-1].join)
+    result << if options[:encode]
+                encode(chars[last_index..-1].join)
+              else
+                chars[last_index..-1].join
+              end
 
     result.flatten.join
   end
 
   def link_to_url(entity)
     url        = Addressable::URI.parse(entity[:url])
-    html_attrs = { target: '_blank', rel: 'nofollow noopener' }
+    html_attrs     = { target: '_blank', rel: 'nofollow noopener' }
 
     Twitter::Autolink.send(:link_to_text, entity, link_html(entity[:url]), url, html_attrs)
   rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError

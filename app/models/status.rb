@@ -18,6 +18,7 @@
 #  favourites_count       :integer          default(0), not null
 #  reblogs_count          :integer          default(0), not null
 #  language               :string
+#  full_status_text       :text             default(""), not null
 #  conversation_id        :integer
 #  local                  :boolean
 #  account_id             :integer          not null
@@ -134,7 +135,7 @@ class Status < ApplicationRecord
   end
 
   def emojis
-    CustomEmoji.from_text([spoiler_text, text].join(' '), account.domain)
+    CustomEmoji.from_text([spoiler_text, text, full_status_text].join(' '), account.domain)
   end
 
   after_create_commit :store_uri, if: :local?
@@ -293,6 +294,7 @@ class Status < ApplicationRecord
   def prepare_contents
     text&.strip!
     spoiler_text&.strip!
+    full_status_text&.strip!
   end
 
   def set_reblog

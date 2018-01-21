@@ -10,6 +10,7 @@ class ProcessMentionsService < BaseService
   def call(status)
     return unless status.local?
 
+    status_text = status.full_status_text? ? status.full_status_text : status.text
     status.text = status.text.gsub(Account::MENTION_RE) do |match|
       username, domain  = $1.split('@')
       mentioned_account = Account.find_remote(username, domain)

@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
 import ReplyIndicatorContainer from '../containers/reply_indicator_container';
 import AutosuggestTextarea from '../../../components/autosuggest_textarea';
 import UploadButtonContainer from '../containers/upload_button_container';
-import { defineMessages, injectIntl } from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import Collapsable from '../../../components/collapsable';
 import SpoilerButtonContainer from '../containers/spoiler_button_container';
+import MonologueButtonContainer from '../containers/monologue_button_container';
 import PrivacyDropdownContainer from '../containers/privacy_dropdown_container';
 import SensitiveButtonContainer from '../containers/sensitive_button_container';
 import EmojiPickerDropdown from '../containers/emoji_picker_dropdown_container';
@@ -32,6 +33,7 @@ export default class ComposeForm extends ImmutablePureComponent {
   static propTypes = {
     intl: PropTypes.object.isRequired,
     text: PropTypes.string.isRequired,
+    monologuing: PropTypes.bool,
     suggestion_token: PropTypes.string,
     suggestions: ImmutablePropTypes.list,
     spoiler: PropTypes.bool,
@@ -41,6 +43,7 @@ export default class ComposeForm extends ImmutablePureComponent {
     preselectDate: PropTypes.instanceOf(Date),
     is_submitting: PropTypes.bool,
     is_uploading: PropTypes.bool,
+    me: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onClearSuggestions: PropTypes.func.isRequired,
@@ -146,6 +149,9 @@ export default class ComposeForm extends ImmutablePureComponent {
     const disabled = this.props.is_submitting;
     const text     = [this.props.spoiler_text, countableText(this.props.text)].join('');
 
+    let disableSubmitButton = false;
+    let characterCounter = '';
+    let monologuingNotice = '';
     let publishText = '';
 
     if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
@@ -154,10 +160,27 @@ export default class ComposeForm extends ImmutablePureComponent {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
     }
 
+    if (this.props.monologuing) {
+      characterCounter = '\u221E';
+      monologuingNotice = (
+        <div className='compose-form__warning'>
+          <FormattedMessage
+            id='compose_form.monologuing_on'
+            defaultMessage='You are monologuing. Your entire status will be saved on the server, however only the first paragraph (400 characters max) will be displayed on timelines. You can format your text using Markdown.'
+          />
+        </div>
+      );
+      disableSubmitButton = this.props.is_uploading || (text.length !== 0 && text.trim().length === 0);
+    } else {
+      characterCounter = <CharacterCounter max={500} text={text} />;
+      disableSubmitButton = this.props.is_uploading || length(text) > 500 || (text.length !== 0 && text.trim().length === 0);
+    }
+
     return (
       <div className='compose-form'>
         <WarningContainer />
 
+        {monologuingNotice}
         <Collapsable isVisible={this.props.spoiler} fullHeight={50}>
           <div className='spoiler-input'>
             <label>
@@ -198,12 +221,13 @@ export default class ComposeForm extends ImmutablePureComponent {
             <PrivacyDropdownContainer />
             <SensitiveButtonContainer />
             <SpoilerButtonContainer />
+            <MonologueButtonContainer />
           </div>
-          <div className='character-counter__wrapper'><CharacterCounter max={500} text={text} /></div>
+          <div className='character-counter__wrapper'><CharacterCounter max={500} text={characterCounter} /></div>
         </div>
 
         <div className='compose-form__publish'>
-          <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || length(text) > 500 || (text.length !== 0 && text.trim().length === 0)} block /></div>
+          <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || length(text) > 500 || (text.length !== 0 && text.trim().length === 0) || disableSubmitButton} block /></div>
         </div>
       </div>
     );
