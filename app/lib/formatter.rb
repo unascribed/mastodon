@@ -48,7 +48,7 @@ class Formatter
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
 
-  def format(status, **options)
+  def format(status, options = {})
     if status.reblog?
       prepend_reblog = status.reblog.account.acct
       status         = status.proper
@@ -186,7 +186,7 @@ class Formatter
     html
   end
 
-  def rewrite(text, entities)
+  def rewrite(text, entities, options = {})
     chars = text.to_s.to_char_a
 
     # Sort by start index
