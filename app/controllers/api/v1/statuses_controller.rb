@@ -40,9 +40,15 @@ class Api::V1::StatusesController < Api::BaseController
 
   def create
     spoiler_text = status_params[:spoiler_text]
-    if status_params[:status].lines.count > 8
-        if spoiler_text.nil? or spoiler_text.blank?
+    status_is_long = status_params[:status].lines.count > 8 or status_params[:status].length > 300
+    status_is_all_caps = status_params[:status].length > 4 and status_params[:status] == status_params[:status].upcase
+    if spoiler_text.nil? or spoiler_text.blank?
+        if status_is_long and status_is_all_caps
+            spoiler_text = "long, caps"
+        elsif status_is_long
             spoiler_text = "long"
+        elsif status_is_all_caps
+            spoiler_text = "caps"
         end
     end
       
