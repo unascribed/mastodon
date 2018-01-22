@@ -39,27 +39,13 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def create
-    spoiler_text = status_params[:spoiler_text]
-    status_text = status_params[:status]
-    status_is_long = (status_text.lines.count > 8 or status_text.length > 300)
-    status_is_all_caps = (status_text.length > 4 and status_text == status_text.upcase)
-    if spoiler_text.nil? or spoiler_text.blank?
-        if status_is_long and status_is_all_caps
-            spoiler_text = "long, caps"
-        elsif status_is_long
-            spoiler_text = "long"
-        elsif status_is_all_caps
-            spoiler_text = "caps"
-        end
-    end
-      
     @status = PostStatusService.new.call(current_user.account,
                                          status_params[:status],
                                          status_params[:in_reply_to_id].blank? ? nil : Status.find(status_params[:in_reply_to_id]),
                                          monologuing: status_params[:monologuing],
                                          media_ids: status_params[:media_ids],
                                          sensitive: status_params[:sensitive],
-                                         spoiler_text: spoiler_text,
+                                         spoiler_text: status_params[:spoiler_text],
                                          visibility: status_params[:visibility],
                                          application: doorkeeper_token.application,
                                          idempotency: request.headers['Idempotency-Key'])
