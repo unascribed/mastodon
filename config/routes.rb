@@ -125,6 +125,7 @@ Rails.application.routes.draw do
   get '/media_proxy/:id/(*any)', to: 'media_proxy#show', as: :media_proxy
 
   # Remote follow
+  resource :remote_unfollow, only: [:create]
   resource :authorize_follow, only: [:show, :create]
   resource :share, only: [:show, :create]
 
@@ -146,6 +147,8 @@ Rails.application.routes.draw do
       resources :reported_statuses, only: [:create, :update, :destroy]
     end
 
+    resources :report_notes, only: [:create, :destroy]
+
     resources :accounts, only: [:index, :show] do
       member do
         post :subscribe
@@ -153,9 +156,11 @@ Rails.application.routes.draw do
         post :enable
         post :disable
         post :redownload
+        post :remove_avatar
         post :memorialize
       end
 
+      resource :change_email, only: [:show, :update]
       resource :reset, only: [:create]
       resource :silence, only: [:create, :destroy]
       resource :suspension, only: [:create, :destroy]
@@ -219,6 +224,9 @@ Rails.application.routes.draw do
           resource :favourite, only: :create
           post :unfavourite, to: 'favourites#destroy'
 
+          resource :bookmark, only: :create
+          post :unbookmark, to: 'bookmarks#destroy'
+
           resource :mute, only: :create
           post :unmute, to: 'mutes#destroy'
 
@@ -254,6 +262,7 @@ Rails.application.routes.draw do
         end
       end
       resources :favourites, only: [:index]
+      resources :bookmarks,  only: [:index]
       resources :reports,    only: [:index, :create]
 
       namespace :apps do

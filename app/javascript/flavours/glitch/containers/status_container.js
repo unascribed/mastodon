@@ -9,8 +9,10 @@ import {
 import {
   reblog,
   favourite,
+  bookmark,
   unreblog,
   unfavourite,
+  unbookmark,
   pin,
   unpin,
 } from 'flavours/glitch/actions/interactions';
@@ -38,7 +40,10 @@ const makeMapStateToProps = () => {
     let account = undefined;
     let prepend = undefined;
 
-    if (reblogStatus !== null && typeof reblogStatus === 'object') {
+    if (props.featured) {
+      account = status.get('account');
+      prepend = 'featured';
+    } else if (reblogStatus !== null && typeof reblogStatus === 'object') {
       account = status.get('account');
       status = reblogStatus;
       prepend = 'reblogged_by';
@@ -75,6 +80,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
       } else {
         dispatch(openModal('BOOST', { status, onReblog: this.onModalReblog }));
       }
+    }
+  },
+
+  onBookmark (status) {
+    if (status.get('bookmarked')) {
+      dispatch(unbookmark(status));
+    } else {
+      dispatch(bookmark(status));
     }
   },
 

@@ -36,8 +36,10 @@ import {
   FollowRequests,
   GenericNotFound,
   FavouritedStatuses,
+  BookmarkedStatuses,
   ListTimeline,
   Blocks,
+  DomainBlocks,
   Mutes,
   PinnedStatuses,
   Lists,
@@ -60,6 +62,7 @@ const mapStateToProps = state => ({
   layout: state.getIn(['local_settings', 'layout']),
   isWide: state.getIn(['local_settings', 'stretch']),
   navbarUnder: state.getIn(['local_settings', 'navbar_under']),
+  dropdownMenuIsOpen: state.getIn(['dropdown_menu', 'openId']) !== null,
 });
 
 const keyMap = {
@@ -111,6 +114,7 @@ export default class UI extends React.Component {
     hasComposingText: PropTypes.bool,
     location: PropTypes.object,
     intl: PropTypes.object.isRequired,
+    dropdownMenuIsOpen: PropTypes.bool,
   };
 
   state = {
@@ -366,7 +370,7 @@ export default class UI extends React.Component {
 
   render () {
     const { width, draggingOver } = this.state;
-    const { children, layout, isWide, navbarUnder } = this.props;
+    const { children, layout, isWide, navbarUnder, dropdownMenuIsOpen } = this.props;
 
     const columnsClass = layout => {
       switch (layout) {
@@ -407,7 +411,7 @@ export default class UI extends React.Component {
 
     return (
       <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef}>
-        <div className={className} ref={this.setRef}>
+        <div className={className} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
           {navbarUnder ? null : (<TabsBar />)}
 
           <ColumnsAreaContainer ref={this.setColumnsAreaRef} singleColumn={isMobile(width, layout)}>
@@ -423,6 +427,7 @@ export default class UI extends React.Component {
               <WrappedRoute path='/timelines/list/:id' component={ListTimeline} content={children} />
               <WrappedRoute path='/notifications' component={Notifications} content={children} />
               <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
+              <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
               <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
 
               <WrappedRoute path='/statuses/new' component={Drawer} content={children} />
@@ -431,12 +436,14 @@ export default class UI extends React.Component {
               <WrappedRoute path='/statuses/:statusId/favourites' component={Favourites} content={children} />
 
               <WrappedRoute path='/accounts/:accountId' exact component={AccountTimeline} content={children} />
+              <WrappedRoute path='/accounts/:accountId/with_replies' component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
               <WrappedRoute path='/accounts/:accountId/followers' component={Followers} content={children} />
               <WrappedRoute path='/accounts/:accountId/following' component={Following} content={children} />
               <WrappedRoute path='/accounts/:accountId/media' component={AccountGallery} content={children} />
 
               <WrappedRoute path='/follow_requests' component={FollowRequests} content={children} />
               <WrappedRoute path='/blocks' component={Blocks} content={children} />
+              <WrappedRoute path='/domain_blocks' component={DomainBlocks} content={children} />
               <WrappedRoute path='/mutes' component={Mutes} content={children} />
               <WrappedRoute path='/lists' component={Lists} content={children} />
               <WrappedRoute path='/getting-started-misc' component={GettingStartedMisc} content={children} />

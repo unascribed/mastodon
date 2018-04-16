@@ -21,6 +21,8 @@ import {
   UNREBLOG_SUCCESS,
   FAVOURITE_SUCCESS,
   UNFAVOURITE_SUCCESS,
+  BOOKMARK_SUCCESS,
+  UNBOOKMARK_SUCCESS,
   REBLOGS_FETCH_SUCCESS,
   FAVOURITES_FETCH_SUCCESS,
 } from 'flavours/glitch/actions/interactions';
@@ -44,6 +46,10 @@ import {
   FAVOURITED_STATUSES_EXPAND_SUCCESS,
 } from 'flavours/glitch/actions/favourites';
 import {
+  BOOKMARKED_STATUSES_FETCH_SUCCESS,
+  BOOKMARKED_STATUSES_EXPAND_SUCCESS,
+} from 'flavours/glitch/actions/bookmarks';
+import {
   LIST_ACCOUNTS_FETCH_SUCCESS,
   LIST_EDITOR_SUGGESTIONS_READY,
 } from 'flavours/glitch/actions/lists';
@@ -62,6 +68,11 @@ const normalizeAccount = (state, account) => {
   const displayName = account.display_name.length === 0 ? account.username : account.display_name;
   account.display_name_html = emojify(escapeTextContentForBrowser(displayName));
   account.note_emojified = emojify(account.note);
+
+  if (account.moved) {
+    state = normalizeAccount(state, account.moved);
+    account.moved = account.moved.id;
+  }
 
   return state.set(account.id, fromJS(account));
 };
@@ -126,11 +137,15 @@ export default function accounts(state = initialState, action) {
   case CONTEXT_FETCH_SUCCESS:
   case FAVOURITED_STATUSES_FETCH_SUCCESS:
   case FAVOURITED_STATUSES_EXPAND_SUCCESS:
+  case BOOKMARKED_STATUSES_FETCH_SUCCESS:
+  case BOOKMARKED_STATUSES_EXPAND_SUCCESS:
     return normalizeAccountsFromStatuses(state, action.statuses);
   case REBLOG_SUCCESS:
   case FAVOURITE_SUCCESS:
   case UNREBLOG_SUCCESS:
   case UNFAVOURITE_SUCCESS:
+  case BOOKMARK_SUCCESS:
+  case UNBOOKMARK_SUCCESS:
     return normalizeAccountFromStatus(state, action.response);
   case TIMELINE_UPDATE:
   case STATUS_FETCH_SUCCESS:

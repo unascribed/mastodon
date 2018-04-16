@@ -74,6 +74,8 @@ class MediaAttachment < ApplicationRecord
     },
   }.freeze
 
+  LIMIT = 8.megabytes
+
   belongs_to :account, inverse_of: :media_attachments, optional: true
   belongs_to :status,  inverse_of: :media_attachments, optional: true
 
@@ -85,7 +87,8 @@ class MediaAttachment < ApplicationRecord
   include Remotable
 
   validates_attachment_content_type :file, content_type: IMAGE_MIME_TYPES + VIDEO_MIME_TYPES + AUDIO_MIME_TYPES
-  validates_attachment_size :file, less_than: 8.megabytes
+  validates_attachment_size :file, less_than: LIMIT
+  remotable_attachment :file, LIMIT
 
   validates :account, presence: true
   validates :description, length: { maximum: 420 }, if: :local?
@@ -147,8 +150,9 @@ class MediaAttachment < ApplicationRecord
                 'pix_fmt'  => 'yuv420p',
                 'vf'       => 'scale=\'trunc(iw/2)*2:trunc(ih/2)*2\'',
                 'vsync'    => 'cfr',
-                'b:v'      => '1300K',
-                'maxrate'  => '500K',
+                'c:v'      => 'h264',
+                'b:v'      => '500K',
+                'maxrate'  => '1300K',
                 'bufsize'  => '1300K',
                 'crf'      => 18,
               },

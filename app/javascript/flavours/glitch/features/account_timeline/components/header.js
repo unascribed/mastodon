@@ -5,6 +5,9 @@ import InnerHeader from 'flavours/glitch/features/account/components/header';
 import ActionBar from 'flavours/glitch/features/account/components/action_bar';
 import MissingIndicator from 'flavours/glitch/components/missing_indicator';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { FormattedMessage } from 'react-intl';
+import { NavLink } from 'react-router-dom';
+import MovedNote from './moved_note';
 
 export default class Header extends ImmutablePureComponent {
 
@@ -18,6 +21,7 @@ export default class Header extends ImmutablePureComponent {
     onMute: PropTypes.func.isRequired,
     onBlockDomain: PropTypes.func.isRequired,
     onUnblockDomain: PropTypes.func.isRequired,
+    hideTabs: PropTypes.bool,
   };
 
   static contextTypes = {
@@ -53,7 +57,7 @@ export default class Header extends ImmutablePureComponent {
 
     if (!domain) return;
 
-    this.props.onBlockDomain(domain, this.props.account.get('id'));
+    this.props.onBlockDomain(domain);
   }
 
   handleUnblockDomain = () => {
@@ -61,11 +65,11 @@ export default class Header extends ImmutablePureComponent {
 
     if (!domain) return;
 
-    this.props.onUnblockDomain(domain, this.props.account.get('id'));
+    this.props.onUnblockDomain(domain);
   }
 
   render () {
-    const { account } = this.props;
+    const { account, hideTabs } = this.props;
 
     if (account === null) {
       return <MissingIndicator />;
@@ -73,6 +77,8 @@ export default class Header extends ImmutablePureComponent {
 
     return (
       <div className='account-timeline__header'>
+        {account.get('moved') && <MovedNote from={account} to={account.get('moved')} />}
+
         <InnerHeader
           account={account}
           onFollow={this.handleFollow}
@@ -89,6 +95,14 @@ export default class Header extends ImmutablePureComponent {
           onBlockDomain={this.handleBlockDomain}
           onUnblockDomain={this.handleUnblockDomain}
         />
+
+        {!hideTabs && (
+          <div className='account__section-headline'>
+            <NavLink exact to={`/accounts/${account.get('id')}`}><FormattedMessage id='account.posts' defaultMessage='Toots' /></NavLink>
+            <NavLink exact to={`/accounts/${account.get('id')}/with_replies`}><FormattedMessage id='account.posts_with_replies' defaultMessage='Toots with replies' /></NavLink>
+            <NavLink exact to={`/accounts/${account.get('id')}/media`}><FormattedMessage id='account.media' defaultMessage='Media' /></NavLink>
+          </div>
+        )}
       </div>
     );
   }

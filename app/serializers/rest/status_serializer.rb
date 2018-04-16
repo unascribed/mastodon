@@ -8,6 +8,7 @@ class REST::StatusSerializer < ActiveModel::Serializer
   attribute :favourited, if: :current_user?
   attribute :reblogged, if: :current_user?
   attribute :muted, if: :current_user?
+  attribute :bookmarked, if: :current_user?
   attribute :pinned, if: :pinnable?
 
   belongs_to :reblog, serializer: REST::StatusSerializer
@@ -15,7 +16,7 @@ class REST::StatusSerializer < ActiveModel::Serializer
   belongs_to :account, serializer: REST::AccountSerializer
 
   has_many :media_attachments, serializer: REST::MediaAttachmentSerializer
-  has_many :mentions
+  has_many :ordered_mentions, key: :mentions
   has_many :tags
   has_many :emojis, serializer: REST::CustomEmojiSerializer
 
@@ -71,6 +72,14 @@ class REST::StatusSerializer < ActiveModel::Serializer
     end
   end
 
+  def bookmarked
+    if instance_options && instance_options[:bookmarks]
+      instance_options[:bookmarks].bookmarks_map[object.id] || false
+    else
+      current_user.account.bookmarked?(object)
+    end
+  end
+
   def pinned
     if instance_options && instance_options[:relationships]
       instance_options[:relationships].pins_map[object.id] || false
@@ -84,6 +93,10 @@ class REST::StatusSerializer < ActiveModel::Serializer
       current_user.account_id == object.account_id &&
       !object.reblog? &&
       %w(public unlisted).include?(object.visibility)
+  end
+
+  def ordered_mentions
+    object.mentions.to_a.sort_by(&:id)
   end
 
   class ApplicationSerializer < ActiveModel::Serializer

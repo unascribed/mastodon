@@ -94,8 +94,16 @@ export function FavouritedStatuses () {
   return import(/* webpackChunkName: "flavours/glitch/async/favourited_statuses" */'flavours/glitch/features/favourited_statuses');
 }
 
+export function BookmarkedStatuses () {
+  return import(/* webpackChunkName: "flavours/glitch/async/bookmarked_statuses" */'flavours/glitch/features/bookmarked_statuses');
+}
+
 export function Blocks () {
   return import(/* webpackChunkName: "flavours/glitch/async/blocks" */'flavours/glitch/features/blocks');
+}
+
+export function DomainBlocks () {
+  return import(/* webpackChunkName: "flavours/glitch/async/domain_blocks" */'flavours/glitch/features/domain_blocks');
 }
 
 export function Mutes () {
