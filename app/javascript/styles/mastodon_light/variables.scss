@@ -1,0 +1,42 @@
+// Commonly used web colors
+$black: #000;            // Black
+$white: #fff;            // White
+$success-green: #79bd9a;    // Padua
+$error-red: #df405a;        // Cerise
+$warning-red: #ff5050;      // Sunset Orange
+$gold-star: #ca8f04;        // Dark Goldenrod
+
+// Values from the classic Mastodon UI
+$classic-base-color: #d9e1e8; //#282c37;         // Midnight Express
+$classic-primary-color: #282c37; //9baec8;      // Echo Blue
+$classic-secondary-color: #1368a5; //d9e1e8;    // Pattens Blue
+$classic-highlight-color: #2b90d9;    // Summer Sky
+
+// Variables for defaults in UI
+$base-shadow-color: $black !default;
+$base-overlay-background: $black !default;
+$base-border-color: $white !default;
+$simple-background-color: $white !default;
+$primary-text-color: $black !default;
+$valid-value-color: $success-green !default;
+$error-value-color: $error-red !default;
+
+// Tell UI to use selected colors
+$ui-base-color: $classic-base-color !default;                  // Darkest
+$ui-base-lighter-color: darken($ui-base-color, 36%) !default; // Lighter darkest
+$ui-primary-color: $classic-primary-color !default;            // Lighter
+$ui-secondary-color: $classic-secondary-color !default;        // Lightest
+$ui-highlight-color: $classic-highlight-color !default;        // Vibrant
+
+// Buttons colors
+$status-buttons-base-color: $ui-primary-color;
+$status-buttons-active-color: $classic-highlight-color;
+$status-buttons-disabled-color: rgba($status-buttons-base-color, .4);
+
+// Spoilers - Show More button
+$status-spoilers-background: $classic-primary-color;
+$status-spoilers-text: $white;
+$status-spoilers-active-background: $classic-highlight-color;
+
+// Languages
+$cjk-langs: ja, ko, zh-CN, zh-HK, zh-TW;
