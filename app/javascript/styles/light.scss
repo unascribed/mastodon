@@ -6,6 +6,8 @@ $ui-primary-color: #bf5677; // "lighter"
 $ui-highlight-color: #bf5677; // "vibrant"
 $primary-text-color: #382b32;
 
+$media-modal-media-max-width: 100%;
+
 $header-color: $ui-primary-color;
 $header-text-color: #fff;
 $icon-button-inactive-color: lighten(desaturate($ui-base-lighter-color, 20%), 20%);
