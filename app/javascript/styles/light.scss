@@ -24,14 +24,14 @@ $gold-star: #dd9d08;
 /* cybre-specific additions */
 
 .column .static-content.getting-started {
-  background-image: url('../images/logo-cybre-light.png');
+  background-image: url('~images/logo-cybre-light.png');
   background-size:auto 50%;
   background-position: 50% 75%;
   background-repeat:no-repeat;
 }
 
 .ui, body {
-  background: $ui-base-color url('../images/background-cybre-light.png');
+  background: $ui-base-color url('~images/background-cybre-light.png');
 }
 
 .drawer__inner__mastodon {
@@ -39,13 +39,13 @@ $gold-star: #dd9d08;
 }
 
 .landing-page .header-wrapper {
-    background-image:url('../images/header-cybre-alt.jpg');
+    background-image:url('~images/header-cybre-alt.jpg');
     background-size:cover;
     background-position:50% 50%;
 }
 
 .landing-page.alternative .header {
-    background-image:url('../images/header-cybre-colour.jpg');
+    background-image:url('~images/header-cybre-colour.jpg');
     background-repeat: repeat-x;
     background-size:contain;
     height:45vh;

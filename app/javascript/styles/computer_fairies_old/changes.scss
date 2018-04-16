@@ -103,7 +103,7 @@ $radius: 10px;
 .account__avatar-overlay-overlay,
 .avatar {
   &:after {
-    background: url('../images/partyhat.png');
+    background: url('~images/partyhat.png');
     background-size: contain;
     width: inherit;
     height: inherit;
