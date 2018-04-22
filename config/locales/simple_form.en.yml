@@ -53,7 +53,7 @@ en:
         setting_system_font_ui: Use system's default font
         setting_unfollow_modal: Show confirmation dialog before unfollowing someone
         setting_st_email_fwd: Enable email forwarding
-        setting_st_avatar_as_favicon: Include your avatar in the favicon
+        setting_st_avatar_as_favicon: Use avatar as tab icon
         severity: Severity
         type: Import type
         username: Username
