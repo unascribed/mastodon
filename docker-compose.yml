@@ -40,7 +40,7 @@ services:
       - external_network
       - internal_network
     ports:
-      - "18233:3000"
+      - "127.0.0.1:18233:3000"
     depends_on:
       - db
       - redis
@@ -60,7 +60,7 @@ services:
       - external_network
       - internal_network
     ports:
-      - "18234:4000"
+      - "127.0.0.1:18234:4000"
     depends_on:
       - db
       - redis
