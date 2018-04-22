@@ -1,0 +1,11 @@
+en:
+  flavours:
+    sleeping:
+      description: The default flavour for Sleeping Town.
+      name: Sleeping
+  skins:
+    sleeping:
+      lighter: Noon (Lighter)
+      light: Dawn (Light)
+      default: Dusk (Dark)
+      dark: Midnight (Darker)

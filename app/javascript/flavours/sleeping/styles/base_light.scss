@@ -1,0 +1,28 @@
+.composer--textarea > label .textarea, .composer--spoiler input {
+  background: #FFF;
+  color: #000;
+}
+
+.drawer--account > .acct,
+.sensitive-marker,
+.icon-button.overlayed,
+.composer--warning,
+.composer--warning a,
+.media-spoiler:hover,
+.media-spoiler:active,
+.media-spoiler:focus {
+  color: #FFF;
+}
+
+.drawer--account > a,
+.media-spoiler{
+  color: #DDD;
+}
+
+.account__header .account__header__content,
+.boost-modal, .doodle-modal, .favourite-modal, .confirmation-modal, .report-modal, .actions-modal, .mute-modal,
+.status__content__spoiler-link,
+.status.light .status__content,
+.empty-column-indicator {
+  color: #000;
+}

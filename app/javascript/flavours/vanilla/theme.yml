@@ -29,7 +29,7 @@ locales: ../../mastodon/locales
 #  or an array thereof. These filenames must be unique across all
 #  images (regardless of path), so it's a good idea to namespace them
 #  to your theme. It's up to you to let webpack know to compile them.
-screenshot: screenshot.jpg
+screenshot: vanilla-preview.png
 
 #  (OPTIONAL) The directory which contains the pack files.
 #  Defaults to this directory (`app/javascript/flavour/[flavour]`),

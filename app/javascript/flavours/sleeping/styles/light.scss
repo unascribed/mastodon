@@ -1,6 +1,6 @@
-@import '../sleeping/material_colors';
-@import '../../../flavours/glitch/styles/mixins';
-@import '../../../flavours/glitch/styles/variables';
+@import 'material_colors';
+@import '../../glitch/styles/mixins';
+@import '../../glitch/styles/variables';
 
 $error-red: $clr-red-500;
 $success-green: $clr-green-500;
@@ -30,29 +30,9 @@ $accent: $clr-pink-500;
 
 $ui-avatar-border-size: 0%;
 
-@import '../sleeping/base';
-
-.composer--textarea > label .textarea, .composer--spoiler input {
-  background: #FFF;
-  color: #000;
-}
-
-.drawer--account > .acct,
-.sensitive-marker,
-.icon-button.overlayed {
-  color: #FFF;
-}
-
-.drawer--account > a {
-  color: #DDD;
-}
-
-.account__header .account__header__content,
-.boost-modal, .doodle-modal, .favourite-modal, .confirmation-modal, .report-modal, .actions-modal, .mute-modal,
-.status__content__spoiler-link {
-  color: #000;
-}
+@import 'base';
+@import 'base_light';
 
 $ui-highlight-color: $clr-light-blue-700;
 $ui-base-color: $ui-base-lighter-color;
-@import '../../../flavours/glitch/styles/components/boost';
+@import '../../glitch/styles/components/boost';

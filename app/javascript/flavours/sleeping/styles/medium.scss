@@ -1,6 +1,6 @@
 @import 'material_colors';
-@import '../../../flavours/glitch/styles/mixins';
-@import '../../../flavours/glitch/styles/variables';
+@import '../../glitch/styles/mixins';
+@import '../../glitch/styles/variables';
 
 $error-red: $clr-red-500;
 $success-green: $clr-green-500;
@@ -19,8 +19,8 @@ $gold-star: $clr-pink-500;
 $ui-base-dark-color: $clr-blue-grey-900;
 $ui-base-color: $clr-blue-grey-800;
 $ui-base-light-color: $clr-blue-grey-700;
-$ui-base-lighter-color: $clr-blue-grey-500;
-$ui-base-lightest-color: $clr-blue-grey-400;
+$ui-base-lighter-color: $clr-blue-grey-400;
+$ui-base-lightest-color: $clr-blue-grey-300;
 $ui-primary-color: $clr-blue-grey-100;
 $ui-secondary-color: $clr-blue-grey-200;
 $ui-highlight-color: $clr-pink-a200;
@@ -33,4 +33,4 @@ $ui-avatar-border-size: 0%;
 @import 'base';
 
 $ui-highlight-color: $clr-light-blue-500;
-@import '../../../flavours/glitch/styles/components/boost';
+@import '../../glitch/styles/components/boost';

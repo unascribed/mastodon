@@ -1,6 +1,6 @@
-@import '../sleeping/material_colors';
-@import '../../../flavours/glitch/styles/mixins';
-@import '../../../flavours/glitch/styles/variables';
+@import 'material_colors';
+@import '../../glitch/styles/mixins';
+@import '../../glitch/styles/variables';
 
 $error-red: $clr-red-700;
 $success-green: $clr-green-700;
@@ -30,11 +30,17 @@ $accent: $clr-pink-a700;
 
 $ui-avatar-border-size: 0%;
 
-@import '../sleeping/base';
+@import 'base';
+
+.composer--textarea > label .textarea, .composer--spoiler input {
+  background: $clr-blue-grey-200;
+  color: #000;
+}
 
 .status__content__spoiler-link {
   color: #000;
 }
 
 $ui-highlight-color: $clr-light-blue-700;
-@import '../../../flavours/glitch/styles/components/boost';
+@import '../../glitch/styles/components/boost';
+

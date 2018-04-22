@@ -31,7 +31,7 @@ locales: locales
 #  or an array thereof. These filenames must be unique across all
 #  images (regardless of path), so it's a good idea to namespace them
 #  to your theme. It's up to you to let webpack know to compile them.
-screenshot: glitch-preview.jpg
+screenshot: glitch-preview.png
 
 #  (OPTIONAL) The directory which contains the pack files.
 #  Defaults to the theme directory (`app/javascript/themes/[theme]`),

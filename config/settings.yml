@@ -29,8 +29,8 @@ defaults: &defaults
   reduce_motion: false
   system_font_ui: false
   noindex: false
-  flavour: 'glitch'
-  skin: 'sleeping'
+  flavour: 'sleeping'
+  skin: 'medium'
   notification_emails:
     follow: false
     reblog: false

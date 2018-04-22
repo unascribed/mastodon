@@ -1,27 +1,27 @@
 @import 'material_colors';
-@import '../../../flavours/glitch/styles/mixins';
+@import '../../glitch/styles/mixins';
 @import 'glitch_variables';
 
 @import '../../../styles/fonts/roboto';
 @import '../../../styles/fonts/roboto-mono';
 @import '../../../styles/fonts/montserrat';
 
-@import '../../../flavours/glitch/styles/reset';
-@import '../../../flavours/glitch/styles/basics';
-@import '../../../flavours/glitch/styles/containers';
-@import '../../../flavours/glitch/styles/lists';
-@import '../../../flavours/glitch/styles/modal';
-@import '../../../flavours/glitch/styles/footer';
-@import '../../../flavours/glitch/styles/compact_header';
-@import '../../../flavours/glitch/styles/landing_strip';
-@import '../../../flavours/glitch/styles/forms';
-@import '../../../flavours/glitch/styles/accounts';
-@import '../../../flavours/glitch/styles/stream_entries';
-@import '../../../flavours/glitch/styles/components/index';
-@import '../../../flavours/glitch/styles/about';
-@import '../../../flavours/glitch/styles/tables';
-@import '../../../flavours/glitch/styles/admin';
-@import '../../../flavours/glitch/styles/rtl';
+@import '../../glitch/styles/reset';
+@import '../../glitch/styles/basics';
+@import '../../glitch/styles/containers';
+@import '../../glitch/styles/lists';
+@import '../../glitch/styles/modal';
+@import '../../glitch/styles/footer';
+@import '../../glitch/styles/compact_header';
+@import '../../glitch/styles/landing_strip';
+@import '../../glitch/styles/forms';
+@import '../../glitch/styles/accounts';
+@import '../../glitch/styles/stream_entries';
+@import '../../glitch/styles/components/index';
+@import '../../glitch/styles/about';
+@import '../../glitch/styles/tables';
+@import '../../glitch/styles/admin';
+@import '../../glitch/styles/rtl';
 
 $primary: #000 !default;
 $accent: #000 !default;
@@ -213,6 +213,10 @@ $ui-base-dark-color: #000 !default;
 
 .button {
   border-radius: 2px;
+}
+
+.composer--textarea > label .textarea:disabled {
+  background: $clr-blue-grey-300;
 }
 
 

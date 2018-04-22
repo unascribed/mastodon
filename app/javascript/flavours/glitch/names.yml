@@ -5,8 +5,11 @@ en:
       name: Glitchsoc
   skins:
     glitch:
-      default: Glitchsoc
+      default: Default
 pl:
   flavours:
     glitch:
-      description: Domyślny motyw instancji GlitchSoc.
+      description: Domyślny motyw instancji Glitchsoc.
+  skins:
+    glitch:
+      default: Domyślny
