@@ -2,6 +2,7 @@ import inherited from 'mastodon/locales/en.json';
 
 const messages = {
   'getting_started.open_source_notice': 'Glitchsoc is free open source software forked from {Mastodon}. You can contribute or report issues on GitHub at {github}.',
+  'getting_started.st_open_source_notice': 'Sleeping Town is open source software, a friendly fork of {Glitchsoc}, which is a friendly fork of {Mastodon}. You can contribute or report issues on GitHub at {github}.',
   'layout.auto': 'Auto',
   'layout.current_is': 'Your current layout is:',
   'layout.desktop': 'Desktop',

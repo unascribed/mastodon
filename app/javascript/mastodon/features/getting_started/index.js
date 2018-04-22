@@ -133,10 +133,14 @@ export default class GettingStarted extends ImmutablePureComponent {
           </p>
           <p>
             <FormattedMessage
-              id='getting_started.open_source_notice'
-              defaultMessage='Mastodon is open source software. You can contribute or report issues on GitHub at {github}.'
-              values={{ github: <a href='https://github.com/tootsuite/mastodon' rel='noopener' target='_blank'>tootsuite/mastodon</a> }}
-            />
+                  id='getting_started.st_open_source_notice'
+                  defaultMessage='Sleeping Town is open source software, a friendly fork of {Glitchsoc}, which is a friendly fork of {Mastodon}. You can contribute or report issues on GitHub at {github}.'
+                  values={{
+                    github: <a href='https://github.com/unascribed/sleeping.town' rel='noopener' target='_blank'>unascribed/sleeping.town</a>,
+                    Glitchsoc: <a href='https://github.com/glitch-soc/mastodon' rel='noopener' target='_blank'>Glitchsoc</a>,
+                    Mastodon: <a href='https://github.com/tootsuite/mastodon' rel='noopener' target='_blank'>Mastodon</a>,
+                  }}
+                />
           </p>
         </div>
       </Column>

@@ -117,6 +117,7 @@
   "getting_started.faq": "FAQ",
   "getting_started.heading": "Getting started",
   "getting_started.open_source_notice": "Mastodon is open source software. You can contribute or report issues on GitHub at {github}.",
+  "getting_started.st_open_source_notice": "Sleeping Town is open source software, a friendly fork of {Glitchsoc}, which is a friendly fork of {Mastodon}. You can contribute or report issues on GitHub at {github}.",
   "getting_started.userguide": "User Guide",
   "home.column_settings.advanced": "Advanced",
   "home.column_settings.basic": "Basic",
