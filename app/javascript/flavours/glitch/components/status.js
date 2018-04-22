@@ -156,7 +156,7 @@ export default class Status extends ImmutablePureComponent {
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (this.state.autoCollapsed) {
       this.setState({ autoCollapsed: false });
-      if (snapshot !== null && this.props.updateScrollBottom) {
+      if (snapshot && this.props.updateScrollBottom) {
         if (this.node.offsetTop < snapshot.top) {
           this.props.updateScrollBottom(snapshot.height - snapshot.top);
         }

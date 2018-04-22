@@ -24,7 +24,6 @@
 #  application_id         :integer
 #  in_reply_to_account_id :integer
 #  local_only             :boolean
-#  full_status_text       :text             default(""), not null
 #
 
 class Status < ApplicationRecord

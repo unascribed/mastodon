@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2018_04_10_220657) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "account_domain_blocks", force: :cascade do |t|
@@ -463,7 +464,6 @@ ActiveRecord::Schema.define(version: 2018_04_10_220657) do
     t.bigint "application_id"
     t.bigint "in_reply_to_account_id"
     t.boolean "local_only"
-    t.text "full_status_text", default: "", null: false
     t.index ["account_id", "id", "visibility", "updated_at"], name: "index_statuses_20180106", order: { id: :desc }
     t.index ["conversation_id"], name: "index_statuses_on_conversation_id"
     t.index ["in_reply_to_id"], name: "index_statuses_on_in_reply_to_id"
