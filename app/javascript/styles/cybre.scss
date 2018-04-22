@@ -20,18 +20,6 @@ $about-page-text: lighten($ui-base-color, 50%);
   }
 }
 
-body, body.about-body {
-  background: $ui-base-color url('~images/background-cybre.png');
-}
-
-body.about-body {
-  // basics.scss &.about-body
-  background: darken($ui-base-color, 8%) url('~images/background-cybre.png');
-
-  background-position-y: 200px;
-  background-position-x: center;
-}
-
 @media screen and (min-width: 1300px) {
   .column {
     flex-grow: 1 !important;
@@ -86,17 +74,6 @@ body.about-body {
 .container.hero .closed-registrations-message .clock {
   font-size: 150%;
   margin: 1em auto;
-}
-
-.column .static-content.getting-started {
-  background-image: url('~images/logo-cybre.png'), url('~images/background-cybre.png');
-  background-size:auto 50%, cover;
-  background-position: 50% 75%, center center;
-  background-repeat:no-repeat, no-repeat;
-}
-
-.columns-area {
-  background: $ui-base-color url('~images/background-cybre.png');
 }
 
 .drawer .drawer__inner {
@@ -169,25 +146,6 @@ body.about-body {
   .landing-page .container.links {
       top: -15px;
   }
-}
-
-.landing-page .header-wrapper {
-    background-image:url('~images/header-cybre-alt.jpg');
-    background-size:cover;
-    background-position:50% 50%;
-}
-
-.landing-page.alternative .header {
-    background-image:url('~images/header-cybre-colour.jpg');
-    background-repeat: repeat-x;
-    background-size:contain;
-    height:45vh;
-    width: 100%;
-    position:absolute;
-    z-index: 1;
-    text-align:center;
-
-    display: unset!important;
 }
 
 .landing-page.alternative .header img {
@@ -331,14 +289,6 @@ body.about-body {
   }
 }
 
-.account__avatar,
-.account__avatar-overlay-base,
-.account__header__avatar,
-.account__avatar-overlay-overlay {
-    border-radius:0px !important;
-    -webkit-clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
-    clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
-}
 
 .emoji-mart-search {
   background: $simple-background-color;
