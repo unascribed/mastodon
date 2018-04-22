@@ -1,0 +1,40 @@
+@import '../sleeping/material_colors';
+@import '../../../flavours/glitch/styles/mixins';
+@import '../../../flavours/glitch/styles/variables';
+
+$error-red: $clr-red-700;
+$success-green: $clr-green-700;
+
+$valid-value-color: $clr-green-a700;
+$error-value-color: $clr-red-a700;
+
+$base-shadow-color: $black;
+$base-overlay-background: $black;
+$base-border-color: $clr-blue-grey-500;
+$simple-background-color: $clr-blue-grey-300;
+$primary-text-color: $clr-blue-grey-200;
+
+$gold-star: $clr-pink-700;
+
+$ui-base-dark-color: #000;
+$ui-base-color: darken($clr-blue-grey-900, 12%);
+$ui-base-light-color: $clr-blue-grey-900;
+$ui-base-lighter-color: $clr-blue-grey-600;
+$ui-base-lightest-color: $clr-blue-grey-500;
+$ui-primary-color: $clr-blue-grey-400;
+$ui-secondary-color: $clr-blue-grey-500;
+$ui-highlight-color: $clr-pink-a700;
+
+$primary: $clr-teal-700;
+$accent: $clr-pink-a700;
+
+$ui-avatar-border-size: 0%;
+
+@import '../sleeping/base';
+
+.status__content__spoiler-link {
+  color: #000;
+}
+
+$ui-highlight-color: $clr-light-blue-700;
+@import '../../../flavours/glitch/styles/components/boost';

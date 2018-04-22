@@ -1,0 +1,274 @@
+@import 'material_colors';
+@import '../../../flavours/glitch/styles/mixins';
+@import 'glitch_variables';
+
+@import '../../../styles/fonts/roboto';
+@import '../../../styles/fonts/roboto-mono';
+@import '../../../styles/fonts/montserrat';
+
+@import '../../../flavours/glitch/styles/reset';
+@import '../../../flavours/glitch/styles/basics';
+@import '../../../flavours/glitch/styles/containers';
+@import '../../../flavours/glitch/styles/lists';
+@import '../../../flavours/glitch/styles/modal';
+@import '../../../flavours/glitch/styles/footer';
+@import '../../../flavours/glitch/styles/compact_header';
+@import '../../../flavours/glitch/styles/landing_strip';
+@import '../../../flavours/glitch/styles/forms';
+@import '../../../flavours/glitch/styles/accounts';
+@import '../../../flavours/glitch/styles/stream_entries';
+@import '../../../flavours/glitch/styles/components/index';
+@import '../../../flavours/glitch/styles/about';
+@import '../../../flavours/glitch/styles/tables';
+@import '../../../flavours/glitch/styles/admin';
+@import '../../../flavours/glitch/styles/rtl';
+
+$primary: #000 !default;
+$accent: #000 !default;
+
+$ui-base-light-color: #000 !default;
+$ui-base-lightest-color: #000 !default;
+$ui-base-dark-color: #000 !default;
+
+@mixin contrast($bg, $dark: #000, $light: #fff) {
+  background-color: $bg;
+
+  $luma: (red($bg) * 299 + green($bg) * 587 + blue($bg) * 114) / 1000;
+
+  luma: $luma;
+  
+  @if $luma >= 128 {
+    color: $dark;
+  } @else {
+    color: $light;
+  }
+}
+
+.account__header {
+    background-size: auto 238px;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+.account__header > div {
+  // i'm old fashioned, shoot me
+  display: block;
+  background-color: transparent;
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
+  background-size: 100% 100px;
+  background-position: center 138px;
+  background-repeat: no-repeat;
+  text-align: start;
+  padding-top: 138px;
+}
+
+.account__header .account__header__display-name,
+.account__header .account__header__username, {
+  width: auto;
+  max-width: calc(100% - 110px);
+  line-height: 1.2;
+  overflow: ellipsize;
+}
+
+.account--follows-info,
+.account--muted-info,
+.account--blocked-info{
+  color: #FFF;
+}
+
+.account__header .account__header__display-name {
+  display: table-cell;
+  height: 75px;
+  vertical-align: bottom;
+  font-size: 32px;
+  font-weight: 300;
+  color: $white;
+}
+
+.account__header .account__header__username {
+  color: $white;
+  opacity: 0.7;
+}
+
+.account__header .account__header__content {
+  clear: both;
+  text-align: center;
+  padding-top: 10px;
+  color: $white;
+}
+
+[dir=rtl] .account__header__avatar {
+  float: right;
+  margin-right: 0px;
+  margin-left: 12px;
+}
+
+.account__header__avatar {
+  float: left;
+  margin-right: 12px;
+}
+
+.wide .column {
+  max-width: 100%;
+}
+
+.composer--options .icon-button,
+.composer--options .text-icon-button {
+  color: #FFF;
+  opacity: 0.5;
+  transition: opacity 0.6s;
+}
+
+.composer--options .icon-button.active,
+.composer--options .text-icon-button.active {
+  opacity: 1;
+}
+
+.composer--options > hr {
+  border-left-color: #FFF;
+  opacity: 0.7;
+}
+
+.composer--publisher {
+  overflow: visible;
+  position: relative;
+}
+.composer--publisher > button {
+  height: 47px !important;
+  position: absolute;
+  top: -47px;
+  right: 0;
+  width: 80px;
+  @include contrast($accent);
+}
+
+.composer--publisher > .count {
+  position: absolute;
+  right: -6px;
+  bottom: 50px;
+  color: #000;
+  font-size: .75em;
+}
+
+.composer--options,
+.drawer--header,
+.column-header,
+.column-header__button,
+.column-back-button,
+.account__section-headline,
+.column-header__back-button {
+  @include contrast($primary);
+}
+
+.column-header__collapsible-inner,
+.column-settings__section,
+.setting-text {
+  @include contrast($ui-base-light-color);
+}
+
+.account__section-headline a {
+  color: #FFF;
+  opacity: 0.7;
+  transition: opacity 0.6s;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-bottom: none;
+  padding-bottom: 15px;
+}
+
+.account__section-headline a.active {
+  color: #FFF;
+  opacity: 1;
+  border-bottom: 4px $ui-highlight-color solid;
+  padding-bottom: 11px;
+}
+
+.account__section-headline a.active::before, .account__section-headline a.active::after {
+  display: none
+}
+
+.drawer--header > * {
+  color: inherit;
+}
+
+.button {
+  border-radius: 2px;
+}
+
+
+.status__collapse-button.icon-button i {
+  transform: scale(1, 1) !important;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s, color 0.2s !important;
+}
+
+.status__collapse-button.icon-button.active i {
+  transform: scale(1, -1) !important;
+}
+
+.status.collapsed > .status__content {
+  margin: 10px 0;
+}
+
+.status.collapsed > .status__content:after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+  background: linear-gradient(rgba($ui-base-color, 0), rgba($ui-base-color, 1));
+}
+
+.status__visibility-icon.fa-globe {
+  color: $clr-blue-700;
+}
+
+.status__visibility-icon.fa-unlock-alt {
+  color: $clr-green-700;
+}
+
+.status__visibility-icon.fa-lock {
+  color: $clr-amber-700;
+}
+
+.status__visibility-icon.fa-envelope {
+  color: $clr-red-700;
+}
+
+button[aria-label=Bookmark].active {
+  color: $clr-purple-500;
+}
+
+button[aria-label=Favourite] > i {
+  transform: none !important;
+}
+
+button[aria-label=Favourite] > i:before,
+.notification__favourite-icon-wrapper > i.fa-star:before {
+  content: "\F004";
+}
+
+.notification__favourite-icon-wrapper .fa-star {
+  color: $gold-star;
+}
+.notification__favourite-icon-wrapper .fa-retweet {
+  color: $clr-light-blue-500;
+}
+
+.contents > .account__header {
+  background-size: cover;
+}
+
+.account__header > div.drawer--account {
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
+  box-sizing: border-box;
+}
+
+.mastodon {
+    background: url(~images/elephant_ui_plane.svg) no-repeat 0 100%/contain !important;
+    filter: none !important;
+}
+.contents {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="#{hex-color($ui-base-dark-color)}"/></svg>') !important;
+}
