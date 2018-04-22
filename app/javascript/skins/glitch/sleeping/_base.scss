@@ -34,8 +34,6 @@ $ui-base-dark-color: #000 !default;
   background-color: $bg;
 
   $luma: (red($bg) * 299 + green($bg) * 587 + blue($bg) * 114) / 1000;
-
-  luma: $luma;
   
   @if $luma >= 128 {
     color: $dark;
