@@ -39,6 +39,10 @@
     = f.input :setting_display_sensitive_media, as: :boolean, wrapper: :with_label
     = f.input :setting_reduce_motion, as: :boolean, wrapper: :with_label
     = f.input :setting_system_font_ui, as: :boolean, wrapper: :with_label
+    
+  %h4= t 'preferences.sleepingtown'
+  .fields-group
+    = f.input :setting_st_avatar_as_favicon, as: :boolean, wrapper: :with_label
 
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit

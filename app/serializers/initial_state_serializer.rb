@@ -34,6 +34,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:auto_play_gif]           = object.current_account.user.setting_auto_play_gif
       store[:display_sensitive_media] = object.current_account.user.setting_display_sensitive_media
       store[:reduce_motion]           = object.current_account.user.setting_reduce_motion
+      store[:st_avatar_as_favicon]    = object.current_account.user.setting_st_avatar_as_favicon
     end
 
     store

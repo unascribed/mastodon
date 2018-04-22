@@ -30,6 +30,8 @@ class UserSettingsDecorator
     user.settings['noindex']                 = noindex_preference if change?('setting_noindex')
     user.settings['flavour']                 = flavour_preference if change?('setting_flavour')
     user.settings['skin']                    = skin_preference if change?('setting_skin')
+    user.settings['st_email_fwd']            = st_email_fwd_preference if change?('setting_st_email_fwd')
+    user.settings['st_avatar_as_favicon']    = st_avatar_as_favicon_preference if change?('setting_st_avatar_as_favicon')
   end
 
   def merged_notification_emails
@@ -90,6 +92,14 @@ class UserSettingsDecorator
 
   def skin_preference
     settings['setting_skin']
+  end
+  
+  def st_email_fwd_preference
+    boolean_cast_setting 'setting_st_email_fwd'
+  end
+  
+  def st_avatar_as_favicon_preference
+    boolean_cast_setting 'setting_st_avatar_as_favicon'
   end
 
   def boolean_cast_setting(key)

@@ -40,6 +40,8 @@ class Settings::PreferencesController < Settings::BaseController
       :setting_reduce_motion,
       :setting_system_font_ui,
       :setting_noindex,
+      :setting_st_email_fwd,
+      :setting_st_avatar_as_favicon,
       notification_emails: %i(follow follow_request reblog favourite mention digest),
       interactions: %i(must_be_follower must_be_following)
     )

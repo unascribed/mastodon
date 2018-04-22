@@ -69,6 +69,20 @@ describe UserSettingsDecorator do
       settings.update(values)
       expect(user.settings['system_font_ui']).to eq false
     end
+    
+    it '(sleeping.town) updates the user settings value for email forwarding' do
+      values = { 'setting_st_email_fwd' => '1' }
+
+      settings.update(values)
+      expect(user.settings['st_email_fwd']).to eq true
+    end
+    
+    it '(sleeping.town) updates the user settings value for avatar as favicon' do
+      values = { 'setting_st_avatar_as_favicon' => '1' }
+
+      settings.update(values)
+      expect(user.settings['st_avatar_as_favicon']).to eq true
+    end
 
     it 'decoerces setting values before applying' do
       values = {

@@ -16,7 +16,8 @@ export default class NavigationBar extends ImmutablePureComponent {
 
   render () {
     return (
-      <div className='navigation-bar'>
+      <div className='account__header' style={{ backgroundImage: `url(${this.props.account.get('header')})`, textAlign: 'start' }}>
+      <div className='navigation-bar' style={{ padding: '10px' }}>
         <Permalink href={this.props.account.get('url')} to={`/accounts/${this.props.account.get('id')}`}>
           <span style={{ display: 'none' }}>{this.props.account.get('acct')}</span>
           <Avatar account={this.props.account} size={40} />
@@ -31,6 +32,7 @@ export default class NavigationBar extends ImmutablePureComponent {
         </div>
 
         <IconButton title='' icon='close' onClick={this.props.onClose} />
+      </div>
       </div>
     );
   }

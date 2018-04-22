@@ -19,6 +19,13 @@ export const store = configureStore();
 const hydrateAction = hydrateStore(initialState);
 store.dispatch(hydrateAction);
 
+if (initialState.meta.st_avatar_as_favicon) {
+  var link = document.createElement('link');
+  link.rel = 'icon';
+  link.href = initialState.accounts[initialState.meta.me].avatar;
+  document.head.appendChild(link);
+}
+
 export default class Mastodon extends React.PureComponent {
 
   static propTypes = {

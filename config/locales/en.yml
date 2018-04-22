@@ -605,6 +605,7 @@ en:
     other: Other
     publishing: Publishing
     web: Web
+    sleepingtown: Sleeping Town Features
   push_notifications:
     favourite:
       title: "%{name} favourited your status"

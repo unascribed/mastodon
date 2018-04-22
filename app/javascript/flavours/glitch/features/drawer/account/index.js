@@ -40,7 +40,8 @@ export default function DrawerAccount ({ account }) {
 
   //  The result.
   return (
-    <div className='drawer--account'>
+    <div className='account__header' style={{ backgroundImage: `url(${account.get('header')})`, padding: 0, display: 'block', textAlign: 'start' }}>
+    <div className='drawer--account' style={{ padding: '10px', height: '100%' }}>
       <Permalink
         className='avatar'
         href={account.get('url')}
@@ -63,6 +64,7 @@ export default function DrawerAccount ({ account }) {
         className='edit'
         href='/settings/profile'
       ><FormattedMessage {...messages.edit} /></a>
+    </div>
     </div>
   );
 }
