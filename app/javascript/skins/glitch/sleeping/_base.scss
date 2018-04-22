@@ -132,12 +132,21 @@ $ui-base-dark-color: #000 !default;
   overflow: visible;
   position: relative;
 }
-.composer--publisher > button {
+.composer--publisher > button.primary {
   height: 47px !important;
   position: absolute;
   top: -47px;
   right: 0;
   min-width: 80px;
+  @include contrast($accent);
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.composer--publisher > button.side_arm {
+  height: 32px !important;
+  width: 32px;
+  line-height: 33px !important;
   @include contrast($accent);
 }
 
