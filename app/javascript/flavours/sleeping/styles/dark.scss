@@ -41,6 +41,16 @@ $ui-avatar-border-size: 0%;
   color: #000;
 }
 
+.activity-stream .status.light .status__content a.status__content__spoiler-link {
+  color: #FFF;
+  background: $ui-base-color;
+}
+
+.activity-stream .media-spoiler {
+  background: #000;
+  color: #FFF;
+}
+
 $ui-highlight-color: $clr-light-blue-700;
 @import 'boost';
 

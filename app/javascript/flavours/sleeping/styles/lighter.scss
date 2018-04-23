@@ -33,11 +33,13 @@ $ui-avatar-border-size: 0%;
 @import 'base';
 @import 'base_light';
 
-.status__content .status__content__spoiler-link {
+.status__content .status__content__spoiler-link,
+.activity-stream .status.light .status__content a.status__content__spoiler-link {
   @include contrast($ui-base-lightest-color);
 }
 
-.status__content .status__content__spoiler-link:hover {
+.status__content .status__content__spoiler-link:hover,
+.activity-stream .status.light .status__content a.status__content__spoiler-link:hover {
   @include contrast($ui-base-lighter-color);
 }
 
