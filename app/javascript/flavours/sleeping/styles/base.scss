@@ -42,6 +42,36 @@ $ui-base-dark-color: #000 !default;
   }
 }
 
+.detailed-status .status__content .st_all_emojis .emojione {
+  width: 48px;
+  height: 48px;
+}
+.st_all_emojis .emojione {
+  width: 32px;
+  height: 32px;
+}
+.st_custom_emoji_wrapper {
+  position: relative;
+  display: inline-block;
+}
+.st_custom_emoji_wrapper * {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.st_custom_emoji_wrapper .st_moving {
+  opacity: 0;
+}
+.st_custom_emoji_wrapper *:not(.st_moving) {
+  opacity: 1;
+}
+.st_custom_emoji_wrapper:hover .st_moving {
+  opacity: 1;
+}
+.st_custom_emoji_wrapper:hover *:not(.st_moving) {
+  opacity: 0;
+}
+
 .account__header {
     background-size: auto 238px;
     background-position: center top;
@@ -235,14 +265,19 @@ $ui-base-dark-color: #000 !default;
 .status.collapsed > .status__content {
   margin: 10px 0;
 }
-
 .status.collapsed > .status__content:after {
   content: "";
   position: absolute;
   top: 0; bottom: 0;
   left: 0; right: 0;
-  background: linear-gradient(rgba($ui-base-color, 0), rgba($ui-base-color, 1));
+  background: linear-gradient(rgba($ui-base-color, 0), rgba($ui-base-color, 0.75));
   pointer-events: none;
+}
+.status.collapsed:focus > .status__content:after {
+  background: linear-gradient(rgba(lighten($ui-base-color, 4%), 0), rgba(lighten($ui-base-color, 4%), 0.75));
+}
+.status.status-direct.collapsed > .status__content:after {
+  background: linear-gradient(rgba(lighten($ui-base-color, 8%), 0), rgba(lighten($ui-base-color, 8%), 0.75));
 }
 
 .status__visibility-icon.fa-globe {

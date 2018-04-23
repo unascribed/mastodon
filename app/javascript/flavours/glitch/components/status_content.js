@@ -141,6 +141,8 @@ export default class StatusContent extends React.PureComponent {
       'status__content--with-spoiler': status.get('spoiler_text').length > 0,
     });
 
+    if (window.sleeping) content.__html = window.sleeping.customEmojiHook(content.__html);
+
     if (isRtl(status.get('search_index'))) {
       directionStyle.direction = 'rtl';
     }
