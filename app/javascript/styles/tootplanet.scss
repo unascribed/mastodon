@@ -1,0 +1,431 @@
+﻿//variables
+$ui-base-color:           #46006b; // purple sky
+$ui-secondary-color:      #ffcbfe; // pale sea pink
+$ui-primary-color:        #378eef; // blue sky
+$ui-highlight-color:      #ca5fc7; // sea pink
+$base-border-color:       #ffffff; // white
+$simple-background-color: #ffffff; // white
+$primary-text-color:      #ffffff; // white
+$error-value-color:       #f2581a; // smoke orange
+$valid-value-color:       #50a346; // grassy green
+$base-shadow-color:       #000000; // black
+$base-overlay-background: #000000; // black
+
+$ui-bg-color:             #10174a; // dark blue
+$secondary-text-color:    #ffd880; // gold
+$gold-star:		  #ffd880;
+$tertiary-text-color:	  #81e69a; // light green
+
+@import 'application';
+
+//report interface quickfix
+.report-modal__statuses {
+  color: $primary-text-color;
+}
+.status-check-box .status__content {
+  white-space: normal;
+}
+
+.admin-wrapper .content-wrapper {
+  background: $ui-bg-color;
+}
+
+//about.scss
+.landing-page {
+
+  background: $ui-bg-color url('~images/background-photo.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  .header-wrapper {
+    background: none;
+
+    &.compact {
+      background: none;
+    }
+  }
+
+  .header {
+    .hero {
+      margin-top: 50px;
+      align-items: center;
+      position: relative;
+
+      .simple_form,
+      .closed-registrations-message {
+        background: darken($ui-base-color, 4%);
+      }
+    }
+  }
+
+
+  .about-short {
+    background: $ui-bg-color;
+  }
+  .features {
+    background: none;
+    .about-mastodon {
+      background: $ui-bg-color;
+      padding: 5px;
+    }
+  }
+}
+
+//accounts.scss
+.card {
+  background: $ui-bg-color;
+
+  &:after {
+    background: none;
+  }
+
+  .details {
+    &:after {
+      background: linear-gradient(rgba($base-overlay-background, 0.5), rgba($base-overlay-background, 0.8));
+      display: block;
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  }
+}
+
+body {
+  background: $ui-bg-color url('~images/background-photo.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+//components.scss
+.compose-form {
+  background: lighten($ui-bg-color, 13%);
+}
+
+.compose-form__warning {
+  a {
+    color: $secondary-text-color;
+  }
+}
+
+.reply-indicator__display-name {
+  color: $ui-secondary-color;
+}
+
+.setting-text {
+  color: $ui-base-color;
+
+  &:focus,
+  &:active {
+    color: $ui-primary-color;
+  }
+}
+
+@media screen and (min-width: 631px) {
+  .column {
+    flex: 1 0 auto;
+  }
+}
+
+.status__content,
+.reply-indicator__content {
+  a {
+    color: $tertiary-text-color;
+    &.mention {
+      color: $secondary-text-color;
+    }
+    .fa {
+      color: lighten($ui-primary-color, 10%);
+    }
+  }
+  .fa {
+    color: lighten($ui-primary-color, 10%);
+  }
+}
+
+.status__content__spoiler-link {
+  color: $ui-secondary-color;
+}
+
+.status__prepend-icon-wrapper {
+  color: $ui-highlight-color;
+}
+
+.focusable {
+  &:focus {
+    background: lighten($ui-bg-color, 4%);
+
+    &.status-direct {
+      background: lighten($ui-bg-color, 12%);
+    }
+
+    .detailed-status,
+    .detailed-status__action-bar {
+      background: lighten($ui-bg-color, 8%);
+    }
+  }
+}
+
+.status {
+ &.status-direct {
+    background: lighten($ui-bg-color, 8%);
+    .icon-button.disabled {
+      color: $ui-secondary-color;
+    }
+  }
+}
+
+.status__relative-time {
+  color: lighten($ui-primary-color, 16%);
+}
+
+.status__display-name {
+  color: lighten($ui-primary-color, 16%);
+  .muted {
+
+  }
+}
+
+.status-check-box {
+  border-bottom: 1px solid lighten($ui-base-color, 8%);
+  display: flex;
+  .status__content {
+    background: lighten($ui-bg-color, 4%);
+    flex: 1 1 auto;
+    padding: 10px;
+  }
+}
+
+.status__prepend {
+  color: $ui-highlight-color;
+  .status__display-name strong {
+    color: $ui-highlight-color;
+  }
+}
+
+.status__display-name,
+.account__display-name {
+  strong {
+    color: $primary-text-color;
+  }
+
+  &.muted {
+    .emojione {
+      opacity: 1;
+    }
+  }
+}
+
+.detailed-status {
+  background: lighten($ui-bg-color, 4%);
+ &.status-direct {
+    background: lighten($ui-bg-color, 8%);
+    .icon-button.disabled {
+      color: $ui-secondary-color;
+    }
+  }
+}
+.detailed-status__meta {
+  color: lighten($ui-primary-color, 26%);
+}
+.detailed-status__action-bar {
+  background: lighten($ui-bg-color, 4%);
+  border-top: 1px solid lighten($ui-bg-color, 8%);
+}
+
+.reply-indicator__content {
+  color: lighten($ui-primary-color, 20%);
+  a {
+    color: lighten($secondary-text-color, 10%);
+  }
+}
+
+.account__action-bar__tab {
+  strong {
+    color: $ui-secondary-color;
+  }
+}
+
+.status__display-name,
+.account__display-name {
+  strong {
+    color: $ui-secondary-color;
+  }
+}
+
+.detailed-status__display-name {
+  color: $ui-primary-color;
+  strong {
+    color: $ui-secondary-color;
+  }
+}
+
+
+.muted {
+  .status__content p {
+    color: lighten($ui-primary-color, 26%);		
+  }		
+  .status__content a {
+    color: $secondary-text-color;
+  }
+  .status__display-name strong {
+    color: lighten($ui-primary-color, 10%);
+  }
+  a.status__content__spoiler-link {
+    color: $ui-secondary-color;
+  }
+}
+
+
+.notification__favourite-icon-wrapper {
+  .star-icon {
+    color: $secondary-text-color;
+  }
+}
+.star-icon.active {
+  color: $secondary-text-color;
+}
+
+.notification__display-name {
+  &:hover {
+    color: $ui-primary-color;
+  }
+}
+
+.navigation-bar {
+  background: lighten($ui-bg-color, 13%);
+  color: $ui-secondary-color;
+}
+
+.column {
+  > .scrollable {
+    background: $ui-bg-color;
+  }
+}
+
+.ui {
+  background: transparent;
+}
+
+body.app-body {
+  background: $ui-bg-color url('~images/background-photo.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.drawer__tab {
+  color: $ui-secondary-color;
+}
+
+.drawer__inner {
+  background: none;
+  &.darker {
+    background: $ui-bg-color;
+  }
+}
+
+.pseudo-drawer {
+  background: lighten($ui-bg-color, 13%);
+}
+
+.column-back-button {
+  color: $ui-secondary-color;
+}
+.column-back-button__icon {
+  color: $ui-highlight-color;
+}
+
+.column-subheading {
+  color: $ui-secondary-color;
+}
+
+.character-counter--over {
+  color: $error-value-color;
+}
+
+.getting-started {
+  a {
+    color: $ui-highlight-color
+  }
+}
+
+.status-card {
+  &:hover {
+    background: lighten($ui-bg-color, 8%);
+  }
+}
+.status-card__image {
+  background: lighten($ui-bg-color, 8%);
+}
+.load-more {
+  &:hover {
+    background: lighten($ui-bg-color, 8%);
+  }
+}
+
+.account--panel {
+  background: lighten($ui-bg-color, 4%);
+}
+.column-settings__outer {
+  background: lighten($ui-bg-color, 8%);
+}
+
+.column-header__icon {
+  color: $ui-secondary-color;
+}
+
+.empty-column-indicator {
+  background: $ui-bg-color;
+  a {
+    color: $secondary-text-color;
+  }
+}
+
+.upload-area__background {
+  background: $ui-bg-color;
+}
+.upload-progress__backdrop {
+  background: $ui-bg-color;
+}
+
+.search-results__header {
+  color: $ui-secondary-color;
+}
+
+.search-results__hashtag {
+  color: $secondary-text-color;
+  text-decoration: none;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $secondary-text-color;
+    text-decoration: underline;
+  }
+}
+
+.search__input {
+  background: $ui-bg-color;
+  &:focus {
+    background: lighten($ui-bg-color, 4%);
+  }
+}
+
+.column-icon {
+  background: lighten($ui-base-color, 4%);
+  color: $ui-secondary-color;
+  &:hover {
+    color: lighten($ui-secondary-color, 7%);
+  }
+}
+
+.onboarding-modal__page-two,
+.onboarding-modal__page-three,
+.onboarding-modal__page-four,
+.onboarding-modal__page-five {
+  .figure {
+    background: darken($ui-bg-color, 8%);
+  }
+}
