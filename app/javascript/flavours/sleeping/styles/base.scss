@@ -202,6 +202,11 @@ $ui-base-dark-color: #000 !default;
   @include contrast($primary);
 }
 
+.drawer--header a:focus,
+.drawer--header a:hover {
+  @include contrast(lighten($primary, 4%));
+}
+
 .column-header__collapsible-inner,
 .column-settings__section,
 .setting-text {
