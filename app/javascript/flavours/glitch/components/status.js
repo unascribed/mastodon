@@ -122,6 +122,8 @@ export default class Status extends ImmutablePureComponent {
     } = this.props;
     const autoCollapseSettings = settings.getIn(['collapsed', 'auto']);
 
+    if (!node) return;
+    
     if (function () {
       switch (true) {
       case !!collapse:
