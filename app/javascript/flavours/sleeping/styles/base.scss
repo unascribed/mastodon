@@ -258,6 +258,7 @@ $ui-base-dark-color: #000 !default;
 }
 
 .button {
+  @include contrast($accent);
   border-radius: 2px;
 }
 

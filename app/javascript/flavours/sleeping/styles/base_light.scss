@@ -21,9 +21,17 @@
 }
 
 .account__header .account__header__content,
-.boost-modal, .doodle-modal, .favourite-modal, .confirmation-modal, .report-modal, .actions-modal, .mute-modal,
 .status__content__spoiler-link,
 .status.light .status__content,
 .empty-column-indicator {
   color: #000;
+}
+
+.confirmation-modal__action-bar .confirmation-modal__cancel-button,
+.confirmation-modal__action-bar .mute-modal__cancel-button,
+.mute-modal__action-bar .confirmation-modal__cancel-button,
+.mute-modal__action-bar .mute-modal__cancel-button {
+  &, &:hover, &:active, &:focus {
+    color: #FFF;
+  }
 }

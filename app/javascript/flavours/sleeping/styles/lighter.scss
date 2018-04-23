@@ -51,6 +51,10 @@ $ui-avatar-border-size: 0%;
   background: linear-gradient(rgba(lighten(desaturate(lighten($primary, 30%), 70%), 20%), 0), rgba(lighten(desaturate(lighten($primary, 30%), 70%), 20%), 0.75));
 }
 
+.react-toggle-track-x > svg > path {
+  fill: #000;
+}
+
 $ui-highlight-color: $clr-light-blue-700;
 $ui-base-color: $ui-base-lighter-color;
 @import 'boost';
