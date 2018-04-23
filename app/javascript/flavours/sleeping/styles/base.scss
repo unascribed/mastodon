@@ -410,3 +410,14 @@ button[aria-label=Favourite].active {
   color: #000;
   opacity: 0.6;
 }
+
+.glitch.local-settings {
+  @include contrast($ui-base-color);
+}
+.glitch.local-settings__navigation,
+.glitch.local-settings__navigation__item{
+  @include contrast($ui-base-lighter-color);
+}
+.glitch.local-settings__navigation__item.active {
+  @include contrast($primary);
+}
