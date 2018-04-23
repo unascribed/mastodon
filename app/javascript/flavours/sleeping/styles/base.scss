@@ -280,32 +280,65 @@ $ui-base-dark-color: #000 !default;
   background: linear-gradient(rgba(lighten($ui-base-color, 8%), 0), rgba(lighten($ui-base-color, 8%), 0.75));
 }
 
-.status__visibility-icon.fa-globe {
+.status__visibility-icon.fa-globe,
+.composer--options--dropdown--content--item .fa-globe {
   color: $clr-blue-700;
 }
 
-.status__visibility-icon.fa-unlock-alt {
+.status__visibility-icon.fa-unlock-alt,
+.composer--options--dropdown--content--item .fa-unlock-alt {
   color: $clr-green-700;
 }
 
-.status__visibility-icon.fa-lock {
+.status__visibility-icon.fa-lock,
+.composer--options--dropdown--content--item .fa-lock {
   color: $clr-amber-700;
 }
 
-.status__visibility-icon.fa-envelope {
+.status__visibility-icon.fa-envelope,
+.composer--options--dropdown--content--item .fa-envelope {
   color: $clr-red-700;
 }
 
-button[aria-label=Bookmark].active {
-  color: $clr-purple-500;
+.composer--options--dropdown--content--item > .content {
+  color: #000;
+}
+.composer--options--dropdown--content--item > .content > span {
+  opacity: 0.7;
+}
+.composer--options--dropdown--content--item:hover > .content,
+.composer--options--dropdown--content--item.active > .content,
+.composer--options--dropdown--content--item:hover > .content strong,
+.composer--options--dropdown--content--item.active > .content strong,
+.composer--options--dropdown--content--item > .content strong{
+  color: inherit;
 }
 
+.composer--options--dropdown--content--item:hover {
+  @include contrast(lighten($primary, 5%));
+}
+.composer--options--dropdown--content--item.active,
+.composer--options--dropdown.open > .value {
+  @include contrast(lighten($primary, 12%));
+}
+
+.composer--options--dropdown--content--item.active:hover {
+  @include contrast(lighten($primary, 15%));
+}
+
+button[aria-label=Bookmark].active {
+  color: $clr-purple-500 !important;
+}
 button[aria-label=Favourite] > i {
   transform: none !important;
 }
+button[aria-label=Favourite].active > i {
+  color: $clr-pink-500 !important;
+}
 
 button[aria-label=Favourite] > i:before,
-.notification__favourite-icon-wrapper > i.fa-star:before {
+.notification__favourite-icon-wrapper > i.fa-star:before,
+.detailed-status__link > i.fa-star:before {
   content: "\F004";
 }
 
