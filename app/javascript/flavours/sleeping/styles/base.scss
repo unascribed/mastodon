@@ -204,7 +204,7 @@ $ui-base-dark-color: #000 !default;
 
 .drawer--header a:focus,
 .drawer--header a:hover {
-  @include contrast(lighten($primary, 4%));
+  @include contrast(lighten($primary, 6%));
 }
 
 .column-header__collapsible-inner,
@@ -222,6 +222,12 @@ $ui-base-dark-color: #000 !default;
 .drawer--header,
 .drawer--search {
   box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 8px, rgba(0, 0, 0, 0.25) 0px 2px 4px;
+}
+
+.icon-button:hover,
+.icon-button:active,
+.icon-button:focus {
+  color: lighten($ui-base-lighter-color, 15%);
 }
 
 .account__section-headline a,
@@ -320,7 +326,7 @@ $ui-base-dark-color: #000 !default;
 .composer--options--dropdown--content--item.active > .content,
 .composer--options--dropdown--content--item:hover > .content strong,
 .composer--options--dropdown--content--item.active > .content strong,
-.composer--options--dropdown--content--item > .content strong{
+.composer--options--dropdown--content--item > .content strong {
   color: inherit;
 }
 
@@ -338,9 +344,20 @@ $ui-base-dark-color: #000 !default;
 
 button[aria-label=Bookmark].active {
   color: $clr-purple-500 !important;
+  &:hover, &:focus, &:active {
+    color: lighten($clr-purple-500, 12%) !important;
+  }
 }
-button[aria-label=Favourite].active > i {
-  color: $gold-star !important;
+button[aria-label=Favourite].active {
+  & > i {
+    color: $gold-star !important;
+    transition: color 0.2s;
+  }
+  &:hover, &:focus, &:active {
+    & > i {
+      color: lighten($gold-star, 12%) !important;
+    }
+  }
 }
 
 .notification__favourite-icon-wrapper .fa-star {
@@ -369,7 +386,7 @@ button[aria-label=Favourite].active > i {
   background: rgba($ui-base-color, 0.75);
 }
 .ui {
-    background-image: url(~images/elephant_ui_sleep.svg), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="#{rgba(darken($primary, 12%), 0.5)}"/></svg>') !important;
+    background-image: url(~images/elephant_ui_sleep.svg), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="#{rgba($primary, 0.75)}"/></svg>') !important;
     background-attachment: fixed;
     background-repeat: no-repeat, repeat no-repeat;
     background-position: bottom left;
