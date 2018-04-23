@@ -14,7 +14,7 @@ $base-border-color: $white;
 $simple-background-color: $white;
 $primary-text-color: #000;
 
-$gold-star: $clr-pink-500;
+$gold-star: $clr-amber-400;
 
 $ui-base-dark-color: $clr-blue-grey-300;
 $ui-base-color: $clr-blue-grey-200;
@@ -32,6 +32,10 @@ $ui-avatar-border-size: 0%;
 
 @import 'base';
 @import 'base_light';
+
+.status.status-direct .star-icon.active > i {
+  color: $clr-amber-800 !important;
+}
 
 $ui-highlight-color: $clr-light-blue-700;
 $ui-base-color: $ui-base-lighter-color;

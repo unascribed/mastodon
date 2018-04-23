@@ -14,7 +14,7 @@ $base-border-color: $white;
 $simple-background-color: $white;
 $primary-text-color: #000;
 
-$gold-star: $clr-pink-500;
+$gold-star: $clr-amber-800;
 
 $ui-base-dark-color: $clr-blue-grey-200;
 $ui-base-color: $clr-blue-grey-50;
@@ -39,6 +39,14 @@ $ui-avatar-border-size: 0%;
 
 .status__content .status__content__spoiler-link:hover {
   @include contrast($ui-base-lighter-color);
+}
+
+.status.status-direct {
+  background: lighten(desaturate(lighten($primary, 30%), 70%), 20%);
+}
+
+.status.status-direct.collapsed > .status__content:after {
+  background: linear-gradient(rgba(lighten(desaturate(lighten($primary, 30%), 70%), 20%), 0), rgba(lighten(desaturate(lighten($primary, 30%), 70%), 20%), 0.75));
 }
 
 $ui-highlight-color: $clr-light-blue-700;

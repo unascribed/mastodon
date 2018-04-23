@@ -329,17 +329,8 @@ $ui-base-dark-color: #000 !default;
 button[aria-label=Bookmark].active {
   color: $clr-purple-500 !important;
 }
-button[aria-label=Favourite] > i {
-  transform: none !important;
-}
 button[aria-label=Favourite].active > i {
-  color: $clr-pink-500 !important;
-}
-
-button[aria-label=Favourite] > i:before,
-.notification__favourite-icon-wrapper > i.fa-star:before,
-.detailed-status__link > i.fa-star:before {
-  content: "\F004";
+  color: $gold-star !important;
 }
 
 .notification__favourite-icon-wrapper .fa-star {
