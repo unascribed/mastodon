@@ -41,6 +41,11 @@ $ui-avatar-border-size: 0%;
   color: #FFF;
 }
 
+.status__visibility-icon.fa-lock,
+.composer--options--dropdown--content--item .fa-lock {
+  color: $clr-amber-900;
+}
+
 $ui-highlight-color: $clr-light-blue-700;
 $ui-base-color: $ui-base-lighter-color;
 @import 'boost';
