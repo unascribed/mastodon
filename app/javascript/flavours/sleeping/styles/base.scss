@@ -96,7 +96,8 @@ $ui-base-dark-color: #000 !default;
   max-width: calc(100% - 110px);
   line-height: 1.2;
   overflow: hidden;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
+  word-break: break-all;
 }
 
 .account--follows-info,
@@ -109,7 +110,7 @@ $ui-base-dark-color: #000 !default;
   display: table-cell;
   height: 75px;
   vertical-align: bottom;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 300;
   color: $white;
 }
