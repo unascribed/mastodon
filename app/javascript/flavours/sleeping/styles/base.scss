@@ -30,16 +30,19 @@ $ui-base-light-color: #000 !default;
 $ui-base-lightest-color: #000 !default;
 $ui-base-dark-color: #000 !default;
 
-@mixin contrast($bg, $dark: #000, $light: #fff) {
-  background-color: $bg;
-
+@function contrast($bg, $dark: #000, $light: #fff) {
   $luma: (red($bg) * 299 + green($bg) * 587 + blue($bg) * 114) / 1000;
   
   @if $luma >= 128 {
-    color: $dark;
+    @return $dark;
   } @else {
-    color: $light;
+    @return $light;
   }
+}
+
+@mixin bg-contrast($bg, $dark: #000, $light: #fff) {
+  background-color: $bg;
+  color: contrast($bg, $dark, $light);
 }
 
 .detailed-status .status__content .st_all_emojis .emojione {
@@ -169,7 +172,7 @@ $ui-base-dark-color: #000 !default;
   top: -47px;
   right: 0;
   min-width: 80px;
-  @include contrast($accent);
+  @include bg-contrast($accent);
   border-radius: 0;
   border-bottom-right-radius: 4px;
 }
@@ -177,7 +180,7 @@ $ui-base-dark-color: #000 !default;
   height: 32px !important;
   width: 32px;
   line-height: 33px !important;
-  @include contrast($accent);
+  @include bg-contrast($accent);
 }
 
 .composer--publisher > .count {
@@ -201,19 +204,44 @@ $ui-base-dark-color: #000 !default;
 .column-back-button,
 .account__section-headline,
 .column-header__back-button,
-.activity-stream-tabs {
-  @include contrast($primary);
+.activity-stream-tabs,
+.boost-modal__action-bar,
+.doodle-modal__action-bar,
+.favourite-modal__action-bar,
+.confirmation-modal__action-bar,
+.mute-modal__action-bar,
+.onboarding-modal__page-four__columns .column-header,
+.onboarding-modal__paginator,
+.error-modal__footer {
+  @include bg-contrast($primary);
 }
 
 .drawer--header a:focus,
 .drawer--header a:hover {
-  @include contrast(lighten($primary, 6%));
+  @include bg-contrast(lighten($primary, 6%));
 }
 
 .column-header__collapsible-inner,
 .column-settings__section,
 .setting-text {
-  @include contrast($ui-base-light-color);
+  @include bg-contrast($ui-base-light-color);
+}
+
+.onboarding-modal, .error-modal, .embed-modal {
+  @include bg-contrast($ui-base-color);
+}
+
+.onboarding-modal__dot {
+  transition: background 0.4s;
+  background: rgba(contrast($primary), 0.25);
+}
+
+.onboarding-modal__dot:hover {
+  background: rgba(contrast($primary), 0.75);
+}
+
+.onboarding-modal__dot.active {
+  background: $accent;
 }
 
 .auto-columns .column {
@@ -262,15 +290,15 @@ $ui-base-dark-color: #000 !default;
 
 .button,
 .admin-wrapper .sidebar ul ul a.selected {
-  @include contrast($accent);
+  @include bg-contrast($accent);
 }
 
 .simple_form button,
 .simple_form .button,
 .simple_form .block-button {
-  @include contrast($accent);
+  @include bg-contrast($accent);
   &:hover, &:active, &:focus {
-    @include contrast(lighten($accent, 6%));
+    @include bg-contrast(lighten($accent, 6%));
   }
 }
 
@@ -343,20 +371,79 @@ $ui-base-dark-color: #000 !default;
 .composer--options--dropdown--content--item.active > .content,
 .composer--options--dropdown--content--item:hover > .content strong,
 .composer--options--dropdown--content--item.active > .content strong,
-.composer--options--dropdown--content--item > .content strong {
+.composer--options--dropdown--content--item > .content strong,
+.status.light .display-name strong,
+.status.light .status__display-name,
+.onboarding-modal__page p,
+.composer--options--dropdown--content--item {
   color: inherit;
 }
 
+.boost-modal__container, .favourite-modal__container {
+  overflow-x: auto;
+}
+
+.boost-modal,
+.doodle-modal,
+.favourite-modal,
+.confirmation-modal,
+.report-modal,
+.actions-modal,
+.mute-modal,
+.onboarding-modal,
+.error-modal,
+.embed-modal {
+  border-radius: 2px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 8px, rgba(0, 0, 0, 0.25) 0px 2px 4px;
+}
+
+.onboarding-modal__paginator .onboarding-modal__nav,
+.onboarding-modal__paginator .error-modal__nav,
+.error-modal__footer .onboarding-modal__nav,
+.error-modal__footer .error-modal__nav {
+  color: inherit;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-radius: 2px;
+  transition: background 0.4s, color 0.4s, box-shadow 0.4s;
+}
+
+.onboarding-modal__paginator .onboarding-modal__nav:hover, .onboarding-modal__paginator .onboarding-modal__nav:focus, .onboarding-modal__paginator .onboarding-modal__nav:active, .onboarding-modal__paginator .error-modal__nav:hover, .onboarding-modal__paginator .error-modal__nav:focus, .onboarding-modal__paginator .error-modal__nav:active, .error-modal__footer .onboarding-modal__nav:hover, .error-modal__footer .onboarding-modal__nav:focus, .error-modal__footer .onboarding-modal__nav:active, .error-modal__footer .error-modal__nav:hover, .error-modal__footer .error-modal__nav:focus, .error-modal__footer .error-modal__nav:active {
+  background: rgba(255, 255, 255, 0.35);
+  color: #000 !important;
+}
+
+.onboarding-modal__done {
+  background: $accent !important;
+  color: contrast($accent);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 2px 4px, rgba(0, 0, 0, 0.25) 0px 1px 2px;
+}
+
+.onboarding-modal__done:hover, .onboarding-modal__done:active {
+  background: lighten($accent, 6%) !important;
+  color: contrast(lighten($accent, 6%)) !important;
+}
+
+.boost-modal__action-bar > div,
+.doodle-modal__action-bar > div,
+.favourite-modal__action-bar > div,
+.confirmation-modal__action-bar > div,
+.mute-modal__action-bar > div,
+.status.light .display-name span {
+  color: inherit;
+  opacity: 0.7;
+}
+
 .composer--options--dropdown--content--item:hover {
-  @include contrast(lighten($primary, 5%));
+  @include bg-contrast(lighten($primary, 5%));
 }
 .composer--options--dropdown--content--item.active,
 .composer--options--dropdown.open > .value {
-  @include contrast(lighten($primary, 12%));
+  @include bg-contrast(lighten($primary, 12%));
 }
 
 .composer--options--dropdown--content--item.active:hover {
-  @include contrast(lighten($primary, 15%));
+  @include bg-contrast(lighten($primary, 15%));
 }
 
 button[aria-label=Bookmark].active {
@@ -389,7 +476,7 @@ button[aria-label=Favourite].active {
 }
 
 .account__header > div.drawer--account {
-  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
   box-sizing: border-box;
 }
 
@@ -412,6 +499,7 @@ button[aria-label=Favourite].active {
   background: none !important;
 }
 .drawer > .contents {
+  overflow: hidden;
   height: auto;
 }
 .column > .scrollable {
@@ -436,8 +524,22 @@ button[aria-label=Favourite].active {
     background-repeat: repeat no-repeat;
     background-position: bottom left;
 }
+.setting-text.light {
+  background: #FFF;
+  color: #000;
+}
+.setting-text.light:focus, .setting-text.light:active {
+  color: #000;
+}
+.status__content a {
+  color: $accent;
+}
 .auto-columns .column:last-child {
   padding: 0;
+}
+
+.dropdown-menu__item a:focus, .dropdown-menu__item a:hover, .dropdown-menu__item a:active {
+  @include bg-contrast($accent);
 }
 
 .composer {
@@ -464,12 +566,12 @@ button[aria-label=Favourite].active {
 }
 
 .glitch.local-settings {
-  @include contrast($ui-base-color);
+  @include bg-contrast($ui-base-color);
 }
 .glitch.local-settings__navigation,
 .glitch.local-settings__navigation__item{
-  @include contrast($ui-base-lighter-color);
+  @include bg-contrast($ui-base-lighter-color);
 }
 .glitch.local-settings__navigation__item.active {
-  @include contrast($primary);
+  @include bg-contrast($primary);
 }

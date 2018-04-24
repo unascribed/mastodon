@@ -51,6 +51,14 @@ $ui-avatar-border-size: 0%;
   color: #FFF;
 }
 
+.boost-modal, .doodle-modal, .favourite-modal, .confirmation-modal, .report-modal, .actions-modal, .mute-modal {
+  background: $clr-blue-grey-800;
+  color: $clr-blue-grey-50;
+}
+.status.light .status__content {
+  color: $clr-blue-grey-50;
+}
+
 $ui-highlight-color: $clr-light-blue-700;
 @import 'boost';
 
