@@ -401,7 +401,8 @@ button[aria-label=Favourite].active {
 .activity-stream .detailed-status.light .detailed-status__display-name .display-name strong,
 .activity-stream .detailed-status.light,
 .activity-stream .status.light .display-name strong,
-.activity-stream .status.light .status__content {
+.activity-stream .status.light .status__content,
+.activity-stream .detailed-status.light .status__content {
   color: #000;
 }
 .activity-stream .detailed-status.light .detailed-status__display-name .display-name span,
