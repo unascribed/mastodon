@@ -375,7 +375,8 @@ $ui-base-dark-color: #000 !default;
 .status.light .display-name strong,
 .status.light .status__display-name,
 .onboarding-modal__page p,
-.composer--options--dropdown--content--item {
+.composer--options--dropdown--content--item,
+.onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__next, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__next, .error-modal__footer .onboarding-modal__nav.onboarding-modal__done, .error-modal__footer .onboarding-modal__nav.onboarding-modal__next, .error-modal__footer .error-modal__nav.onboarding-modal__done, .error-modal__footer .error-modal__nav.onboarding-modal__next {
   color: inherit;
 }
 
