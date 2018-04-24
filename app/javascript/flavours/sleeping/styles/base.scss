@@ -395,14 +395,12 @@ button[aria-label=Favourite].active {
 
 .drawer {
   position: relative;
-  z-index: 2;
 }
 .mastodon {;
   filter: none !important;
   position: fixed;
   left: 0;
   bottom: 0;
-  z-index: -1;
   width: 293px;
   height: 205px;
   background-image: url(~images/elephant_ui_sleep.svg) !important;
