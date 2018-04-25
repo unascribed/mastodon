@@ -244,15 +244,9 @@ $ui-base-dark-color: #000 !default;
   background: $accent;
 }
 
-.auto-columns .column {
+.wide .column {
   padding: 0;
   margin: 10px 5px;
-}
-
-.auto-columns .column,
-.drawer--header,
-.drawer--search {
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 8px, rgba(0, 0, 0, 0.25) 0px 2px 4px;
 }
 
 .icon-button:hover,
@@ -483,25 +477,30 @@ button[aria-label=Favourite].active {
 
 .drawer {
   position: relative;
+  padding-bottom: 0;
 }
-.mastodon {;
+.mastodon {
   filter: none !important;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 293px;
-  height: 205px;
-  background-image: url(~images/elephant_ui_sleep.svg) !important;
+  margin-left: -10px;
+  max-height: 205px;
+  margin-top: auto;
 }
-.mastodon:active {
-  background-image: url(~images/elephant_ui_wake.svg) !important;
+.mbstobon-0, .mbstobon-1 {
+  & .mastodon {
+    background-image: url(~images/elephant_ui_sleep.svg) !important;
+  }
+  & .mastodon:active {
+    background-image: url(~images/elephant_ui_wake.svg) !important;
+  }
 }
-.contents {
-  background: none !important;
+.mbstobon-2 .mastodon {
+  background-image: url(~images/elephant_ui_plane.svg) !important;
 }
 .drawer > .contents {
-  overflow: hidden;
-  height: auto;
+  background: none !important;
+  overflow-x: visible;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 .column > .scrollable {
   background: none;
@@ -516,7 +515,7 @@ button[aria-label=Favourite].active {
   left: -12px;
   width: calc(100% + 24px);
   height: 44px;
-  opacity: 0.5;
+  opacity: 0.2;
   filter: blur(6px);
 }
 .ui, .column:before {
@@ -535,8 +534,22 @@ button[aria-label=Favourite].active {
 .status__content a {
   color: $accent;
 }
-.auto-columns .column:last-child {
+.status {
+  border-bottom-width: 8px;
+  border-bottom-color: darken($ui-base-color, 7%);;
+}
+.wide .column:last-child {
   padding: 0;
+}
+.drawer:first-child {
+  padding-left: 0;
+}
+.drawer:first-child > * {
+  margin-left: 10px;
+}
+.drawer:first-child > .contents {
+  margin-left: 0;
+  padding-left: 10px;
 }
 
 .dropdown-menu__item a:focus, .dropdown-menu__item a:hover, .dropdown-menu__item a:active {

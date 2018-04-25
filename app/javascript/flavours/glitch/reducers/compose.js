@@ -50,7 +50,7 @@ const initialState = ImmutableMap({
     threaded_mode: false,
   }),
   sensitive: false,
-  elefriend: Math.random() < glitchProbability ? Math.floor(Math.random() * totalElefriends) : totalElefriends,
+  elefriend: 0,
   spoiler: false,
   spoiler_text: '',
   privacy: null,
