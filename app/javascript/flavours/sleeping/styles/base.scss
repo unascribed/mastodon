@@ -534,7 +534,7 @@ button[aria-label=Favourite].active {
 .status__content a {
   color: $accent;
 }
-.status {
+.status, .notification-follow, .detailed-status__action-bar {
   border-bottom-width: 8px;
   border-bottom-color: darken($ui-base-color, 7%);;
 }
