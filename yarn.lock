@@ -2216,9 +2216,9 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
-emoji-mart@Gargron/emoji-mart#build:
-  version "2.1.4"
-  resolved "https://codeload.github.com/Gargron/emoji-mart/tar.gz/a5e1afe5ebcf2841e611d20d261b029581cbe051"
+emoji-mart@unascribed/emoji-mart#build:
+  version "2.6.1"
+  resolved "https://codeload.github.com/unascribed/emoji-mart/tar.gz/ac3065396d3692adbd2c067d7024de7ea1ceedf5"
 
 emoji-regex@^6.1.0:
   version "6.5.1"
