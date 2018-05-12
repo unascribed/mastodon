@@ -1,4 +1,5 @@
 {
+  "account.badges.bot": "Bot",
   "account.block": "Արգելափակել @{name}֊ին",
   "account.block_domain": "Թաքցնել ամենը հետեւյալ տիրույթից՝ {domain}",
   "account.blocked": "Blocked",
@@ -135,6 +136,7 @@
   "keyboard_shortcuts.mention": "հեղինակին նշելու համար",
   "keyboard_shortcuts.reply": "պատասխանելու համար",
   "keyboard_shortcuts.search": "որոնման դաշտին սեւեռվելու համար",
+  "keyboard_shortcuts.toggle_hidden": "to show/hide text behind CW",
   "keyboard_shortcuts.toot": "թարմ թութ սկսելու համար",
   "keyboard_shortcuts.unfocus": "տեքստի/որոնման տիրույթից ապասեւեռվելու համար",
   "keyboard_shortcuts.up": "ցանկով վերեւ շարժվելու համար",

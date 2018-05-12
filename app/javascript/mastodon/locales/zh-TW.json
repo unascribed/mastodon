@@ -1,4 +1,5 @@
 {
+  "account.badges.bot": "Bot",
   "account.block": "封鎖 @{name}",
   "account.block_domain": "隱藏來自 {domain} 的一切貼文",
   "account.blocked": "已被封鎖的",
@@ -135,6 +136,7 @@
   "keyboard_shortcuts.mention": "到提到的作者",
   "keyboard_shortcuts.reply": "到回應",
   "keyboard_shortcuts.search": "to focus search",
+  "keyboard_shortcuts.toggle_hidden": "to show/hide text behind CW",
   "keyboard_shortcuts.toot": "to start a brand new toot",
   "keyboard_shortcuts.unfocus": "to un-focus compose textarea/search",
   "keyboard_shortcuts.up": "to move up in the list",

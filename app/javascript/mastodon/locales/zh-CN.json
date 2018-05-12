@@ -1,4 +1,5 @@
 {
+  "account.badges.bot": "Bot",
   "account.block": "屏蔽 @{name}",
   "account.block_domain": "隐藏来自 {domain} 的内容",
   "account.blocked": "Blocked",
@@ -135,6 +136,7 @@
   "keyboard_shortcuts.mention": "提及嘟文作者",
   "keyboard_shortcuts.reply": "回复嘟文",
   "keyboard_shortcuts.search": "选择搜索框",
+  "keyboard_shortcuts.toggle_hidden": "to show/hide text behind CW",
   "keyboard_shortcuts.toot": "发送新嘟文",
   "keyboard_shortcuts.unfocus": "取消输入",
   "keyboard_shortcuts.up": "在列表中让光标上移",

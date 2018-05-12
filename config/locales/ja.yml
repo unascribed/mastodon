@@ -53,9 +53,7 @@ ja:
     unfollow: フォロー解除
   admin:
     account_moderation_notes:
-      account: モデレータ
       create: 書き込む
-      created_at: 日付
       created_msg: モデレーションメモを書き込みました！
       delete: 削除
       destroyed_msg: モデレーションメモを削除しました！
@@ -68,10 +66,11 @@ ja:
         current_email: 現在のメールアドレス
         label: メールアドレスを変更
         new_email: 新しいメールアドレス
-        submit: Change Email
+        submit: メールアドレスの変更
         title: "%{username} さんのメールアドレスを変更"
       confirm: 確認
       confirmed: 確認済み
+      confirming: 確認中
       demote: 降格
       disable: 無効化
       disable_two_factor_authentication: 二段階認証を無効にする
@@ -80,6 +79,7 @@ ja:
       domain: ドメイン
       edit: 編集
       email: メールアドレス
+      email_status: メールアドレスの状態
       enable: 有効化
       enabled: 有効
       feed_url: フィードURL
@@ -118,6 +118,10 @@ ja:
       push_subscription_expires: PuSH購読期限
       redownload: アバターの更新
       remove_avatar: アイコンを削除
+      resend_confirmation:
+        already_confirmed: メールアドレスは確認済みです
+        send: 確認メールを再送
+        success: 確認メールを再送信しました!
       reset: リセット
       reset_password: パスワード再設定
       resubscribe: 再講読
@@ -259,16 +263,16 @@ ja:
       created_msg: レポートメモを書き込みました！
       destroyed_msg: レポートメモを削除しました！
     reports:
+      account:
+        note: メモ
+        report: レポート
       action_taken_by: レポート処理者
       are_you_sure: 本当に実行しますか？
       assign_to_self: 担当になる
       assigned: 担当者
       comment:
-        label: コメント
         none: なし
       created_at: レポート日時
-      delete: 削除
-      history: モデレーション履歴
       id: ID
       mark_as_resolved: 解決済みとしてマーク
       mark_as_unresolved: 未解決として再び開く
@@ -277,12 +281,7 @@ ja:
         create_and_resolve: 書き込み、解決済みにする
         create_and_unresolve: 書き込み、未解決として開く
         delete: 削除
-        label: モデレーターメモ
-        new_label: モデレーターメモの追加
-        placeholder: このレポートに取られた措置やその他更新を記述してください
-      nsfw:
-        'false': NSFW オフ
-        'true': NSFW オン
+        placeholder: このレポートに取られた措置や、その他の更新を記述してください…
       reopen: 再び開く
       report: レポート#%{id}
       report_contents: 内容
@@ -292,7 +291,6 @@ ja:
       resolved_msg: レポートを解決済みにしました！
       silence_account: アカウントをサイレンス
       status: ステータス
-      statuses: 通報されたトゥート
       suspend_account: アカウントを停止
       target: ターゲット
       title: レポート
@@ -356,13 +354,10 @@ ja:
       back_to_account: アカウントページに戻る
       batch:
         delete: 削除
-        nsfw_off: NSFW オフ
-        nsfw_on: NSFW オン
-      execute: 実行
+        nsfw_off: 閲覧注意のマークを取り除く
+        nsfw_on: 閲覧注意としてマークする
       failed_to_execute: 実行に失敗しました
       media:
-        hide: メディアを隠す
-        show: メディアを表示
         title: メディア
       no_media: メディアなし
       title: トゥート一覧
@@ -378,6 +373,7 @@ ja:
   admin_mailer:
     new_report:
       body: "%{reporter} が %{target} を通報しました"
+      body_remote: "%{domain} の誰かが %{target} を通報しました"
       subject: "%{instance} の新しい通報 (#%{id})"
   application_mailer:
     notification_preferences: メール設定の変更
@@ -467,7 +463,7 @@ ja:
     archive_takeout:
       date: 日時
       download: ダウンロード
-      hint_html: "<strong>トゥートとメディア</strong>のアーカイブをリクエストできます。 データはActivityPub形式で、対応しているソフトウェアで読み込むことができます。"
+      hint_html: "<strong>トゥートとメディア</strong>のアーカイブをリクエストできます。 データはActivityPub形式で、対応しているソフトウェアで読み込むことができます。7日毎にアーカイブをリクエストできます。"
       in_progress: 準備中...
       request: アーカイブをリクエスト
       size: 容量
@@ -697,6 +693,9 @@ ja:
         one: "%{count} 本の動画"
         other: "%{count} 本の動画"
     content_warning: '閲覧注意: %{warning}'
+    disallowed_hashtags:
+      one: '許可されていないハッシュタグが含まれています: %{tags}'
+      other: '許可されていないハッシュタグが含まれています: %{tags}'
     open_in_web: Webで開く
     over_character_limit: 上限は %{max}文字までです
     pin_errors:
@@ -804,7 +803,7 @@ ja:
       default: "%Y年%m月%d日 %H:%M"
   two_factor_authentication:
     code_hint: 確認するには認証アプリで表示されたコードを入力してください
-    description_html: "<strong>二段階認証</strong>を有効にするとログイン時、電話でコードを受け取る必要があります。"
+    description_html: "<strong>二段階認証</strong>を有効にするとログイン時、認証アプリからコードを入力する必要があります。"
     disable: 無効
     enable: 有効
     enabled: 二段階認証は有効になっています
@@ -844,5 +843,6 @@ ja:
   users:
     invalid_email: メールアドレスが無効です
     invalid_otp_token: 二段階認証コードが間違っています
+    otp_lost_help_html: どちらも使用できない場合、%{email} に連絡を取ると解決できるかもしれません
     seamless_external_login: あなたは外部サービスを介してログインしているため、パスワードとメールアドレスの設定は利用できません。
     signed_in_as: '下記でログイン中:'

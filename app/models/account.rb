@@ -3,7 +3,7 @@
 #
 # Table name: accounts
 #
-#  id                      :integer          not null, primary key
+#  id                      :bigint(8)        not null, primary key
 #  username                :string           default(""), not null
 #  domain                  :string
 #  secret                  :string           default(""), not null
@@ -42,9 +42,10 @@
 #  followers_url           :string           default(""), not null
 #  protocol                :integer          default("ostatus"), not null
 #  memorial                :boolean          default(FALSE), not null
-#  moved_to_account_id     :integer
+#  moved_to_account_id     :bigint(8)
 #  featured_collection_url :string
 #  fields                  :jsonb
+#  actor_type              :string
 #
 
 class Account < ApplicationRecord
@@ -76,6 +77,7 @@ class Account < ApplicationRecord
   validates_with UnreservedUsernameValidator, if: -> { local? && will_save_change_to_username? }
   validates :display_name, length: { maximum: 30 }, if: -> { local? && will_save_change_to_display_name? }
   validate :note_length_does_not_exceed_length_limit, if: -> { local? && will_save_change_to_note? }
+  validates :fields, length: { maximum: 4 }, if: -> { local? && will_save_change_to_fields? }
 
   # Timelines
   has_many :stream_entries, inverse_of: :account, dependent: :destroy
@@ -120,6 +122,7 @@ class Account < ApplicationRecord
   scope :partitioned, -> { order(Arel.sql('row_number() over (partition by domain)')) }
   scope :silenced, -> { where(silenced: true) }
   scope :suspended, -> { where(suspended: true) }
+  scope :without_suspended, -> { where(suspended: false) }
   scope :recent, -> { reorder(id: :desc) }
   scope :alphabetic, -> { order(domain: :asc, username: :asc) }
   scope :by_domain_accounts, -> { group(:domain).select(:domain, 'COUNT(*) AS accounts_count').order('accounts_count desc') }
@@ -148,6 +151,16 @@ class Account < ApplicationRecord
 
   def moved?
     moved_to_account_id.present?
+  end
+
+  def bot?
+    %w(Application Service).include? actor_type
+  end
+
+  alias bot bot?
+
+  def bot=(val)
+    self.actor_type = ActiveModel::Type::Boolean.new.cast(val) ? 'Service' : 'Person'
   end
 
   def acct
@@ -200,9 +213,11 @@ class Account < ApplicationRecord
   def fields_attributes=(attributes)
     fields = []
 
-    attributes.each_value do |attr|
-      next if attr[:name].blank?
-      fields << attr
+    if attributes.is_a?(Hash)
+      attributes.each_value do |attr|
+        next if attr[:name].blank?
+        fields << attr
+      end
     end
 
     self[:fields] = fields
@@ -271,9 +286,13 @@ class Account < ApplicationRecord
 
     def initialize(account, attr)
       @account = account
-      @name    = attr['name']
-      @value   = attr['value']
+      @name    = attr['name'].strip[0, 255]
+      @value   = attr['value'].strip[0, 255]
       @errors  = {}
+    end
+
+    def to_h
+      { name: @name, value: @value }
     end
   end
 
@@ -393,7 +412,7 @@ class Account < ApplicationRecord
   end
 
   def emojis
-    CustomEmoji.from_text(note, domain)
+    @emojis ||= CustomEmoji.from_text(emojifiable_text, domain)
   end
 
   before_create :generate_keys
@@ -408,9 +427,9 @@ class Account < ApplicationRecord
   end
 
   def generate_keys
-    return unless local?
+    return unless local? && !Rails.env.test?
 
-    keypair = OpenSSL::PKey::RSA.new(Rails.env.test? ? 512 : 2048)
+    keypair = OpenSSL::PKey::RSA.new(2048)
     self.private_key = keypair.to_pem
     self.public_key  = keypair.public_key.to_pem
   end
@@ -435,5 +454,9 @@ class Account < ApplicationRecord
     return if local?
 
     self.domain = TagManager.instance.normalize_domain(domain)
+  end
+
+  def emojifiable_text
+    [note, display_name, fields.map(&:value)].join(' ')
   end
 end

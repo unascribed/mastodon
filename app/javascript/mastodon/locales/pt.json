@@ -1,4 +1,5 @@
 {
+  "account.badges.bot": "Bot",
   "account.block": "Bloquear @{name}",
   "account.block_domain": "Esconder tudo do domínio {domain}",
   "account.blocked": "Blocked",
@@ -135,6 +136,7 @@
   "keyboard_shortcuts.mention": "para mencionar o autor",
   "keyboard_shortcuts.reply": "para responder",
   "keyboard_shortcuts.search": "para focar na pesquisa",
+  "keyboard_shortcuts.toggle_hidden": "to show/hide text behind CW",
   "keyboard_shortcuts.toot": "para compor um novo post",
   "keyboard_shortcuts.unfocus": "para remover o foco da área de publicação/pesquisa",
   "keyboard_shortcuts.up": "para mover para cima na lista",
