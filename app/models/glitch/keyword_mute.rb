@@ -3,8 +3,8 @@
 #
 # Table name: glitch_keyword_mutes
 #
-#  id         :integer          not null, primary key
-#  account_id :integer          not null
+#  id         :bigint(8)        not null, primary key
+#  account_id :bigint(8)        not null
 #  keyword    :string           not null
 #  whole_word :boolean          default(TRUE), not null
 #  created_at :datetime         not null

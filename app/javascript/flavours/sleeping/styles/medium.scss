@@ -25,6 +25,13 @@ $ui-primary-color: $clr-blue-grey-100;
 $ui-secondary-color: $clr-blue-grey-200;
 $ui-highlight-color: $clr-pink-a200;
 
+$secondary-text-color: $ui-secondary-color;
+$darker-text-color: rgba($primary-text-color, 0.7);
+$dark-text-color: rgba($primary-text-color, 0.5);
+$inverted-text-color: $black !default;
+$lighter-text-color: rgba($inverted-text-color, 0.7);
+$light-text-color: rgba($inverted-text-color, 0.5);
+
 $primary: $clr-teal-500;
 $accent: $clr-pink-a200;
 

@@ -282,6 +282,10 @@ $ui-base-dark-color: #000 !default;
   color: inherit;
 }
 
+.dropdown-menu__item a {
+  color: #000;
+}
+
 .button,
 .admin-wrapper .sidebar ul ul a.selected {
   @include bg-contrast($accent);
@@ -473,6 +477,10 @@ button[aria-label=Favourite].active {
 .account__header > div.drawer--account {
   background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
   box-sizing: border-box;
+  color: #FFF;
+  & > .acct {
+    color: #FFF;
+  }
 }
 
 .drawer {
