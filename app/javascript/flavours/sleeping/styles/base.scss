@@ -518,16 +518,21 @@ button[aria-label=Favourite].active {
   max-height: 205px;
   margin-top: auto;
 }
-.mbstobon-0, .mbstobon-1 {
-  & .mastodon {
+.drawer.mbstobon-0, .drawer.mbstobon-1 {
+  & > .contents > .mastodon {
     background-image: url(~images/elephant_ui_sleep.svg) !important;
+    background-size: 293px 615px;
+    background-position: 0px 0px;
   }
-  & .mastodon:active {
-    background-image: url(~images/elephant_ui_wake.svg) !important;
+  & > .contents > .mastodon:active {
+    background-image: url(~images/elephant_ui_sleep.svg) !important;
+    background-position: 0px -205px;
   }
 }
-.mbstobon-2 .mastodon {
-  background-image: url(~images/elephant_ui_plane.svg) !important;
+.drawer.mbstobon-2 > .contents > .mastodon {
+  background-image: url(~images/elephant_ui_sleep.svg) !important;
+  background-size: 293px 615px;
+  background-position: 0px -410px;
 }
 .drawer > .contents {
   background: none !important;
