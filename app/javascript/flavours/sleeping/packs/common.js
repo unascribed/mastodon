@@ -2,6 +2,7 @@ window.sleeping = {
   customEmojiHook: function(html) {
     var dummy = document.createElement('div');
     dummy.innerHTML = html;
+    if (dummy.childNodes.length == 0) return html;
     var allEmojos = dummy.querySelectorAll('.emojione')
     for (var i = 0; i < allEmojos.length; i++) {
       var emojo = allEmojos[i];
@@ -11,7 +12,7 @@ window.sleeping = {
       originalNode.src = originalNode.src.replace('static', 'original');
       var staticNode = emojo.cloneNode();
       staticNode.src = staticNode.src.replace('original', 'static');
-      
+
       var wrapper = document.createElement('span');
       originalNode.classList.add('st_moving');
       wrapper.appendChild(originalNode);

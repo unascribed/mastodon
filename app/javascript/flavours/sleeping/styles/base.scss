@@ -45,6 +45,15 @@ $ui-base-dark-color: #000 !default;
   color: contrast($bg, $dark, $light);
 }
 
+*, *:after, *:before {
+  /* NO. JUST DON'T. */
+  text-shadow: none !important;
+}
+
+.status__reply-icon {
+  display: none;
+}
+
 .detailed-status .status__content .st_all_emojis .emojione {
   width: 48px;
   height: 48px;
@@ -130,6 +139,19 @@ $ui-base-dark-color: #000 !default;
   color: $white;
 }
 
+body .column-header__notif-cleaning-buttons button,
+body .column-header__notif-cleaning-buttons button.active,
+body .column-header__notif-cleaning-buttons button:hover,
+body .column-header__notif-cleaning-buttons button.active:hover {
+  @include bg-contrast($ui-base-light-color);
+}
+body .column-header__notif-cleaning-buttons button:hover {
+  color: $accent;
+}
+body .column-header__notif-cleaning-buttons button.active {
+  opacity: 0.5;
+}
+
 [dir=rtl] .account__header__avatar {
   float: right;
   margin-right: 0px;
@@ -212,7 +234,8 @@ $ui-base-dark-color: #000 !default;
 .mute-modal__action-bar,
 .onboarding-modal__page-four__columns .column-header,
 .onboarding-modal__paginator,
-.error-modal__footer {
+.error-modal__footer,
+.column-header > .column-header__back-button {
   @include bg-contrast($primary);
 }
 
@@ -374,7 +397,9 @@ $ui-base-dark-color: #000 !default;
 .status.light .status__display-name,
 .onboarding-modal__page p,
 .composer--options--dropdown--content--item,
-.onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__next, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__next, .error-modal__footer .onboarding-modal__nav.onboarding-modal__done, .error-modal__footer .onboarding-modal__nav.onboarding-modal__next, .error-modal__footer .error-modal__nav.onboarding-modal__done, .error-modal__footer .error-modal__nav.onboarding-modal__next {
+.onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__next, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__next, .error-modal__footer .onboarding-modal__nav.onboarding-modal__done, .error-modal__footer .onboarding-modal__nav.onboarding-modal__next, .error-modal__footer .error-modal__nav.onboarding-modal__done, .error-modal__footer .error-modal__nav.onboarding-modal__next,
+.composer--reply > header > .account.small,
+.composer--reply > header > .account.small {
   color: inherit;
 }
 
@@ -539,7 +564,11 @@ button[aria-label=Favourite].active {
 .setting-text.light:focus, .setting-text.light:active {
   color: #000;
 }
-.status__content a {
+.status__content {
+  padding-left: 4px;
+}
+.status__content a,
+.composer--reply > .content a {
   color: $accent;
 }
 .status, .notification-follow, .detailed-status__action-bar {

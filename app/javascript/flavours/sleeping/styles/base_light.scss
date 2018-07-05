@@ -12,7 +12,10 @@
 .media-spoiler:hover,
 .media-spoiler:active,
 .media-spoiler:focus,
-.dropdown-menu__item a {
+.dropdown-menu__item a,
+.composer--reply > .content,
+.composer--reply > header,
+.composer--reply > header > button.icon-button.inverted {
   color: #FFF;
 }
 
