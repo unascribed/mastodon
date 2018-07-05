@@ -19,7 +19,6 @@ gem 'fog-local', '~> 0.5', require: false
 gem 'fog-openstack', '~> 0.1', require: false
 gem 'paperclip', '~> 6.0'
 gem 'paperclip-av-transcoder', '~> 0.6'
-gem 'posix-spawn', '~> 0.3'
 gem 'streamio-ffmpeg', '~> 3.0'
 
 gem 'active_model_serializers', '~> 0.10'
@@ -63,11 +62,11 @@ gem 'nsa', '~> 0.2'
 gem 'oj', '~> 3.5'
 gem 'ostatus2', '~> 2.0'
 gem 'ox', '~> 2.9'
+gem 'posix-spawn', git: 'https://github.com/rtomayko/posix-spawn', ref: '58465d2e213991f8afb13b984854a49fcdcc980c'
 gem 'pundit', '~> 1.1'
 gem 'premailer-rails'
 gem 'rack-attack', '~> 5.2'
 gem 'rack-cors', '~> 1.0', require: 'rack/cors'
-gem 'rack-timeout', '~> 0.4'
 gem 'rails-i18n', '~> 5.1'
 gem 'rails-settings-cached', '~> 0.6'
 gem 'redis', '~> 4.0', require: ['redis', 'redis/connection/hiredis']

@@ -139,11 +139,12 @@ class Account < ApplicationRecord
            :moderator?,
            :staff?,
            :locale,
+           :hides_network?,
            to: :user,
            prefix: true,
            allow_nil: true
 
-  delegate :filtered_languages, to: :user, prefix: false, allow_nil: true
+  delegate :chosen_languages, to: :user, prefix: false, allow_nil: true
 
   def local?
     domain.nil?

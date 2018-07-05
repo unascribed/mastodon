@@ -32,10 +32,12 @@ import {
 } from 'flavours/glitch/actions/compose';
 import { TIMELINE_DELETE } from 'flavours/glitch/actions/timelines';
 import { STORE_HYDRATE } from 'flavours/glitch/actions/store';
+import { REDRAFT } from 'flavours/glitch/actions/statuses';
 import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, fromJS } from 'immutable';
 import uuid from 'flavours/glitch/util/uuid';
 import { me } from 'flavours/glitch/util/initial_state';
 import { overwrite } from 'flavours/glitch/util/js_helpers';
+import { unescapeHTML } from 'flavours/glitch/util/html';
 
 const totalElefriends = 3;
 
@@ -56,6 +58,7 @@ const initialState = ImmutableMap({
   privacy: null,
   text: '',
   focusDate: null,
+  caretPosition: null,
   preselectDate: null,
   in_reply_to: null,
   is_submitting: false,
@@ -148,6 +151,7 @@ function continueThread (state, status) {
     map.update('media_attachments', list => list.clear());
     map.set('idempotencyKey', uuid());
     map.set('focusDate', new Date());
+    map.set('caretPosition', null);
     map.set('preselectDate', new Date());
   });
 }
@@ -159,7 +163,6 @@ function appendMedia(state, media) {
     map.update('media_attachments', list => list.push(media));
     map.set('is_uploading', false);
     map.set('resetFileKey', Math.floor((Math.random() * 0x10000)));
-    map.set('focusDate', new Date());
     map.set('idempotencyKey', uuid());
 
     if (prevSize === 0 && (state.get('default_sensitive') || state.get('spoiler'))) {
@@ -187,6 +190,7 @@ const insertSuggestion = (state, position, token, completion) => {
     map.set('suggestion_token', null);
     map.update('suggestions', ImmutableList(), list => list.clear());
     map.set('focusDate', new Date());
+    map.set('caretPosition', position + completion.length + 1);
     map.set('idempotencyKey', uuid());
   });
 };
@@ -197,6 +201,7 @@ const insertEmoji = (state, position, emojiData) => {
   return state.withMutations(map => {
     map.update('text', oldText => `${oldText.slice(0, position)}${emoji}\u200B${oldText.slice(position)}`);
     map.set('focusDate', new Date());
+    map.set('caretPosition', position + emoji.length + 1);
     map.set('idempotencyKey', uuid());
   });
 };
@@ -221,6 +226,18 @@ const hydrate = (state, hydratedState) => {
   }
 
   return state;
+};
+
+const domParser = new DOMParser();
+
+const expandMentions = status => {
+  const fragment = domParser.parseFromString(status.get('content'), 'text/html').documentElement;
+
+  status.get('mentions').forEach(mention => {
+    fragment.querySelector(`a[href="${mention.get('url')}"]`).textContent = `@${mention.get('acct')}`;
+  });
+
+  return fragment.innerHTML;
 };
 
 export default function compose(state = initialState, action) {
@@ -278,6 +295,7 @@ export default function compose(state = initialState, action) {
         map => map.merge(new ImmutableMap({ do_not_federate: /👁\ufe0f?\u200b?(?:<\/p>)?$/.test(action.status.get('content')) }))
       );
       map.set('focusDate', new Date());
+      map.set('caretPosition', null);
       map.set('preselectDate', new Date());
       map.set('idempotencyKey', uuid());
 
@@ -325,6 +343,7 @@ export default function compose(state = initialState, action) {
     return state.withMutations(map => {
       map.update('text', text => [text.trim(), `@${action.account.get('acct')} `].filter((str) => str.length !== 0).join(' '));
       map.set('focusDate', new Date());
+      map.set('caretPosition', null);
       map.set('idempotencyKey', uuid());
     });
   case COMPOSE_DIRECT:
@@ -332,6 +351,7 @@ export default function compose(state = initialState, action) {
       map.update('text', text => [text.trim(), `@${action.account.get('acct')} `].filter((str) => str.length !== 0).join(' '));
       map.set('privacy', 'direct');
       map.set('focusDate', new Date());
+      map.set('caretPosition', null);
       map.set('idempotencyKey', uuid());
     });
   case COMPOSE_SUGGESTIONS_CLEAR:
@@ -360,6 +380,24 @@ export default function compose(state = initialState, action) {
       }));
   case COMPOSE_DOODLE_SET:
     return state.mergeIn(['doodle'], action.options);
+  case REDRAFT:
+    return state.withMutations(map => {
+      map.set('text', unescapeHTML(expandMentions(action.status)));
+      map.set('in_reply_to', action.status.get('in_reply_to_id'));
+      map.set('privacy', action.status.get('visibility'));
+      map.set('media_attachments', action.status.get('media_attachments'));
+      map.set('focusDate', new Date());
+      map.set('caretPosition', null);
+      map.set('idempotencyKey', uuid());
+
+      if (action.status.get('spoiler_text').length > 0) {
+        map.set('spoiler', true);
+        map.set('spoiler_text', action.status.get('spoiler_text'));
+      } else {
+        map.set('spoiler', false);
+        map.set('spoiler_text', '');
+      }
+    });
   default:
     return state;
   }

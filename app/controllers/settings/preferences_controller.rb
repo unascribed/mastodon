@@ -23,7 +23,7 @@ class Settings::PreferencesController < Settings::BaseController
   def user_params
     params.require(:user).permit(
       :locale,
-      filtered_languages: []
+      chosen_languages: []
     )
   end
 
@@ -31,6 +31,7 @@ class Settings::PreferencesController < Settings::BaseController
     params.require(:user).permit(
       :setting_default_privacy,
       :setting_default_sensitive,
+      :setting_default_language,
       :setting_unfollow_modal,
       :setting_boost_modal,
       :setting_favourite_modal,
@@ -40,6 +41,7 @@ class Settings::PreferencesController < Settings::BaseController
       :setting_reduce_motion,
       :setting_system_font_ui,
       :setting_noindex,
+      :setting_hide_network,
       :setting_st_email_fwd,
       :setting_st_avatar_as_favicon,
       notification_emails: %i(follow follow_request reblog favourite mention digest),

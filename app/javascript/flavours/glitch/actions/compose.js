@@ -3,14 +3,9 @@ import { CancelToken } from 'axios';
 import { throttle } from 'lodash';
 import { search as emojiSearch } from 'flavours/glitch/util/emoji/emoji_mart_search_light';
 import { useEmoji } from './emojis';
+import resizeImage from 'flavours/glitch/util/resize_image';
 
-import {
-  updateTimeline,
-  refreshHomeTimeline,
-  refreshCommunityTimeline,
-  refreshPublicTimeline,
-  refreshDirectTimeline,
-} from './timelines';
+import { updateTimeline } from './timelines';
 
 let cancelFetchComposeSuggestionsAccounts;
 
@@ -150,21 +145,19 @@ export function submitCompose() {
 
       // To make the app more responsive, immediately get the status into the columns
 
-      const insertOrRefresh = (timelineId, refreshAction) => {
-        if (getState().getIn(['timelines', timelineId, 'online'])) {
+      const insertIfOnline = (timelineId) => {
+        if (getState().getIn(['timelines', timelineId, 'items', 0]) !== null) {
           dispatch(updateTimeline(timelineId, { ...response.data }));
-        } else if (getState().getIn(['timelines', timelineId, 'loaded'])) {
-          dispatch(refreshAction());
         }
       };
 
-      insertOrRefresh('home', refreshHomeTimeline);
+      insertIfOnline('home');
 
       if (response.data.in_reply_to_id === null && response.data.visibility === 'public') {
-        insertOrRefresh('community', refreshCommunityTimeline);
-        insertOrRefresh('public', refreshPublicTimeline);
+        insertIfOnline('community');
+        insertIfOnline('public');
       } else if (response.data.visibility === 'direct') {
-        insertOrRefresh('direct', refreshDirectTimeline);
+        insertIfOnline('direct');
       }
     }).catch(function (error) {
       dispatch(submitComposeFail(error));
@@ -207,18 +200,14 @@ export function uploadCompose(files) {
 
     dispatch(uploadComposeRequest());
 
-    let data = new FormData();
-    data.append('file', files[0]);
+    resizeImage(files[0]).then(file => {
+      const data = new FormData();
+      data.append('file', file);
 
-    api(getState).post('/api/v1/media', data, {
-      onUploadProgress: function (e) {
-        dispatch(uploadComposeProgress(e.loaded, e.total));
-      },
-    }).then(function (response) {
-      dispatch(uploadComposeSuccess(response.data));
-    }).catch(function (error) {
-      dispatch(uploadComposeFail(error));
-    });
+      return api(getState).post('/api/v1/media', data, {
+        onUploadProgress: ({ loaded, total }) => dispatch(uploadComposeProgress(loaded, total)),
+      }).then(({ data }) => dispatch(uploadComposeSuccess(data)));
+    }).catch(error => dispatch(uploadComposeFail(error)));
   };
 };
 

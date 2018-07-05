@@ -65,6 +65,7 @@ class User < ApplicationRecord
 
   validates :locale, inclusion: I18n.available_locales.map(&:to_s), if: :locale?
   validates_with BlacklistedEmailValidator, if: :email_changed?
+  validates_with EmailMxValidator, if: :email_changed?
 
   scope :recent, -> { order(id: :desc) }
   scope :admins, -> { where(admin: true) }
@@ -86,7 +87,8 @@ class User < ApplicationRecord
   has_many :session_activations, dependent: :destroy
 
   delegate :auto_play_gif, :default_sensitive, :unfollow_modal, :boost_modal, :favourite_modal, :delete_modal,
-           :reduce_motion, :system_font_ui, :noindex, :flavour, :skin, :display_sensitive_media,
+           :reduce_motion, :system_font_ui, :noindex, :flavour, :skin, :display_sensitive_media, :hide_network,
+           :default_language,
            :st_avatar_as_favicon, :st_email_fwd,
            to: :settings, prefix: :setting, allow_nil: false
 
@@ -220,6 +222,10 @@ class User < ApplicationRecord
     settings.notification_emails['digest']
   end
 
+  def hides_network?
+    @hides_network ||= settings.hide_network
+  end
+
   def token_for_app(a)
     return nil if a.nil? || a.owner != self
     Doorkeeper::AccessToken
@@ -313,7 +319,9 @@ class User < ApplicationRecord
   private
 
   def sanitize_languages
-    filtered_languages.reject!(&:blank?)
+    return if chosen_languages.nil?
+    chosen_languages.reject!(&:blank?)
+    self.chosen_languages = nil if chosen_languages.empty?
   end
 
   def prepare_new_user!

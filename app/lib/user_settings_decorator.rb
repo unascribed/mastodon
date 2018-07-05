@@ -19,6 +19,7 @@ class UserSettingsDecorator
     user.settings['interactions']            = merged_interactions if change?('interactions')
     user.settings['default_privacy']         = default_privacy_preference if change?('setting_default_privacy')
     user.settings['default_sensitive']       = default_sensitive_preference if change?('setting_default_sensitive')
+    user.settings['default_language']        = default_language_preference if change?('setting_default_language')
     user.settings['unfollow_modal']          = unfollow_modal_preference if change?('setting_unfollow_modal')
     user.settings['boost_modal']             = boost_modal_preference if change?('setting_boost_modal')
     user.settings['favourite_modal']         = favourite_modal_preference if change?('setting_favourite_modal')
@@ -30,6 +31,7 @@ class UserSettingsDecorator
     user.settings['noindex']                 = noindex_preference if change?('setting_noindex')
     user.settings['flavour']                 = flavour_preference if change?('setting_flavour')
     user.settings['skin']                    = skin_preference if change?('setting_skin')
+    user.settings['hide_network']            = hide_network_preference if change?('setting_hide_network')
     user.settings['st_email_fwd']            = st_email_fwd_preference if change?('setting_st_email_fwd')
     user.settings['st_avatar_as_favicon']    = st_avatar_as_favicon_preference if change?('setting_st_avatar_as_favicon')
   end
@@ -92,6 +94,14 @@ class UserSettingsDecorator
 
   def skin_preference
     settings['setting_skin']
+  end
+
+  def hide_network_preference
+    boolean_cast_setting 'setting_hide_network'
+  end
+
+  def default_language_preference
+    settings['setting_default_language']
   end
   
   def st_email_fwd_preference
