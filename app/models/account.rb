@@ -59,7 +59,7 @@ class Account < ApplicationRecord
   include Attachmentable
   include Paginable
 
-  MAX_NOTE_LENGTH = 500
+  MAX_NOTE_LENGTH = 555
 
   enum protocol: [:ostatus, :activitypub]
 
@@ -72,10 +72,10 @@ class Account < ApplicationRecord
   validates :username, uniqueness: { scope: :domain, case_sensitive: true }, if: -> { !local? && will_save_change_to_username? }
 
   # Local user validations
-  validates :username, format: { with: /\A[a-z0-9_]+\z/i }, length: { maximum: 30 }, if: -> { local? && will_save_change_to_username? }
+  validates :username, format: { with: /\A[a-z0-9_]+\z/i }, length: { maximum: 55 }, if: -> { local? && will_save_change_to_username? }
   validates_with UniqueUsernameValidator, if: -> { local? && will_save_change_to_username? }
   validates_with UnreservedUsernameValidator, if: -> { local? && will_save_change_to_username? }
-  validates :display_name, length: { maximum: 30 }, if: -> { local? && will_save_change_to_display_name? }
+  validates :display_name, length: { maximum: 55 }, if: -> { local? && will_save_change_to_display_name? }
   validate :note_length_does_not_exceed_length_limit, if: -> { local? && will_save_change_to_note? }
   validates :fields, length: { maximum: 4 }, if: -> { local? && will_save_change_to_fields? }
 
@@ -421,7 +421,7 @@ class Account < ApplicationRecord
       end
     end
     if note_without_metadata.mb_chars.grapheme_length > MAX_NOTE_LENGTH
-      errors.add(:note, "can't be longer than 500 graphemes")
+      errors.add(:note, "can't be longer than 555 graphemes")
     end
   end
 
