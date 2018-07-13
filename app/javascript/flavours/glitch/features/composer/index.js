@@ -47,10 +47,24 @@ import { me } from 'flavours/glitch/util/initial_state';
 import { isMobile } from 'flavours/glitch/util/is_mobile';
 import { assignHandlers } from 'flavours/glitch/util/react_helpers';
 import { wrap } from 'flavours/glitch/util/redux_helpers';
+import { privacyPreference } from 'flavours/glitch/util/privacy_preference';
 
 //  State mapping.
 function mapStateToProps (state) {
   const inReplyTo = state.getIn(['compose', 'in_reply_to']);
+  const replyPrivacy = inReplyTo ? state.getIn(['statuses', inReplyTo, 'visibility']) : null;
+  const sideArmBasePrivacy = state.getIn(['local_settings', 'side_arm']);
+  const sideArmRestrictedPrivacy = replyPrivacy ? privacyPreference(replyPrivacy, sideArmBasePrivacy) : null;
+  let sideArmPrivacy = null;
+  switch (state.getIn(['local_settings', 'side_arm_reply_mode'])) {
+    case 'copy':
+      sideArmPrivacy = replyPrivacy;
+      break;
+    case 'restrict':
+      sideArmPrivacy = sideArmRestrictedPrivacy;
+      break;
+  }
+  sideArmPrivacy = sideArmPrivacy || sideArmBasePrivacy;
   return {
     acceptContentTypes: state.getIn(['media_attachments', 'accept_content_types']).toArray().join(','),
     advancedOptions: state.getIn(['compose', 'advanced_options']),
@@ -67,7 +81,7 @@ function mapStateToProps (state) {
     replyAccount: inReplyTo ? state.getIn(['statuses', inReplyTo, 'account']) : null,
     replyContent: inReplyTo ? state.getIn(['statuses', inReplyTo, 'contentHtml']) : null,
     resetFileKey: state.getIn(['compose', 'resetFileKey']),
-    sideArm: state.getIn(['local_settings', 'side_arm']),
+    sideArm: sideArmPrivacy,
     sensitive: state.getIn(['compose', 'sensitive']),
     showSearch: state.getIn(['search', 'submitted']) && !state.getIn(['search', 'hidden']),
     spoiler: state.getIn(['compose', 'spoiler']),
@@ -314,14 +328,14 @@ class Composer extends React.Component {
         {privacy === 'direct' ? <ComposerDirectWarning /> : null}
         {privacy === 'private' && amUnlocked ? <ComposerWarning /> : null}
         {privacy !== 'public' && APPROX_HASHTAG_RE.test(text) ? <ComposerHashtagWarning /> : null}
-        {replyContent ? (
+        {replyContent !== null && (
           <ComposerReply
             account={replyAccount}
             content={replyContent}
             intl={intl}
             onCancel={onCancelReply}
           />
-        ) : null}
+        )}
         <ComposerTextarea
           advancedOptions={advancedOptions}
           autoFocus={!showSearch && !isMobile(window.innerWidth, layout)}
@@ -331,6 +345,7 @@ class Composer extends React.Component {
           onPaste={onUpload}
           onPickEmoji={handleEmoji}
           onSubmit={handleSubmit}
+          onSecondarySubmit={handleSecondarySubmit}
           onSuggestionsClearRequested={onClearSuggestions}
           onSuggestionsFetchRequested={onFetchSuggestions}
           onSuggestionSelected={handleSelect}
