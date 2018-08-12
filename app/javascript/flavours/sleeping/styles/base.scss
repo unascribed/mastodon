@@ -208,7 +208,8 @@ body .column-header__notif-cleaning-buttons button.active {
 .composer--publisher > .count {
   position: absolute;
   right: -6px;
-  bottom: 50px;
+  /* this will probably do weird stuff with different font sizes idk, it's already a hack */
+  top: -76px;
   color: #000;
   font-size: .75em;
 }
