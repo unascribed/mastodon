@@ -117,12 +117,14 @@ window.sleeping = {
     return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
   },
   init: function() {
-    var primary = localStorage["sleeping-primary-color"] || getComputedStyle(document.body).getPropertyValue("--sleeping-primary-default").trim();
-    var accent = localStorage["sleeping-accent-color"] || getComputedStyle(document.body).getPropertyValue("--sleeping-accent-default").trim();
-    var link = localStorage["sleeping-link-color"] || getComputedStyle(document.body).getPropertyValue("--sleeping-link-default").trim();
-    sleeping.setColors("primary", primary);
-    sleeping.setColors("accent", accent);
-    sleeping.setColors("link", link);
+    document.addEventListener('DOMContentLoaded', function() {
+      var primary = localStorage["sleeping-primary-color"] || getComputedStyle(document.body).getPropertyValue("--sleeping-primary-default").trim();
+      var accent = localStorage["sleeping-accent-color"] || getComputedStyle(document.body).getPropertyValue("--sleeping-accent-default").trim();
+      var link = localStorage["sleeping-link-color"] || getComputedStyle(document.body).getPropertyValue("--sleeping-link-default").trim();
+      sleeping.setColors("primary", primary);
+      sleeping.setColors("accent", accent);
+      sleeping.setColors("link", link);
+    });
   }
 }
 

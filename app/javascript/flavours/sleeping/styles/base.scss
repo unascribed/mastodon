@@ -54,6 +54,33 @@ body {
   --sleeping-primary-default: $primary;
   --sleeping-accent-default: $accent;
   --sleeping-link-default: $accent;
+  
+  --sleeping-primary: $primary;
+  --sleeping-primary-contrast: contrast($primary);
+  --sleeping-primary-light: lighten($primary, 4%);
+  --sleeping-primary-light-contrast: contrast(lighten($primary, 4%));
+  --sleeping-primary-lighter: lighten($primary, 6%);
+  --sleeping-primary-lighter-contrast: contrast(lighten($primary, 6%));
+  --sleeping-primary-lightest: lighten($primary, 12%);
+  --sleeping-primary-lightest-contrast: contrast(lighten($primary, 12%));
+  
+  --sleeping-accent: $accent;
+  --sleeping-accent-contrast: contrast($accent);
+  --sleeping-accent-light: lighten($accent, 4%);
+  --sleeping-accent-light-contrast: contrast(lighten($accent, 4%));
+  --sleeping-accent-lighter: lighten($accent, 6%);
+  --sleeping-accent-lighter-contrast: contrast(lighten($accent, 6%));
+  --sleeping-accent-lightest: lighten($accent, 12%);
+  --sleeping-accent-lightest-contrast: contrast(lighten($accent, 12%));
+  
+  --sleeping-link: $accent;
+  --sleeping-link-contrast: contrast($accent);
+  --sleeping-link-light: lighten($accent, 4%);
+  --sleeping-link-light-contrast: contrast(lighten($accent, 4%));
+  --sleeping-link-lighter: lighten($accent, 6%);
+  --sleeping-link-lighter-contrast: contrast(lighten($accent, 6%));
+  --sleeping-link-lightest: lighten($accent, 12%);
+  --sleeping-link-lightest-contrast: contrast(lighten($accent, 12%));
 }
 
 #sleeping-settings {
