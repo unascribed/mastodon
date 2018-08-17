@@ -50,6 +50,16 @@ $ui-base-dark-color: #000 !default;
   text-shadow: none !important;
 }
 
+body {
+  --sleeping-primary-default: $primary;
+  --sleeping-accent-default: $accent;
+  --sleeping-link-default: $accent;
+}
+
+#sleeping-settings {
+  display: block !important;
+}
+
 .status__reply-icon {
   display: none;
 }
@@ -146,7 +156,7 @@ body .column-header__notif-cleaning-buttons button.active:hover {
   @include bg-contrast($ui-base-light-color);
 }
 body .column-header__notif-cleaning-buttons button:hover {
-  color: $accent;
+  color: var(--sleeping-accent);
 }
 body .column-header__notif-cleaning-buttons button.active {
   opacity: 0.5;
@@ -194,7 +204,8 @@ body .column-header__notif-cleaning-buttons button.active {
   top: -47px;
   right: 0;
   min-width: 80px;
-  @include bg-contrast($accent);
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
   border-radius: 0;
   border-bottom-right-radius: 4px;
 }
@@ -202,7 +213,8 @@ body .column-header__notif-cleaning-buttons button.active {
   height: 32px !important;
   width: 32px;
   line-height: 33px !important;
-  @include bg-contrast($accent);
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
 }
 
 .composer--publisher > .count {
@@ -237,12 +249,14 @@ body .column-header__notif-cleaning-buttons button.active {
 .onboarding-modal__paginator,
 .error-modal__footer,
 .column-header > .column-header__back-button {
-  @include bg-contrast($primary);
+  background-color: var(--sleeping-primary);
+  color: var(--sleeping-primary-contrast);
 }
 
 .drawer--header a:focus,
 .drawer--header a:hover {
-  @include bg-contrast(lighten($primary, 6%));
+  background-color: var(--sleeping-primary-light);
+  color: var(--sleeping-primary-light-contrast);
 }
 
 .column-header__collapsible-inner,
@@ -256,16 +270,18 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .onboarding-modal__dot {
-  transition: background 0.4s;
-  background: rgba(contrast($primary), 0.25);
+  transition: opacity 0.4s;
+  opacity: 0.25;
+  background: var(--sleeping-primary-contrast);
 }
 
 .onboarding-modal__dot:hover {
-  background: rgba(contrast($primary), 0.75);
+  opacity: 0.75;
+  background: var(--sleeping-primary-contrast);
 }
 
 .onboarding-modal__dot.active {
-  background: $accent;
+  background: var(--sleeping-accent);
 }
 
 .wide .column {
@@ -312,15 +328,18 @@ body .column-header__notif-cleaning-buttons button.active {
 
 .button,
 .admin-wrapper .sidebar ul ul a.selected {
-  @include bg-contrast($accent);
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
 }
 
 .simple_form button,
 .simple_form .button,
 .simple_form .block-button {
-  @include bg-contrast($accent);
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
   &:hover, &:active, &:focus {
-    @include bg-contrast(lighten($accent, 6%));
+    background: var(--sleeping-accent-light);
+    color: var(--sleeping-accent-light-contrast);
   }
 }
 
@@ -439,14 +458,14 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .onboarding-modal__done {
-  background: $accent !important;
-  color: contrast($accent);
+  background: var(--sleeping-accent) !important;
+  color: var(--sleeping-accent-contrast);
   box-shadow: rgba(0, 0, 0, 0.25) 0px 2px 4px, rgba(0, 0, 0, 0.25) 0px 1px 2px;
 }
 
 .onboarding-modal__done:hover, .onboarding-modal__done:active {
-  background: lighten($accent, 6%) !important;
-  color: contrast(lighten($accent, 6%)) !important;
+  background: var(--sleeping-accent-light) !important;
+  color: var(--sleeping-accent-light-contrast) !important;
 }
 
 .boost-modal__action-bar > div,
@@ -460,15 +479,14 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .composer--options--dropdown--content--item:hover {
-  @include bg-contrast(lighten($primary, 5%));
+  background: var(--sleeping-primary-lighter);
+  color: var(--sleeping-primary-lighter-contrast);
 }
 .composer--options--dropdown--content--item.active,
-.composer--options--dropdown.open > .value {
-  @include bg-contrast(lighten($primary, 12%));
-}
-
-.composer--options--dropdown--content--item.active:hover {
-  @include bg-contrast(lighten($primary, 15%));
+.composer--options--dropdown.open > .value,
+.composer--options--dropdown--content--item.active:hover{
+  background: var(--sleeping-primary-lightest);
+  color: var(--sleeping-primary-lightest-contrast);
 }
 
 button[aria-label=Bookmark].active {
@@ -548,7 +566,7 @@ button[aria-label=Favourite].active {
   background: $ui-base-color;
 }
 .ui, .column:before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="#{rgba($primary, 0.75)}"/></svg>') !important;
+    background-image: none !important;
     background-attachment: fixed;
     background-repeat: repeat no-repeat;
     background-position: bottom left;
@@ -565,7 +583,7 @@ button[aria-label=Favourite].active {
 }
 .status__content a,
 .composer--reply > .content a {
-  color: $accent;
+  color: var(--sleeping-link);
 }
 .status, .notification-follow, .detailed-status__action-bar {
   border-bottom-width: 8px;
@@ -586,7 +604,8 @@ button[aria-label=Favourite].active {
 }
 
 .dropdown-menu__item a:focus, .dropdown-menu__item a:hover, .dropdown-menu__item a:active {
-  @include bg-contrast($accent);
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
 }
 
 .composer {
@@ -620,5 +639,10 @@ button[aria-label=Favourite].active {
   @include bg-contrast($ui-base-lighter-color);
 }
 .glitch.local-settings__navigation__item.active {
-  @include bg-contrast($primary);
+  background: var(--sleeping-primary);
+  color: var(--sleeping-primary-contrast);
+}
+
+.glitch.local-settings__navigation__item.sleeping {
+  display: block !important;
 }

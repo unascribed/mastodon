@@ -29,6 +29,7 @@ if (initialState.meta.st_avatar_as_favicon) {
   link.href = initialState.accounts[initialState.meta.me].avatar;
   document.head.appendChild(link);
 }
+if (window.sleeping) window.sleeping.init();
 
 export default class Mastodon extends React.PureComponent {
 

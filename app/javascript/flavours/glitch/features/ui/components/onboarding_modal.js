@@ -43,11 +43,7 @@ const PageTwo = ({ intl, myAccount }) => (
     <div className='figure non-interactive'>
       <div className='pseudo-drawer'>
         <DrawerAccount account={myAccount} />
-        <RawComposer
-          intl={intl}
-          privacy='public'
-          text='Awoo! #introductions'
-        />
+        <span>pretend there is a compose box here</span>
       </div>
     </div>
 

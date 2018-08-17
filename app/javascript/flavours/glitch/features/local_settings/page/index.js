@@ -212,12 +212,28 @@ export default class LocalSettingsPage extends React.PureComponent {
         </LocalSettingsPageItem>
       </div>
     ),
+    ({ onChange, settings }) => (
+      <div className='glitch local-settings__page sleeping'>
+        <h1>Sleeping</h1>
+        <section>
+          <h2>Color</h2>
+          <label htmlFor="sleeping-primary">Primary color</label>
+          <input type="color" id="sleeping-primary"/> <button id="sleeping-reset-primary">Reset</button>
+          <label htmlFor="sleeping-accent">Accent color</label>
+          <input type="color" id="sleeping-accent"/> <button id="sleeping-reset-accent">Reset</button>
+          <label htmlFor="sleeping-link">Link color</label>
+          <input type="color" id="sleeping-link"/> <button id="sleeping-reset-link">Reset</button>
+        </section>
+      </div>
+    ),
   ];
 
   render () {
     const { pages } = this;
     const { index, intl, onChange, settings } = this.props;
     const CurrentPage = pages[index] || pages[0];
+
+    if (window.sleeping) window.sleeping.settingsHook(index);
 
     return <CurrentPage intl={intl} onChange={onChange} settings={settings} />;
   }

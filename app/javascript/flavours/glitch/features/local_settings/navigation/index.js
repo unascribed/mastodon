@@ -52,15 +52,22 @@ export default class LocalSettingsNavigation extends React.PureComponent {
         />
         <LocalSettingsNavigationItem
           active={index === 3}
-          href='/settings/preferences'
           index={3}
+          onNavigate={onNavigate}
+          title="Sleeping"
+          className="sleeping"
+        />
+        <LocalSettingsNavigationItem
+          active={index === 4}
+          href='/settings/preferences'
+          index={4}
           icon='cog'
           title={intl.formatMessage(messages.preferences)}
         />
         <LocalSettingsNavigationItem
-          active={index === 4}
+          active={index === 5}
           className='close'
-          index={4}
+          index={5}
           onNavigate={onClose}
           title={intl.formatMessage(messages.close)}
         />
