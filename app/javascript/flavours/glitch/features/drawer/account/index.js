@@ -41,7 +41,7 @@ export default function DrawerAccount ({ account }) {
   //  The result.
   return (
     <div className='account__header' style={{ backgroundImage: `url(${account.get('header')})`, padding: 0, display: 'block', textAlign: 'start' }}>
-    <div className='drawer--account' style={{ padding: '10px', height: '100%' }}>
+    <div className='drawer--account>
       <Permalink
         className='avatar'
         href={account.get('url')}
