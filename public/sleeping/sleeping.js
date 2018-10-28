@@ -58,6 +58,7 @@ window.sleepingInit = function(convert) {
 					var accent = document.getElementById("sleeping-accent");
 					var link = document.getElementById("sleeping-link");
 					var brightness = document.getElementById("sleeping-brightness");
+					brightness.step = 0.005;
 					primary.value = getComputedStyle(document.body).getPropertyValue("--sleeping-primary").trim();
 					accent.value = getComputedStyle(document.body).getPropertyValue("--sleeping-accent").trim();
 					link.value = getComputedStyle(document.body).getPropertyValue("--sleeping-link").trim();
@@ -129,37 +130,40 @@ window.sleepingInit = function(convert) {
 			var mid = "#607D8B";
 			var dar = "#1A2327";
 			var bla = "#000000";
-			function setLerp(base, end, t) {
-				sleeping.setColor("background-dark", sleeping.lerpColor(base, end, t+0.1));
-				sleeping.setColor("background", sleeping.lerpColor(base, end, t));
-				sleeping.setColor("background-light", sleeping.lerpColor(base, end, t-0.1));
-				sleeping.setColor("background-lighter", sleeping.lerpColor(base, end, t-0.2));
-				sleeping.setColor("background-lightest", sleeping.lerpColor(base, end, t-0.3));
+			function setLerp(base, end, t, signum) {
+				var col = sleeping.lerpColor(base, end, t);
+				var c = col.rgb;
+				var hex = col.hex;
+				sleeping.setColor("background-dark", sleeping.lighten(c, -5*signum));
+				sleeping.setColor("background", hex);
+				sleeping.setColor("background-light", sleeping.lighten(c, 5*signum));
+				sleeping.setColor("background-lighter", sleeping.lighten(c, 15*signum));
+				sleeping.setColor("background-lightest", sleeping.lighten(c, 20*signum));
 			}
 			if (t > 0.9) {
 				t = (t-0.9)*10;
-				setLerp(bri, whi, t);
+				setLerp(bri, whi, t, -1);
 			} else if (t > 0) {
-				setLerp(mid, bri, t);
+				setLerp(mid, bri, t, -1);
 			} else {
 				t = -t;
 				if (t > 0.9) {
 					t = (t-0.9)*10;
-					setLerp(dar, bla, t);
+					setLerp(dar, bla, t, 1);
 				} else {
-					setLerp(mid, dar, t);
+					setLerp(mid, dar, t, 1);
 				}
 			}
 		},
-		lighten: function(hex, pct) {
-			var hsl = convert(hex).hsl;
+		lighten: function(col, pct) {
+			var hsl = convert(col).hsl;
 			hsl.l += pct;
 			if (hsl.l > 100) hsl.l = 100;
 			if (hsl.l < 0) hsl.l = 0;
 			return convert(hsl).hex;
 		},
-		getLuma: function(hex) {
-			var rgb = convert(hex).rgb;
+		getLuma: function(col) {
+			var rgb = convert(col).rgb;
 			return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
 		},
 		lerp: function(a, b, t) {
@@ -167,14 +171,14 @@ window.sleepingInit = function(convert) {
 			if (t > 1) t = 1;
 			return a + t * (b - a);
 		},
-		lerpColor: function(ahex, bhex, t) {
-			var argb = convert(ahex).rgb;
-			var brgb = convert(bhex).rgb;
+		lerpColor: function(acol, bcol, t) {
+			var argb = convert(acol).rgb;
+			var brgb = convert(bcol).rgb;
 			return convert({
 				r: sleeping.lerp(argb.r, brgb.r, t),
 				g: sleeping.lerp(argb.g, brgb.g, t),
 				b: sleeping.lerp(argb.b, brgb.b, t),
-			}).hex;
+			});
 		}
 	}
 	var primary = localStorage["sleeping-primary-color"] || defaultPrimary;

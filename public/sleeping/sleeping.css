@@ -1,3 +1,13 @@
+body:after {
+  content: "S146";
+  position: fixed;
+  opacity: 0.5;
+  left: 18px;
+  bottom: 8px;
+  color: #FFF;
+  font-weight: bold;
+}
+
 .glitch.local-settings__navigation__item.sleeping {
   display: block !important;
 }
@@ -275,8 +285,14 @@ body .column-header__notif-cleaning-buttons button.active {
 .detailed-status__display-name strong,
 .detailed-status__display-name,
 .muted .status__content p,
-.detailed-status__meta {
+.detailed-status__meta,
+.muted .status__display-name strong {
   color: inherit;
+}
+
+.muted .status__display-name strong,
+.muted .status__content {
+  opacity: 0.7;
 }
 
 .detailed-status__meta {
@@ -714,13 +730,13 @@ button.icon-button i.fa-retweet {
 .notification__message {
   color: var(--sleeping-background-contrast);
 }
-.focusable:focus,
+
 .detailed-status,
 .detailed-status__action-bar,
 .focusable:focus .detailed-status,
 .focusable:focus .detailed-status__action-bar {
-  background: var(--sleeping-background-lighter);
-  color: var(--sleeping-background-lighter-contrast);
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
 }
 .detailed-status__action-bar {
   border-top: none;
@@ -821,4 +837,17 @@ button.icon-button i.fa-retweet {
 .button:active, .button:focus, .button:hover {
   background: var(--sleeping-accent-light);
   color: var(--sleeping-accent-light-contrast);
+}
+
+#sleeping-brightness {
+  width: 100%;
+}
+
+.composer--textarea > label .textarea,
+.composer--spoiler input {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+}
+.composer--publisher > .count {
+  color: var(--sleeping-background-light-contrast);
 }
