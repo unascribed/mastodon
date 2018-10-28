@@ -25,6 +25,7 @@ class Follow < ApplicationRecord
   has_one :notification, as: :activity, dependent: :destroy
 
   validates :account_id, uniqueness: { scope: :target_account_id }
+  validates_with FollowLimitValidator, on: :create
 
   scope :recent, -> { reorder(id: :desc) }
 
@@ -32,11 +33,21 @@ class Follow < ApplicationRecord
     false # Force uri_for to use uri attribute
   end
 
+  def revoke_request!
+    FollowRequest.create!(account: account, target_account: target_account, show_reblogs: show_reblogs, uri: uri)
+    destroy!
+  end
+
   before_validation :set_uri, only: :create
+  after_destroy :remove_endorsements
 
   private
 
   def set_uri
     self.uri = ActivityPub::TagManager.instance.generate_uri_for(self) if uri.nil?
+  end
+
+  def remove_endorsements
+    AccountPin.where(target_account_id: target_account_id, account_id: account_id).delete_all
   end
 end

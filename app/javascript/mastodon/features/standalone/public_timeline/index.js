@@ -12,9 +12,9 @@ const messages = defineMessages({
   title: { id: 'standalone.public_title', defaultMessage: 'A look inside...' },
 });
 
-@connect()
+export default @connect()
 @injectIntl
-export default class PublicTimeline extends React.PureComponent {
+class PublicTimeline extends React.PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -51,7 +51,7 @@ export default class PublicTimeline extends React.PureComponent {
     const { intl } = this.props;
 
     return (
-      <Column ref={this.setRef}>
+      <Column ref={this.setRef} label={intl.formatMessage(messages.title)}>
         <ColumnHeader
           icon='globe'
           title={intl.formatMessage(messages.title)}

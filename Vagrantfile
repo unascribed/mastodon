@@ -12,7 +12,7 @@ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 sudo apt-add-repository 'deb https://dl.yarnpkg.com/debian/ stable main'
 
 # Add repo for NodeJS
-curl -sL https://deb.nodesource.com/setup_6.x | sudo bash -
+curl -sL https://deb.nodesource.com/setup_8.x | sudo bash -
 
 # Add firewall rule to redirect 80 to PORT and save
 sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port #{ENV["PORT"]}
@@ -85,6 +85,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider :virtualbox do |vb|
     vb.name = "mastodon"
     vb.customize ["modifyvm", :id, "--memory", "4096"]
+    # Increase the number of CPUs. Uncomment and adjust to
+    # increase performance
+    # vb.customize ["modifyvm", :id, "--cpus", "3"]
 
     # Disable VirtualBox DNS proxy to skip long-delay IPv6 resolutions.
     # https://github.com/mitchellh/vagrant/issues/1172
@@ -97,19 +100,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   end
 
-  config.vm.hostname = "mastodon.dev"
-
   # This uses the vagrant-hostsupdater plugin, and lets you
-  # access the development site at http://mastodon.dev.
+  # access the development site at http://mastodon.local.
+  # If you change it, also change it in .env.vagrant before provisioning
+  # the vagrant server to update the development build.
+  #
   # To install:
   #   $ vagrant plugin install vagrant-hostsupdater
+  config.vm.hostname = "mastodon.local"
+
   if defined?(VagrantPlugins::HostsUpdater)
     config.vm.network :private_network, ip: "192.168.42.42", nictype: "virtio"
     config.hostsupdater.remove_on_suspend = false
   end
 
   if config.vm.networks.any? { |type, options| type == :private_network }
-    config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ['rw', 'vers=3', 'tcp']
+    config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'actimeo=1']
   else
     config.vm.synced_folder ".", "/vagrant"
   end

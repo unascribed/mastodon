@@ -33,6 +33,7 @@ const messages = defineMessages({
   lists: { id: 'navigation_bar.lists', defaultMessage: 'Lists' },
   lists_subheading: { id: 'column_subheading.lists', defaultMessage: 'Lists' },
   misc: { id: 'navigation_bar.misc', defaultMessage: 'Misc' },
+  menu: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
 });
 
 const makeMapStateToProps = () => {
@@ -129,26 +130,26 @@ export default class GettingStarted extends ImmutablePureComponent {
     }
 
     if (!multiColumn || !columns.find(item => item.get('id') === 'BOOKMARKS')) {
-      navItems.push(<ColumnLink icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />);
+      navItems.push(<ColumnLink key='5' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />);
     }
 
     if (myAccount.get('locked')) {
-      navItems.push(<ColumnLink key='5' icon='users' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
+      navItems.push(<ColumnLink key='6' icon='users' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
     }
 
-    navItems.push(<ColumnLink key='6' icon='ellipsis-h' text={intl.formatMessage(messages.misc)} to='/getting-started-misc' />);
+    navItems.push(<ColumnLink key='7' icon='ellipsis-h' text={intl.formatMessage(messages.misc)} to='/getting-started-misc' />);
 
     listItems = listItems.concat([
-      <div key='7'>
-        <ColumnLink key='8' icon='bars' text={intl.formatMessage(messages.lists)} to='/lists' />
+      <div key='8'>
+        <ColumnLink key='9' icon='bars' text={intl.formatMessage(messages.lists)} to='/lists' />
         {lists.map(list =>
-          <ColumnLink key={(8 + Number(list.get('id'))).toString()} to={`/timelines/list/${list.get('id')}`} icon='list-ul' text={list.get('title')} />
+          <ColumnLink key={(9 + Number(list.get('id'))).toString()} to={`/timelines/list/${list.get('id')}`} icon='list-ul' text={list.get('title')} />
         )}
       </div>,
     ]);
 
     return (
-      <Column name='getting-started' icon='asterisk' heading={intl.formatMessage(messages.heading)} hideHeadingOnMobile>
+      <Column name='getting-started' icon='asterisk' heading={intl.formatMessage(messages.heading)} label={intl.formatMessage(messages.menu)} hideHeadingOnMobile>
         <div className='scrollable optionally-scrollable'>
           <div className='getting-started__wrapper'>
             <ColumnSubheading text={intl.formatMessage(messages.navigation_subheading)} />
@@ -164,13 +165,10 @@ export default class GettingStarted extends ImmutablePureComponent {
           <div className='getting-started__footer'>
             <div className='static-content getting-started'>
               <p>
-                <a href='https://github.com/tootsuite/documentation/blob/master/Using-Mastodon/FAQ.md' rel='noopener' target='_blank'>
-                  <FormattedMessage id='getting_started.faq' defaultMessage='FAQ' />
+                <a href='https://docs.joinmastodon.org' target='_blank'>
+                  <FormattedMessage id='getting_started.documentation' defaultMessage='Documentation' />
                 </a>&nbsp;•&nbsp;
-                <a href='https://github.com/tootsuite/documentation/blob/master/Using-Mastodon/User-guide.md' rel='noopener' target='_blank'>
-                  <FormattedMessage id='getting_started.userguide' defaultMessage='User Guide' />
-                </a>&nbsp;•&nbsp;
-                <a href='https://github.com/tootsuite/documentation/blob/master/Using-Mastodon/Apps.md' rel='noopener' target='_blank'>
+                <a href='https://joinmastodon.org/apps' target='_blank' rel='noopener'>
                   <FormattedMessage id='getting_started.appsshort' defaultMessage='Apps' />
                 </a>
               </p>

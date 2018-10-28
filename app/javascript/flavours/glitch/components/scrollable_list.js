@@ -149,6 +149,11 @@ export default class ScrollableList extends PureComponent {
     this.props.onLoadMore();
   }
 
+  defaultShouldUpdateScroll = (prevRouterProps, { location }) => {
+    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
+    return !(location.state && location.state.mastodonModalOpen);
+  }
+
   render () {
     const { children, scrollKey, trackScroll, shouldUpdateScroll, isLoading, hasMore, prepend, emptyMessage, onLoadMore } = this.props;
     const { fullscreen } = this.state;
@@ -190,7 +195,7 @@ export default class ScrollableList extends PureComponent {
 
     if (trackScroll) {
       return (
-        <ScrollContainer scrollKey={scrollKey} shouldUpdateScroll={shouldUpdateScroll}>
+        <ScrollContainer scrollKey={scrollKey} shouldUpdateScroll={shouldUpdateScroll || this.defaultShouldUpdateScroll}>
           {scrollableArea}
         </ScrollContainer>
       );

@@ -10,13 +10,14 @@ import { isMobile } from 'flavours/glitch/util/is_mobile';
 import { debounce } from 'lodash';
 import { uploadCompose, resetCompose } from 'flavours/glitch/actions/compose';
 import { expandHomeTimeline } from 'flavours/glitch/actions/timelines';
-import { expandNotifications } from 'flavours/glitch/actions/notifications';
+import { expandNotifications, notificationsSetVisibility } from 'flavours/glitch/actions/notifications';
 import { fetchFilters } from 'flavours/glitch/actions/filters';
 import { clearHeight } from 'flavours/glitch/actions/height_cache';
 import { WrappedSwitch, WrappedRoute } from 'flavours/glitch/util/react_router_helpers';
 import UploadArea from './components/upload_area';
 import ColumnsAreaContainer from './containers/columns_area_container';
 import classNames from 'classnames';
+import Favico from 'favico.js';
 import {
   Drawer,
   Status,
@@ -59,11 +60,14 @@ const messages = defineMessages({
 });
 
 const mapStateToProps = state => ({
-  hasComposingText: state.getIn(['compose', 'text']) !== '',
+  hasComposingText: state.getIn(['compose', 'text']).trim().length !== 0,
+  hasMediaAttachments: state.getIn(['compose', 'media_attachments']).size > 0,
   layout: state.getIn(['local_settings', 'layout']),
   isWide: state.getIn(['local_settings', 'stretch']),
   navbarUnder: state.getIn(['local_settings', 'navbar_under']),
   dropdownMenuIsOpen: state.getIn(['dropdown_menu', 'openId']) !== null,
+  unreadNotifications: state.getIn(['notifications', 'unread']),
+  showFaviconBadge: state.getIn(['local_settings', 'notifications', 'favicon_badge']),
 });
 
 const keyMap = {
@@ -92,6 +96,7 @@ const keyMap = {
   goToProfile: 'g u',
   goToBlocked: 'g b',
   goToMuted: 'g m',
+  goToRequests: 'g r',
   toggleSpoiler: 'x',
 };
 
@@ -109,10 +114,14 @@ export default class UI extends React.Component {
     navbarUnder: PropTypes.bool,
     isComposing: PropTypes.bool,
     hasComposingText: PropTypes.bool,
-    location: PropTypes.object,
-    router: PropTypes.object,
+    hasMediaAttachments: PropTypes.bool,
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
     intl: PropTypes.object.isRequired,
     dropdownMenuIsOpen: PropTypes.bool,
+    unreadNotifications: PropTypes.number,
+    showFaviconBadge: PropTypes.bool,
   };
 
   state = {
@@ -121,9 +130,9 @@ export default class UI extends React.Component {
   };
 
   handleBeforeUnload = (e) => {
-    const { intl, hasComposingText } = this.props;
+    const { intl, hasComposingText, hasMediaAttachments } = this.props;
 
-    if (hasComposingText) {
+    if (hasComposingText || hasMediaAttachments) {
       // Setting returnValue to any string causes confirmation dialog.
       // Many browsers no longer display this text to users,
       // but we set user-friendly message for other browsers, e.g. Edge.
@@ -198,13 +207,33 @@ export default class UI extends React.Component {
 
   handleServiceWorkerPostMessage = ({ data }) => {
     if (data.type === 'navigate') {
-      this.props.router.history.push(data.path);
+      this.props.history.push(data.path);
     } else {
       console.warn('Unknown message type:', data.type);
     }
   }
 
+  handleVisibilityChange = () => {
+    const visibility = !document[this.visibilityHiddenProp];
+    this.props.dispatch(notificationsSetVisibility(visibility));
+  }
+
   componentWillMount () {
+    if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
+      this.visibilityHiddenProp = 'hidden';
+      this.visibilityChange = 'visibilitychange';
+    } else if (typeof document.msHidden !== 'undefined') {
+      this.visibilityHiddenProp = 'msHidden';
+      this.visibilityChange = 'msvisibilitychange';
+    } else if (typeof document.webkitHidden !== 'undefined') {
+      this.visibilityHiddenProp = 'webkitHidden';
+      this.visibilityChange = 'webkitvisibilitychange';
+    }
+    if (this.visibilityChange !== undefined) {
+      document.addEventListener(this.visibilityChange, this.handleVisibilityChange, false);
+      this.handleVisibilityChange();
+    }
+
     window.addEventListener('beforeunload', this.handleBeforeUnload, false);
     window.addEventListener('resize', this.handleResize, { passive: true });
     document.addEventListener('dragenter', this.handleDragEnter, false);
@@ -216,6 +245,8 @@ export default class UI extends React.Component {
     if ('serviceWorker' in  navigator) {
       navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerPostMessage);
     }
+
+    this.favicon = new Favico({ animation:"none" });
 
     this.props.dispatch(expandHomeTimeline());
     this.props.dispatch(expandNotifications());
@@ -245,9 +276,19 @@ export default class UI extends React.Component {
     if (![this.props.location.pathname, '/'].includes(prevProps.location.pathname)) {
       this.columnsAreaNode.handleChildrenContentChange();
     }
+    if (this.props.unreadNotifications != prevProps.unreadNotifications ||
+        this.props.showFaviconBadge != prevProps.showFaviconBadge) {
+      if (this.favicon) {
+        this.favicon.badge(this.props.showFaviconBadge ? this.props.unreadNotifications : 0);
+      }
+    }
   }
 
   componentWillUnmount () {
+    if (this.visibilityChange !== undefined) {
+      document.removeEventListener(this.visibilityChange, this.handleVisibilityChange);
+    }
+
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('dragenter', this.handleDragEnter);
@@ -268,7 +309,7 @@ export default class UI extends React.Component {
   handleHotkeyNew = e => {
     e.preventDefault();
 
-    const element = this.node.querySelector('.compose-form__autosuggest-wrapper textarea');
+    const element = this.node.querySelector('.composer--textarea textarea');
 
     if (element) {
       element.focus();
@@ -278,7 +319,7 @@ export default class UI extends React.Component {
   handleHotkeySearch = e => {
     e.preventDefault();
 
-    const element = this.node.querySelector('.search__input');
+    const element = this.node.querySelector('.drawer--search input');
 
     if (element) {
       element.focus();
@@ -306,9 +347,9 @@ export default class UI extends React.Component {
   handleHotkeyBack = () => {
     // if history is exhausted, or we would leave mastodon, just go to root.
     if (window.history.state) {
-      this.context.router.history.goBack();
+      this.props.history.goBack();
     } else {
-      this.context.router.history.push('/');
+      this.props.history.push('/');
     }
   }
 
@@ -318,54 +359,58 @@ export default class UI extends React.Component {
 
   handleHotkeyToggleHelp = () => {
     if (this.props.location.pathname === '/keyboard-shortcuts') {
-      this.props.router.history.goBack();
+      this.props.history.goBack();
     } else {
-      this.props.router.history.push('/keyboard-shortcuts');
+      this.props.history.push('/keyboard-shortcuts');
     }
   }
 
   handleHotkeyGoToHome = () => {
-    this.props.router.history.push('/timelines/home');
+    this.props.history.push('/timelines/home');
   }
 
   handleHotkeyGoToNotifications = () => {
-    this.props.router.history.push('/notifications');
+    this.props.history.push('/notifications');
   }
 
   handleHotkeyGoToLocal = () => {
-    this.props.router.history.push('/timelines/public/local');
+    this.props.history.push('/timelines/public/local');
   }
 
   handleHotkeyGoToFederated = () => {
-    this.props.router.history.push('/timelines/public');
+    this.props.history.push('/timelines/public');
   }
 
   handleHotkeyGoToDirect = () => {
-    this.props.router.history.push('/timelines/direct');
+    this.props.history.push('/timelines/direct');
   }
 
   handleHotkeyGoToStart = () => {
-    this.props.router.history.push('/getting-started');
+    this.props.history.push('/getting-started');
   }
 
   handleHotkeyGoToFavourites = () => {
-    this.props.router.history.push('/favourites');
+    this.props.history.push('/favourites');
   }
 
   handleHotkeyGoToPinned = () => {
-    this.props.router.history.push('/pinned');
+    this.props.history.push('/pinned');
   }
 
   handleHotkeyGoToProfile = () => {
-    this.props.router.history.push(`/accounts/${me}`);
+    this.props.history.push(`/accounts/${me}`);
   }
 
   handleHotkeyGoToBlocked = () => {
-    this.props.router.history.push('/blocks');
+    this.props.history.push('/blocks');
   }
 
   handleHotkeyGoToMuted = () => {
-    this.props.router.history.push('/mutes');
+    this.props.history.push('/mutes');
+  }
+
+  handleHotkeyGoToRequests = () => {
+    this.props.history.push('/follow_requests');
   }
 
   render () {
@@ -407,10 +452,11 @@ export default class UI extends React.Component {
       goToProfile: this.handleHotkeyGoToProfile,
       goToBlocked: this.handleHotkeyGoToBlocked,
       goToMuted: this.handleHotkeyGoToMuted,
+      goToRequests: this.handleHotkeyGoToRequests,
     };
 
     return (
-      <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef}>
+      <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef} attach={window} focused>
         <div className={className} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
           {navbarUnder ? null : (<TabsBar />)}
 
@@ -429,6 +475,8 @@ export default class UI extends React.Component {
               <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
               <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
               <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
+
+              <WrappedRoute path='/search' component={Drawer} content={children} componentParams={{ isSearchPage: true }} />
 
               <WrappedRoute path='/statuses/new' component={Drawer} content={children} />
               <WrappedRoute path='/statuses/:statusId' exact component={Status} content={children} />

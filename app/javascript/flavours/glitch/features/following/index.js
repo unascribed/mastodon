@@ -56,6 +56,11 @@ export default class Following extends ImmutablePureComponent {
     this.props.dispatch(expandFollowing(this.props.params.accountId));
   }
 
+  shouldUpdateScroll = (prevRouterProps, { location }) => {
+    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
+    return !(location.state && location.state.mastodonModalOpen);
+  }
+
   render () {
     const { accountIds, hasMore } = this.props;
 
@@ -77,7 +82,7 @@ export default class Following extends ImmutablePureComponent {
       <Column>
         <ColumnBackButton />
 
-        <ScrollContainer scrollKey='following'>
+        <ScrollContainer scrollKey='following' shouldUpdateScroll={this.shouldUpdateScroll}>
           <div className='scrollable' onScroll={this.handleScroll}>
             <div className='following'>
               <HeaderContainer accountId={this.props.params.accountId} hideTabs />

@@ -154,7 +154,7 @@ RSpec.describe Status, type: :model do
 
   describe '#target' do
     it 'returns nil if the status is self-contained' do
-     expect(subject.target).to be_nil
+      expect(subject.target).to be_nil
     end
 
     it 'returns nil if the status is a reply' do
@@ -181,6 +181,27 @@ RSpec.describe Status, type: :model do
       expect(subject.reblogs_count).to eq 1
       reblog.destroy
       expect(subject.reblogs_count).to eq 0
+    end
+
+    it 'does not fail when original is deleted before reblog' do
+      reblog = Fabricate(:status, account: bob, reblog: subject)
+      expect(subject.reblogs_count).to eq 1
+      expect { subject.destroy }.to_not raise_error
+      expect(Status.find_by(id: reblog.id)).to be_nil
+    end
+  end
+
+  describe '#replies_count' do
+    it 'is the number of replies' do
+      reply = Fabricate(:status, account: bob, thread: subject)
+      expect(subject.replies_count).to eq 1
+    end
+
+    it 'is decremented when reply is removed' do
+      reply = Fabricate(:status, account: bob, thread: subject)
+      expect(subject.replies_count).to eq 1
+      reply.destroy
+      expect(subject.replies_count).to eq 0
     end
   end
 
@@ -587,17 +608,6 @@ RSpec.describe Status, type: :model do
           results = Status.as_public_timeline(@account)
           expect(results).to include(en_status)
           expect(results).to include(es_status)
-        end
-      end
-
-      context 'where that account is silenced' do
-        it 'includes statuses from other accounts that are silenced' do
-          @account.update(silenced: true)
-          other_silenced_account = Fabricate(:account, silenced: true)
-          other_status = Fabricate(:status, account: other_silenced_account)
-
-          results = Status.as_public_timeline(@account)
-          expect(results).to include(other_status)
         end
       end
     end

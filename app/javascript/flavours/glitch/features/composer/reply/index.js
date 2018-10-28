@@ -1,11 +1,13 @@
 //  Package imports.
 import PropTypes from 'prop-types';
 import React from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { defineMessages } from 'react-intl';
 
 //  Components.
 import AccountContainer from 'flavours/glitch/containers/account_container';
 import IconButton from 'flavours/glitch/components/icon_button';
+import AttachmentList from 'flavours/glitch/components/attachment_list';
 
 //  Utils.
 import { assignHandlers } from 'flavours/glitch/util/react_helpers';
@@ -44,10 +46,13 @@ export default class ComposerReply extends React.PureComponent {
   render () {
     const { handleClick } = this.handlers;
     const {
-      account,
-      content,
+      status,
       intl,
     } = this.props;
+
+    const account     = status.get('account');
+    const content     = status.get('content');
+    const attachments = status.get('media_attachments');
 
     //  The result.
     return (
@@ -60,18 +65,24 @@ export default class ComposerReply extends React.PureComponent {
             title={intl.formatMessage(messages.cancel)}
             inverted
           />
-          {account ? (
+          {account && (
             <AccountContainer
               id={account}
               small
             />
-          ) : null}
+          )}
         </header>
         <div
           className='content'
           dangerouslySetInnerHTML={{ __html: content || '' }}
           style={{ direction: isRtl(content) ? 'rtl' : 'ltr' }}
         />
+        {attachments.size > 0 && (
+          <AttachmentList
+            compact
+            media={attachments}
+          />
+        )}
       </article>
     );
   }
@@ -79,8 +90,7 @@ export default class ComposerReply extends React.PureComponent {
 }
 
 ComposerReply.propTypes = {
-  account: PropTypes.string,
-  content: PropTypes.string,
+  status: ImmutablePropTypes.map.isRequired,
   intl: PropTypes.object.isRequired,
   onCancel: PropTypes.func,
 };

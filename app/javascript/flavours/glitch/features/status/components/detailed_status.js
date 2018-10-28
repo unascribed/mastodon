@@ -60,6 +60,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
           <Video
             preview={video.get('preview_url')}
             src={video.get('url')}
+            alt={video.get('description')}
             inline
             sensitive={status.get('sensitive')}
             letterbox={settings.getIn(['media', 'letterbox'])}
@@ -76,6 +77,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
             sensitive={status.get('sensitive')}
             media={status.get('media_attachments')}
             letterbox={settings.getIn(['media', 'letterbox'])}
+            fullwidth={settings.getIn(['media', 'fullwidth'])}
             onOpenMedia={this.props.onOpenMedia}
           />
         );

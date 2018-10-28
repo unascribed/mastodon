@@ -15,8 +15,6 @@
 #  visibility             :integer          default("public"), not null
 #  spoiler_text           :text             default(""), not null
 #  reply                  :boolean          default(FALSE), not null
-#  favourites_count       :integer          default(0), not null
-#  reblogs_count          :integer          default(0), not null
 #  language               :string
 #  conversation_id        :bigint(8)
 #  local                  :boolean
@@ -27,6 +25,8 @@
 #
 
 class Status < ApplicationRecord
+  before_destroy :unlink_from_conversations
+
   include Paginable
   include Streamable
   include Cacheable
@@ -38,7 +38,7 @@ class Status < ApplicationRecord
 
   update_index('statuses#status', :proper) if Chewy.enabled?
 
-  enum visibility: [:public, :unlisted, :private, :direct], _suffix: :visibility
+  enum visibility: [:public, :unlisted, :private, :direct, :limited], _suffix: :visibility
 
   belongs_to :application, class_name: 'Doorkeeper::Application', optional: true
 
@@ -53,7 +53,8 @@ class Status < ApplicationRecord
   has_many :bookmarks, inverse_of: :status, dependent: :destroy
   has_many :reblogs, foreign_key: 'reblog_of_id', class_name: 'Status', inverse_of: :reblog, dependent: :destroy
   has_many :replies, foreign_key: 'in_reply_to_id', class_name: 'Status', inverse_of: :thread
-  has_many :mentions, dependent: :destroy
+  has_many :mentions, dependent: :destroy, inverse_of: :status
+  has_many :active_mentions, -> { active }, class_name: 'Mention', inverse_of: :status
   has_many :media_attachments, dependent: :nullify
 
   has_and_belongs_to_many :tags
@@ -61,6 +62,7 @@ class Status < ApplicationRecord
 
   has_one :notification, as: :activity, dependent: :destroy
   has_one :stream_entry, as: :activity, inverse_of: :status
+  has_one :status_stat, inverse_of: :status
 
   validates :uri, uniqueness: true, presence: true, unless: :local?
   validates :text, presence: true, unless: -> { with_media? || reblog? }
@@ -85,7 +87,25 @@ class Status < ApplicationRecord
 
   scope :not_local_only, -> { where(local_only: [false, nil]) }
 
-  cache_associated :account, :application, :media_attachments, :conversation, :tags, :stream_entry, mentions: :account, reblog: [:account, :application, :stream_entry, :tags, :media_attachments, :conversation, mentions: :account], thread: :account
+  cache_associated :account,
+                   :application,
+                   :media_attachments,
+                   :conversation,
+                   :status_stat,
+                   :tags,
+                   :stream_entry,
+                   active_mentions: :account,
+                   reblog: [
+                     :account,
+                     :application,
+                     :stream_entry,
+                     :tags,
+                     :media_attachments,
+                     :conversation,
+                     :status_stat,
+                     active_mentions: :account,
+                   ],
+                   thread: :account
 
   delegate :domain, to: :account, prefix: true
 
@@ -156,7 +176,11 @@ class Status < ApplicationRecord
   end
 
   def hidden?
-    private_visibility? || direct_visibility?
+    private_visibility? || direct_visibility? || limited_visibility?
+  end
+
+  def distributable?
+    public_visibility? || unlisted_visibility?
   end
 
   def with_media?
@@ -179,6 +203,26 @@ class Status < ApplicationRecord
     @marked_for_mass_destruction
   end
 
+  def replies_count
+    status_stat&.replies_count || 0
+  end
+
+  def reblogs_count
+    status_stat&.reblogs_count || 0
+  end
+
+  def favourites_count
+    status_stat&.favourites_count || 0
+  end
+
+  def increment_count!(key)
+    update_status_stat!(key => public_send(key) + 1)
+  end
+
+  def decrement_count!(key)
+    update_status_stat!(key => [public_send(key) - 1, 0].max)
+  end
+
   after_create  :increment_counter_caches
   after_destroy :decrement_counter_caches
 
@@ -196,6 +240,14 @@ class Status < ApplicationRecord
   before_validation :set_local
 
   class << self
+    def cache_ids
+      left_outer_joins(:status_stat).select('statuses.id, greatest(statuses.updated_at, status_stats.updated_at) AS updated_at')
+    end
+
+    def selectable_visibilities
+      visibilities.keys - %w(direct limited)
+    end
+
     def in_chosen_languages(account)
       where(language: nil).or where(language: account.chosen_languages)
     end
@@ -206,7 +258,7 @@ class Status < ApplicationRecord
 
     def as_direct_timeline(account, limit = 20, max_id = nil, since_id = nil, cache_ids = false)
       # direct timeline is mix of direct message from_me and to_me.
-      # 2 querys are executed with pagination.
+      # 2 queries are executed with pagination.
       # constant expression using arel_table is required for partial index
 
       # _from_me part does not require any timeline filters
@@ -353,7 +405,8 @@ class Status < ApplicationRecord
 
     def account_silencing_filter(account)
       if account.silenced?
-        including_silenced_accounts
+        including_myself = left_outer_joins(:account).where(account_id: account.id).references(:accounts)
+        excluding_silenced_accounts.or(including_myself)
       else
         excluding_silenced_accounts
       end
@@ -370,6 +423,13 @@ class Status < ApplicationRecord
   end
 
   private
+
+  def update_status_stat!(attrs)
+    return if marked_for_destruction? || destroyed?
+
+    record = status_stat || build_status_stat
+    record.update(attrs)
+  end
 
   def store_uri
     update_attribute(:uri, ActivityPub::TagManager.instance.uri_for(self)) if uri.nil?
@@ -433,13 +493,8 @@ class Status < ApplicationRecord
       Account.where(id: account_id).update_all('statuses_count = COALESCE(statuses_count, 0) + 1')
     end
 
-    return unless reblog?
-
-    if association(:reblog).loaded?
-      reblog.update_attribute(:reblogs_count, reblog.reblogs_count + 1)
-    else
-      Status.where(id: reblog_of_id).update_all('reblogs_count = COALESCE(reblogs_count, 0) + 1')
-    end
+    reblog&.increment_count!(:reblogs_count) if reblog?
+    thread&.increment_count!(:replies_count) if in_reply_to_id.present? && (public_visibility? || unlisted_visibility?)
   end
 
   def decrement_counter_caches
@@ -451,12 +506,18 @@ class Status < ApplicationRecord
       Account.where(id: account_id).update_all('statuses_count = GREATEST(COALESCE(statuses_count, 0) - 1, 0)')
     end
 
-    return unless reblog?
+    reblog&.decrement_count!(:reblogs_count) if reblog?
+    thread&.decrement_count!(:replies_count) if in_reply_to_id.present? && (public_visibility? || unlisted_visibility?)
+  end
 
-    if association(:reblog).loaded?
-      reblog.update_attribute(:reblogs_count, [reblog.reblogs_count - 1, 0].max)
-    else
-      Status.where(id: reblog_of_id).update_all('reblogs_count = GREATEST(COALESCE(reblogs_count, 0) - 1, 0)')
+  def unlink_from_conversations
+    return unless direct_visibility?
+
+    mentioned_accounts = mentions.includes(:account).map(&:account)
+    inbox_owners       = mentioned_accounts.select(&:local?) + (account.local? ? [account] : [])
+
+    inbox_owners.each do |inbox_owner|
+      AccountConversation.remove_status(inbox_owner, self)
     end
   end
 end

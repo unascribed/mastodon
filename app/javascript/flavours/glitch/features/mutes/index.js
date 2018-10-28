@@ -42,6 +42,11 @@ export default class Mutes extends ImmutablePureComponent {
     }
   }
 
+  shouldUpdateScroll = (prevRouterProps, { location }) => {
+    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
+    return !(location.state && location.state.mastodonModalOpen);
+  }
+
   render () {
     const { intl, accountIds } = this.props;
 
@@ -56,7 +61,7 @@ export default class Mutes extends ImmutablePureComponent {
     return (
       <Column name='mutes' icon='volume-off' heading={intl.formatMessage(messages.heading)}>
         <ColumnBackButtonSlim />
-        <ScrollContainer scrollKey='mutes'>
+        <ScrollContainer scrollKey='mutes' shouldUpdateScroll={this.shouldUpdateScroll}>
           <div className='scrollable mutes' onScroll={this.handleScroll}>
             {accountIds.map(id =>
               <AccountContainer key={id} id={id} />

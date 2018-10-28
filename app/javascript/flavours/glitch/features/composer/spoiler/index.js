@@ -3,9 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { defineMessages, FormattedMessage } from 'react-intl';
 
-//  Components.
-import Collapsable from 'flavours/glitch/components/collapsable';
-
 //  Utils.
 import {
   assignHandlers,
@@ -28,12 +25,29 @@ const handlers = {
     ctrlKey,
     keyCode,
     metaKey,
+    altKey,
   }) {
-    const { onSubmit } = this.props;
+    const { onSubmit, onSecondarySubmit } = this.props;
 
     //  We submit the status on control/meta + enter.
     if (onSubmit && keyCode === 13 && (ctrlKey || metaKey)) {
       onSubmit();
+    }
+
+    // Submit the status with secondary visibility on alt + enter.
+    if (onSecondarySubmit && keyCode === 13 && altKey) {
+      onSecondarySubmit();
+    }
+  },
+
+  handleRefSpoilerText (spoilerText) {
+    this.spoilerText = spoilerText;
+  },
+
+  //  When the escape key is released, we focus the UI.
+  handleKeyUp ({ key }) {
+    if (key === 'Escape') {
+      document.querySelector('.ui').parentElement.focus();
     }
   },
 };
@@ -49,7 +63,7 @@ export default class ComposerSpoiler extends React.PureComponent {
 
   //  Rendering.
   render () {
-    const { handleKeyDown } = this.handlers;
+    const { handleKeyDown, handleKeyUp, handleRefSpoilerText } = this.handlers;
     const {
       hidden,
       intl,
@@ -59,11 +73,8 @@ export default class ComposerSpoiler extends React.PureComponent {
 
     //  The result.
     return (
-      <Collapsable
-        isVisible={!hidden}
-        fullHeight={50}
-      >
-        <label className='composer--spoiler'>
+      <div className={`composer--spoiler ${hidden ? '' : 'composer--spoiler--visible'}`}>
+        <label>
           <span {...hiddenComponent}>
             <FormattedMessage {...messages.placeholder} />
           </span>
@@ -71,12 +82,14 @@ export default class ComposerSpoiler extends React.PureComponent {
             id='glitch.composer.spoiler.input'
             onChange={onChange}
             onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
             placeholder={intl.formatMessage(messages.placeholder)}
             type='text'
             value={text}
+            ref={handleRefSpoilerText}
           />
         </label>
-      </Collapsable>
+      </div>
     );
   }
 
@@ -88,5 +101,6 @@ ComposerSpoiler.propTypes = {
   intl: PropTypes.object.isRequired,
   onChange: PropTypes.func,
   onSubmit: PropTypes.func,
+  onSecondarySubmit: PropTypes.func,
   text: PropTypes.string,
 };

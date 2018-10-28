@@ -48,23 +48,27 @@ export default class MediaModal extends ImmutablePureComponent {
     this.setState({ index: index % this.props.media.size });
   }
 
-  handleKeyUp = (e) => {
+  handleKeyDown = (e) => {
     switch(e.key) {
     case 'ArrowLeft':
       this.handlePrevClick();
+      e.preventDefault();
+      e.stopPropagation();
       break;
     case 'ArrowRight':
       this.handleNextClick();
+      e.preventDefault();
+      e.stopPropagation();
       break;
     }
   }
 
   componentDidMount () {
-    window.addEventListener('keyup', this.handleKeyUp, false);
+    window.addEventListener('keydown', this.handleKeyDown, false);
   }
 
   componentWillUnmount () {
-    window.removeEventListener('keyup', this.handleKeyUp);
+    window.removeEventListener('keydown', this.handleKeyDown);
   }
 
   getIndex () {
@@ -125,7 +129,7 @@ export default class MediaModal extends ImmutablePureComponent {
             startTime={time || 0}
             onCloseVideo={onClose}
             detailed
-            description={image.get('description')}
+            alt={image.get('description')}
             key={image.get('url')}
           />
         );

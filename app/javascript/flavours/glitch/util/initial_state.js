@@ -14,11 +14,14 @@ const getMeta = (prop) => initialState && initialState.meta && initialState.meta
 export const reduceMotion = getMeta('reduce_motion');
 export const autoPlayGif = getMeta('auto_play_gif');
 export const displaySensitiveMedia = getMeta('display_sensitive_media');
+export const displayMedia = getMeta('display_media') || (getMeta('display_sensitive_media') ? 'show_all' : 'default');
 export const unfollowModal = getMeta('unfollow_modal');
 export const boostModal = getMeta('boost_modal');
 export const favouriteModal = getMeta('favourite_modal');
 export const deleteModal = getMeta('delete_modal');
 export const me = getMeta('me');
+export const searchEnabled = getMeta('search_enabled');
 export const maxChars = (initialState && initialState.max_toot_chars) || 500;
+export const isStaff = getMeta('is_staff');
 
 export default initialState;

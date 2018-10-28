@@ -3,12 +3,21 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import StatusContainer from '../../../containers/status_container';
 import AccountContainer from '../../../containers/account_container';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import Permalink from '../../../components/permalink';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { HotKeys } from 'react-hotkeys';
 
-export default class Notification extends ImmutablePureComponent {
+const notificationForScreenReader = (intl, message, timestamp) => {
+  const output = [message];
+
+  output.push(intl.formatDate(timestamp, { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }));
+
+  return output.join(', ');
+};
+
+export default @injectIntl
+class Notification extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
@@ -20,6 +29,7 @@ export default class Notification extends ImmutablePureComponent {
     onMoveUp: PropTypes.func.isRequired,
     onMoveDown: PropTypes.func.isRequired,
     onMention: PropTypes.func.isRequired,
+    intl: PropTypes.object.isRequired,
   };
 
   handleMoveUp = () => {
@@ -65,16 +75,19 @@ export default class Notification extends ImmutablePureComponent {
     };
   }
 
-  renderFollow (account, link) {
+  renderFollow (notification, account, link) {
+    const { intl } = this.props;
+
     return (
       <HotKeys handlers={this.getHandlers()}>
-        <div className='notification notification-follow focusable' tabIndex='0'>
+        <div className='notification notification-follow focusable' tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage({ id: 'notification.follow', defaultMessage: '{name} followed you' }, { name: account.get('acct') }), notification.get('created_at'))}>
           <div className='notification__message'>
             <div className='notification__favourite-icon-wrapper'>
               <i className='fa fa-fw fa-user-plus' />
             </div>
-
-            <FormattedMessage id='notification.follow' defaultMessage='{name} followed you' values={{ name: link }} />
+            <span title={notification.get('created_at')}>
+              <FormattedMessage id='notification.follow' defaultMessage='{name} followed you' values={{ name: link }} />
+            </span>
           </div>
 
           <AccountContainer id={account.get('id')} withNote={false} hidden={this.props.hidden} />
@@ -97,9 +110,11 @@ export default class Notification extends ImmutablePureComponent {
   }
 
   renderFavourite (notification, link) {
+    const { intl } = this.props;
+
     return (
       <HotKeys handlers={this.getHandlers()}>
-        <div className='notification notification-favourite focusable' tabIndex='0'>
+        <div className='notification notification-favourite focusable' tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage({ id: 'notification.favourite', defaultMessage: '{name} favourited your status' }, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
           <div className='notification__message'>
             <div className='notification__favourite-icon-wrapper'>
               <i className='fa fa-fw fa-star star-icon' />
@@ -114,9 +129,11 @@ export default class Notification extends ImmutablePureComponent {
   }
 
   renderReblog (notification, link) {
+    const { intl } = this.props;
+
     return (
       <HotKeys handlers={this.getHandlers()}>
-        <div className='notification notification-reblog focusable' tabIndex='0'>
+        <div className='notification notification-reblog focusable' tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage({ id: 'notification.reblog', defaultMessage: '{name} boosted your status' }, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
           <div className='notification__message'>
             <div className='notification__favourite-icon-wrapper'>
               <i className='fa fa-fw fa-retweet' />
@@ -138,7 +155,7 @@ export default class Notification extends ImmutablePureComponent {
 
     switch(notification.get('type')) {
     case 'follow':
-      return this.renderFollow(account, link);
+      return this.renderFollow(notification, account, link);
     case 'mention':
       return this.renderMention(notification);
     case 'favourite':

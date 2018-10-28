@@ -44,14 +44,16 @@ module Admin
       when 'resolve'
         @report.resolve!(current_account)
         log_action :resolve, @report
-      when 'suspend'
-        Admin::SuspensionWorker.perform_async(@report.target_account.id)
+      when 'disable'
+        @report.resolve!(current_account)
+        @report.target_account.user.disable!
 
         log_action :resolve, @report
-        log_action :suspend, @report.target_account
+        log_action :disable, @report.target_account.user
 
         resolve_all_target_account_reports
       when 'silence'
+        @report.resolve!(current_account)
         @report.target_account.update!(silenced: true)
 
         log_action :resolve, @report
@@ -61,6 +63,7 @@ module Admin
       else
         raise ActiveRecord::RecordNotFound
       end
+
       @report.reload
     end
 

@@ -13,13 +13,14 @@ const mapStateToProps = (state, props) => ({
   hasUnread: state.getIn(['timelines', `hashtag:${props.params.id}`, 'unread']) > 0,
 });
 
-@connect(mapStateToProps)
-export default class HashtagTimeline extends React.PureComponent {
+export default @connect(mapStateToProps)
+class HashtagTimeline extends React.PureComponent {
 
   static propTypes = {
     params: PropTypes.object.isRequired,
     columnId: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
+    shouldUpdateScroll: PropTypes.func,
     hasUnread: PropTypes.bool,
     multiColumn: PropTypes.bool,
   };
@@ -83,12 +84,12 @@ export default class HashtagTimeline extends React.PureComponent {
   }
 
   render () {
-    const { hasUnread, columnId, multiColumn } = this.props;
+    const { shouldUpdateScroll, hasUnread, columnId, multiColumn } = this.props;
     const { id } = this.props.params;
     const pinned = !!columnId;
 
     return (
-      <Column ref={this.setRef}>
+      <Column ref={this.setRef} label={`#${id}`}>
         <ColumnHeader
           icon='hashtag'
           active={hasUnread}
@@ -107,6 +108,7 @@ export default class HashtagTimeline extends React.PureComponent {
           timelineId={`hashtag:${id}`}
           onLoadMore={this.handleLoadMore}
           emptyMessage={<FormattedMessage id='empty_column.hashtag' defaultMessage='There is nothing in this hashtag yet.' />}
+          shouldUpdateScroll={shouldUpdateScroll}
         />
       </Column>
     );

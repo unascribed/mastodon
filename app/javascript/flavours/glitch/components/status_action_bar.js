@@ -5,7 +5,7 @@ import IconButton from './icon_button';
 import DropdownMenuContainer from 'flavours/glitch/containers/dropdown_menu_container';
 import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { me } from 'flavours/glitch/util/initial_state';
+import { me, isStaff } from 'flavours/glitch/util/initial_state';
 import RelativeTimestamp from './relative_timestamp';
 
 const messages = defineMessages({
@@ -31,7 +31,19 @@ const messages = defineMessages({
   pin: { id: 'status.pin', defaultMessage: 'Pin on profile' },
   unpin: { id: 'status.unpin', defaultMessage: 'Unpin from profile' },
   embed: { id: 'status.embed', defaultMessage: 'Embed' },
+  admin_account: { id: 'status.admin_account', defaultMessage: 'Open moderation interface for @{name}' },
+  admin_status: { id: 'status.admin_status', defaultMessage: 'Open this status in the moderation interface' },
 });
+
+const obfuscatedCount = count => {
+  if (count < 0) {
+    return 0;
+  } else if (count <= 1) {
+    return count;
+  } else {
+    return '1+';
+  }
+};
 
 @injectIntl
 export default class StatusActionBar extends ImmutablePureComponent {
@@ -56,6 +68,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     onPin: PropTypes.func,
     onBookmark: PropTypes.func,
     withDismiss: PropTypes.bool,
+    showReplyCount: PropTypes.bool,
     intl: PropTypes.object.isRequired,
   };
 
@@ -63,6 +76,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   // evaluate to false. See react-immutable-pure-component for usage.
   updateOnProps = [
     'status',
+    'showReplyCount',
     'withDismiss',
   ]
 
@@ -90,11 +104,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleDeleteClick = () => {
-    this.props.onDelete(this.props.status);
+    this.props.onDelete(this.props.status, this.context.router.history);
   }
 
   handleRedraftClick = () => {
-    this.props.onDelete(this.props.status, true);
+    this.props.onDelete(this.props.status, this.context.router.history, true);
   }
 
   handlePinClick = () => {
@@ -134,7 +148,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   render () {
-    const { status, intl, withDismiss } = this.props;
+    const { status, intl, withDismiss, showReplyCount } = this.props;
 
     const mutingConversation = status.get('muted');
     const anonymousAccess    = !me;
@@ -174,6 +188,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
       menu.push({ text: intl.formatMessage(messages.mute, { name: status.getIn(['account', 'username']) }), action: this.handleMuteClick });
       menu.push({ text: intl.formatMessage(messages.block, { name: status.getIn(['account', 'username']) }), action: this.handleBlockClick });
       menu.push({ text: intl.formatMessage(messages.report, { name: status.getIn(['account', 'username']) }), action: this.handleReport });
+      if (isStaff) {
+        menu.push(null);
+        menu.push({ text: intl.formatMessage(messages.admin_account, { name: status.getIn(['account', 'username']) }), href: `/admin/accounts/${status.getIn(['account', 'id'])}` });
+        menu.push({ text: intl.formatMessage(messages.admin_status), href: `/admin/accounts/${status.getIn(['account', 'id'])}/statuses/${status.get('id')}` });
+      }
     }
 
     if (status.get('in_reply_to_id', null) === null) {
@@ -188,9 +207,27 @@ export default class StatusActionBar extends ImmutablePureComponent {
       <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
     );
 
+    let replyButton = (
+      <IconButton
+        className='status__action-bar-button'
+        disabled={anonymousAccess}
+        title={replyTitle}
+        icon={replyIcon}
+        onClick={this.handleReplyClick}
+      />
+    );
+    if (showReplyCount) {
+      replyButton = (
+        <div className='status__action-bar__counter'>
+          {replyButton}
+          <span className='status__action-bar__counter__label' >{obfuscatedCount(status.get('replies_count'))}</span>
+        </div>
+      );
+    }
+
     return (
       <div className='status__action-bar'>
-        <IconButton className='status__action-bar-button' disabled={anonymousAccess} title={replyTitle} icon={replyIcon} onClick={this.handleReplyClick} />
+        {replyButton}
         <IconButton className='status__action-bar-button' disabled={reblogDisabled} active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogDisabled ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(reblogMessage)} icon={reblogIcon} onClick={this.handleReblogClick} />
         <IconButton className='status__action-bar-button star-icon' disabled={anonymousAccess} animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
         {shareButton}

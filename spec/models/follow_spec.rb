@@ -23,6 +23,20 @@ RSpec.describe Follow, type: :model do
       follow.valid?
       expect(follow).to model_have_error_on_field(:target_account)
     end
+
+    it 'is invalid if account already follows too many people' do
+      alice.update(following_count: FollowLimitValidator::LIMIT)
+
+      expect(subject).to_not be_valid
+      expect(subject).to model_have_error_on_field(:base)
+    end
+
+    it 'is valid if account is only on the brink of following too many people' do
+      alice.update(following_count: FollowLimitValidator::LIMIT - 1)
+
+      expect(subject).to be_valid
+      expect(subject).to_not model_have_error_on_field(:base)
+    end
   end
 
   describe 'recent' do
@@ -35,6 +49,22 @@ RSpec.describe Follow, type: :model do
       expect(a.size).to eq 2
       expect(a[0]).to eq follow1
       expect(a[1]).to eq follow0
+    end
+  end
+
+  describe 'revoke_request!' do
+    let(:follow)         { Fabricate(:follow, account: account, target_account: target_account) }
+    let(:account)        { Fabricate(:account) }
+    let(:target_account) { Fabricate(:account) }
+
+    it 'revokes the follow relation' do
+      follow.revoke_request!
+      expect(account.following?(target_account)).to be false
+    end
+
+    it 'creates a follow request' do
+      follow.revoke_request!
+      expect(account.requested?(target_account)).to be true
     end
   end
 end

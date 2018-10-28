@@ -13,6 +13,9 @@ class FanOutOnWriteService < BaseService
     if status.direct_visibility?
       deliver_to_mentioned_followers(status)
       deliver_to_direct_timelines(status)
+      deliver_to_own_conversation(status)
+    elsif status.limited_visibility?
+      deliver_to_mentioned_followers(status)
     else
       deliver_to_followers(status)
       deliver_to_lists(status)
@@ -56,7 +59,7 @@ class FanOutOnWriteService < BaseService
   end
 
   def deliver_to_mentioned_followers(status)
-    Rails.logger.debug "Delivering status #{status.id} to mentioned followers"
+    Rails.logger.debug "Delivering status #{status.id} to limited followers"
 
     status.mentions.includes(:account).each do |mention|
       mentioned_account = mention.account
@@ -99,6 +102,11 @@ class FanOutOnWriteService < BaseService
     status.mentions.includes(:account).each do |mention|
       Redis.current.publish("timeline:direct:#{mention.account.id}", @payload) if mention.account.local?
     end
+
     Redis.current.publish("timeline:direct:#{status.account.id}", @payload) if status.account.local?
+  end
+
+  def deliver_to_own_conversation(status)
+    AccountConversation.add_status(status.account, status)
   end
 end

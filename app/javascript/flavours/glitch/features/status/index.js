@@ -38,6 +38,8 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { HotKeys } from 'react-hotkeys';
 import { boostModal, favouriteModal, deleteModal } from 'flavours/glitch/util/initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from 'flavours/glitch/util/fullscreen';
+import { autoUnfoldCW } from 'flavours/glitch/util/content_warning';
+import { textForScreenReader } from 'flavours/glitch/components/status';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -47,6 +49,9 @@ const messages = defineMessages({
   blockConfirm: { id: 'confirmations.block.confirm', defaultMessage: 'Block' },
   revealAll: { id: 'status.show_more_all', defaultMessage: 'Show more for all' },
   hideAll: { id: 'status.show_less_all', defaultMessage: 'Show less for all' },
+  detailedStatus: { id: 'status.detailed_status', defaultMessage: 'Detailed conversation view' },
+  replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
+  replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
 });
 
 const makeMapStateToProps = () => {
@@ -57,6 +62,7 @@ const makeMapStateToProps = () => {
     settings: state.get('local_settings'),
     ancestorsIds: state.getIn(['contexts', 'ancestors', props.params.statusId]),
     descendantsIds: state.getIn(['contexts', 'descendants', props.params.statusId]),
+    askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
   });
 
   return mapStateToProps;
@@ -78,12 +84,13 @@ export default class Status extends ImmutablePureComponent {
     ancestorsIds: ImmutablePropTypes.list,
     descendantsIds: ImmutablePropTypes.list,
     intl: PropTypes.object.isRequired,
+    askReplyConfirmation: PropTypes.bool,
   };
 
   state = {
     fullscreen: false,
-    isExpanded: false,
-    threadExpanded: null,
+    isExpanded: undefined,
+    threadExpanded: undefined,
   };
 
   componentWillMount () {
@@ -95,9 +102,14 @@ export default class Status extends ImmutablePureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.state.isExpanded === undefined) {
+      const isExpanded = autoUnfoldCW(nextProps.settings, nextProps.status);
+      if (isExpanded !== undefined) this.setState({ isExpanded: isExpanded });
+    }
     if (nextProps.params.statusId !== this.props.params.statusId && nextProps.params.statusId) {
       this._scrolledIntoView = false;
       this.props.dispatch(fetchStatus(nextProps.params.statusId));
+      this.setState({ isExpanded: autoUnfoldCW(nextProps.settings, nextProps.status), threadExpanded: undefined });
     }
   }
 
@@ -115,7 +127,7 @@ export default class Status extends ImmutablePureComponent {
     if (status.get('favourited')) {
       this.props.dispatch(unfavourite(status));
     } else {
-      if (e.shiftKey || !favouriteModal) {
+      if ((e && e.shiftKey) || !favouriteModal) {
         this.handleModalFavourite(status);
       } else {
         this.props.dispatch(openModal('FAVOURITE', { status, onFavourite: this.handleModalFavourite }));
@@ -132,7 +144,16 @@ export default class Status extends ImmutablePureComponent {
   }
 
   handleReplyClick = (status) => {
-    this.props.dispatch(replyCompose(status, this.context.router.history));
+    let { askReplyConfirmation, dispatch, intl } = this.props;
+    if (askReplyConfirmation) {
+      dispatch(openModal('CONFIRM', {
+        message: intl.formatMessage(messages.replyMessage),
+        confirm: intl.formatMessage(messages.replyConfirm),
+        onConfirm: () => dispatch(replyCompose(status, this.context.router.history)),
+      }));
+    } else {
+      dispatch(replyCompose(status, this.context.router.history));
+    }
   }
 
   handleModalReblog = (status) => {
@@ -143,7 +164,7 @@ export default class Status extends ImmutablePureComponent {
     if (status.get('reblogged')) {
       this.props.dispatch(unreblog(status));
     } else {
-      if (e.shiftKey || !boostModal) {
+      if ((e && e.shiftKey) || !boostModal) {
         this.handleModalReblog(status);
       } else {
         this.props.dispatch(openModal('BOOST', { status, onReblog: this.handleModalReblog }));
@@ -159,16 +180,16 @@ export default class Status extends ImmutablePureComponent {
     }
   }
 
-  handleDeleteClick = (status, withRedraft = false) => {
+  handleDeleteClick = (status, history, withRedraft = false) => {
     const { dispatch, intl } = this.props;
 
     if (!deleteModal) {
-      dispatch(deleteStatus(status.get('id'), withRedraft));
+      dispatch(deleteStatus(status.get('id'), history, withRedraft));
     } else {
       dispatch(openModal('CONFIRM', {
         message: intl.formatMessage(withRedraft ? messages.redraftMessage : messages.deleteMessage),
         confirm: intl.formatMessage(withRedraft ? messages.redraftConfirm : messages.deleteConfirm),
-        onConfirm: () => dispatch(deleteStatus(status.get('id'), withRedraft)),
+        onConfirm: () => dispatch(deleteStatus(status.get('id'), history, withRedraft)),
       }));
     }
   }
@@ -327,10 +348,10 @@ export default class Status extends ImmutablePureComponent {
     if (status && ancestorsIds && ancestorsIds.size > 0) {
       const element = this.node.querySelectorAll('.focusable')[ancestorsIds.size - 1];
 
-      if (element) {
+      window.requestAnimationFrame(() => {
         element.scrollIntoView(true);
-        this._scrolledIntoView = true;
-      }
+      });
+      this._scrolledIntoView = true;
     }
   }
 
@@ -340,6 +361,11 @@ export default class Status extends ImmutablePureComponent {
 
   onFullScreenChange = () => {
     this.setState({ fullscreen: isFullscreen() });
+  }
+
+  shouldUpdateScroll = (prevRouterProps, { location }) => {
+    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
+    return !(location.state && location.state.mastodonModalOpen);
   }
 
   render () {
@@ -377,7 +403,7 @@ export default class Status extends ImmutablePureComponent {
     };
 
     return (
-      <Column>
+      <Column label={intl.formatMessage(messages.detailedStatus)}>
         <ColumnHeader
           showBackButton
           extraButton={(
@@ -385,12 +411,12 @@ export default class Status extends ImmutablePureComponent {
           )}
         />
 
-        <ScrollContainer scrollKey='thread'>
+        <ScrollContainer scrollKey='thread' shouldUpdateScroll={this.shouldUpdateScroll}>
           <div className={classNames('scrollable', 'detailed-status__wrapper', { fullscreen })} ref={this.setRef}>
             {ancestors}
 
             <HotKeys handlers={handlers}>
-              <div className='focusable' tabIndex='0'>
+              <div className='focusable' tabIndex='0' aria-label={textForScreenReader(intl, status, false, !status.get('hidden'))}>
                 <DetailedStatus
                   status={status}
                   settings={settings}

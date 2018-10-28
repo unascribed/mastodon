@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { defineMessages } from 'react-intl';
 import classNames from 'classnames';
 
 //  Actions.
@@ -25,6 +26,11 @@ import DrawerSearch from './search';
 import { me } from 'flavours/glitch/util/initial_state';
 import { wrap } from 'flavours/glitch/util/redux_helpers';
 
+//  Messages.
+const messages = defineMessages({
+  compose: { id: 'navigation_bar.compose', defaultMessage: 'Compose new toot' },
+});
+
 //  State mapping.
 const mapStateToProps = state => ({
   account: state.getIn(['accounts', me]),
@@ -34,17 +40,33 @@ const mapStateToProps = state => ({
   searchHidden: state.getIn(['search', 'hidden']),
   searchValue: state.getIn(['search', 'value']),
   submitted: state.getIn(['search', 'submitted']),
+  unreadNotifications: state.getIn(['notifications', 'unread']),
+  showNotificationsBadge: state.getIn(['local_settings', 'notifications', 'tab_badge']),
 });
 
 //  Dispatch mapping.
-const mapDispatchToProps = {
-  onChange: changeSearch,
-  onClear: clearSearch,
-  onClickElefriend: cycleElefriendCompose,
-  onShow: showSearch,
-  onSubmit: submitSearch,
-  onOpenSettings: openModal.bind(null, 'SETTINGS', {}),
-};
+const mapDispatchToProps = (dispatch, { intl }) => ({
+  onChange (value) {
+    dispatch(changeSearch(value));
+  },
+  onClear () {
+    dispatch(clearSearch());
+  },
+  onClickElefriend () {
+    dispatch(cycleElefriendCompose());
+  },
+  onShow () {
+    dispatch(showSearch());
+  },
+  onSubmit () {
+    dispatch(submitSearch());
+  },
+  onOpenSettings (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(openModal('SETTINGS', {}));
+  },
+});
 
 //  The component.
 class Drawer extends React.Component {
@@ -72,36 +94,42 @@ class Drawer extends React.Component {
       searchHidden,
       searchValue,
       submitted,
+      isSearchPage,
+      unreadNotifications,
+      showNotificationsBadge,
     } = this.props;
     const computedClass = classNames('drawer', `mbstobon-${elefriend}`);
 
     //  The result.
     return (
-      <div className={computedClass}>
+      <div className={computedClass} role='region' aria-label={intl.formatMessage(messages.compose)}>
         {multiColumn ? (
           <DrawerHeader
             columns={columns}
+            unreadNotifications={unreadNotifications}
+            showNotificationsBadge={showNotificationsBadge}
             intl={intl}
             onSettingsClick={onOpenSettings}
           />
         ) : null}
-        <DrawerSearch
-          intl={intl}
-          onChange={onChange}
-          onClear={onClear}
-          onShow={onShow}
-          onSubmit={onSubmit}
-          submitted={submitted}
-          value={searchValue}
-        />
+        {(multiColumn || isSearchPage) && <DrawerSearch
+            intl={intl}
+            onChange={onChange}
+            onClear={onClear}
+            onShow={onShow}
+            onSubmit={onSubmit}
+            submitted={submitted}
+            value={searchValue}
+          /> }
         <div className='contents'>
-          <DrawerAccount account={account} />
-          <Composer />
+          {!isSearchPage && <DrawerAccount account={account} />}
+          {!isSearchPage && <Composer />}
           {multiColumn && <button className='mastodon' onClick={onClickElefriend} />}
-          <DrawerResults
-            results={results}
-            visible={submitted && !searchHidden}
-          />
+          {(multiColumn || isSearchPage) &&
+            <DrawerResults
+              results={results}
+              visible={submitted && !searchHidden}
+            />}
         </div>
       </div>
     );
@@ -112,6 +140,7 @@ class Drawer extends React.Component {
 //  Props.
 Drawer.propTypes = {
   intl: PropTypes.object.isRequired,
+  isSearchPage: PropTypes.bool,
   multiColumn: PropTypes.bool,
 
   //  State props.
@@ -122,6 +151,8 @@ Drawer.propTypes = {
   searchHidden: PropTypes.bool,
   searchValue: PropTypes.string,
   submitted: PropTypes.bool,
+  unreadNotifications: PropTypes.number,
+  showNotificationsBadge: PropTypes.bool,
 
   //  Dispatch props.
   onChange: PropTypes.func,

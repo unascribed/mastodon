@@ -9,11 +9,11 @@ module Mastodon
     end
 
     def minor
-      4
+      6
     end
 
     def patch
-      3
+      0
     end
 
     def pre
@@ -21,19 +21,27 @@ module Mastodon
     end
 
     def flags
-      ''
+      'rc1'
     end
 
     def to_a
       [major, minor, patch, pre].compact
     end
 
+    def suffix
+      '+glitch'
+    end
+
     def to_s
-      [to_a.join('.'), flags].join
+      [to_a.join('.'), flags, suffix].join
+    end
+
+    def repository
+      'glitch-soc/mastodon'
     end
 
     def source_base_url
-      'https://github.com/glitch-soc/mastodon'
+      "https://github.com/#{repository}"
     end
 
     # specify git tag or commit hash here

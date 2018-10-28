@@ -7,17 +7,36 @@ import StatusIcons from './status_icons';
 import StatusContent from './status_content';
 import StatusActionBar from './status_action_bar';
 import AttachmentList from './attachment_list';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { MediaGallery, Video } from 'flavours/glitch/util/async-components';
 import { HotKeys } from 'react-hotkeys';
 import NotificationOverlayContainer from 'flavours/glitch/features/notifications/containers/overlay_container';
 import classNames from 'classnames';
+import { autoUnfoldCW } from 'flavours/glitch/util/content_warning';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
 import Bundle from '../features/ui/components/bundle';
 
+export const textForScreenReader = (intl, status, rebloggedByText = false, expanded = false) => {
+  const displayName = status.getIn(['account', 'display_name']);
+
+  const values = [
+    displayName.length === 0 ? status.getIn(['account', 'acct']).split('@')[0] : displayName,
+    status.get('spoiler_text') && !expanded ? status.get('spoiler_text') : status.get('search_index').slice(status.get('spoiler_text').length),
+    intl.formatDate(status.get('created_at'), { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
+    status.getIn(['account', 'acct']),
+  ];
+
+  if (rebloggedByText) {
+    values.push(rebloggedByText);
+  }
+
+  return values.join(', ');
+};
+
+@injectIntl
 export default class Status extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -51,11 +70,13 @@ export default class Status extends ImmutablePureComponent {
     getScrollPosition: PropTypes.func,
     updateScrollBottom: PropTypes.func,
     expanded: PropTypes.bool,
+    intl: PropTypes.object.isRequired,
   };
 
   state = {
     isCollapsed: false,
     autoCollapsed: false,
+    isExpanded: undefined,
   }
 
   // Avoid checking props that are functions (and whose equality will always
@@ -121,6 +142,17 @@ export default class Status extends ImmutablePureComponent {
       update.isExpanded = nextProps.expanded;
       if (nextProps.expanded) update.isCollapsed = false;
       updated = true;
+    }
+
+    if (nextProps.expanded === undefined &&
+      prevState.isExpanded === undefined &&
+      update.isExpanded === undefined
+    ) {
+      const isExpanded = autoUnfoldCW(nextProps.settings, nextProps.status);
+      if (isExpanded !== undefined) {
+        update.isExpanded = isExpanded;
+        updated = true;
+      }
     }
 
     return updated ? update : null;
@@ -243,7 +275,7 @@ export default class Status extends ImmutablePureComponent {
         status.getIn(['reblog', 'id'], status.get('id'))
       }`;
     }
-    if (e.button === 0) {
+    if (e.button === 0 && !(e.ctrlKey || e.altKey || e.metaKey)) {
       if (isCollapsed) this.setCollapsed(false);
       else if (e.shiftKey) {
         this.setCollapsed(true);
@@ -326,6 +358,7 @@ export default class Status extends ImmutablePureComponent {
     } = this;
     const { router } = this.context;
     const {
+      intl,
       status,
       account,
       settings,
@@ -414,10 +447,12 @@ export default class Status extends ImmutablePureComponent {
             {Component => (<Component
               preview={video.get('preview_url')}
               src={video.get('url')}
+              alt={video.get('description')}
               inline
               sensitive={status.get('sensitive')}
               letterbox={settings.getIn(['media', 'letterbox'])}
               fullwidth={settings.getIn(['media', 'fullwidth'])}
+              preventPlayback={isCollapsed || !isExpanded}
               onOpenVideo={this.handleOpenVideo}
             />)}
           </Bundle>
@@ -425,13 +460,14 @@ export default class Status extends ImmutablePureComponent {
         mediaIcon = 'video-camera';
       } else {  //  Media type is 'image' or 'gifv'
         media = (
-          <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery} >
+          <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
             {Component => (
               <Component
                 media={attachments}
                 sensitive={status.get('sensitive')}
                 letterbox={settings.getIn(['media', 'letterbox'])}
                 fullwidth={settings.getIn(['media', 'fullwidth'])}
+                hidden={isCollapsed || !isExpanded}
                 onOpenMedia={this.props.onOpenMedia}
               />
             )}
@@ -461,6 +497,12 @@ export default class Status extends ImmutablePureComponent {
       selectorAttribs[`data-${notifKind}-by`] = `@${account.get('acct')}`;
     }
 
+    let rebloggedByText;
+
+    if (prepend === 'reblog') {
+      rebloggedByText = intl.formatMessage({ id: 'status.reblogged_by', defaultMessage: '{name} boosted' }, { name: account.get('acct') });
+    }
+
     const handlers = {
       reply: this.handleHotkeyReply,
       favourite: this.handleHotkeyFavourite,
@@ -476,6 +518,7 @@ export default class Status extends ImmutablePureComponent {
     const computedClass = classNames('status', `status-${status.get('visibility')}`, {
       collapsed: isCollapsed,
       'has-background': isCollapsed && background,
+      'status__wrapper-reply': !!status.get('in_reply_to_id'),
       muted,
     }, 'focusable');
 
@@ -488,6 +531,7 @@ export default class Status extends ImmutablePureComponent {
           ref={handleRef}
           tabIndex='0'
           data-featured={featured ? 'true' : null}
+          aria-label={textForScreenReader(intl, status, rebloggedByText, !status.get('hidden'))}
         >
           <header className='status__info'>
             <span>
@@ -525,11 +569,12 @@ export default class Status extends ImmutablePureComponent {
             parseClick={parseClick}
             disabled={!router}
           />
-          {!isCollapsed || !muted ? (
+          {!isCollapsed || !(muted || !settings.getIn(['collapsed', 'show_action_bar'])) ? (
             <StatusActionBar
               {...other}
               status={status}
               account={status.get('account')}
+              showReplyCount={settings.get('show_reply_count')}
             />
           ) : null}
           {notification ? (

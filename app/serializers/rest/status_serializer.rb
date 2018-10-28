@@ -3,7 +3,8 @@
 class REST::StatusSerializer < ActiveModel::Serializer
   attributes :id, :created_at, :in_reply_to_id, :in_reply_to_account_id,
              :sensitive, :spoiler_text, :visibility, :language,
-             :uri, :content, :url, :reblogs_count, :favourites_count
+             :uri, :content, :url, :replies_count, :reblogs_count,
+             :favourites_count
 
   attribute :favourited, if: :current_user?
   attribute :reblogged, if: :current_user?
@@ -34,6 +35,17 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   def current_user?
     !current_user.nil?
+  end
+
+  def visibility
+    # This visibility is masked behind "private"
+    # to avoid API changes because there are no
+    # UX differences
+    if object.limited_visibility?
+      'private'
+    else
+      object.visibility
+    end
   end
 
   def uri
@@ -96,7 +108,7 @@ class REST::StatusSerializer < ActiveModel::Serializer
   end
 
   def ordered_mentions
-    object.mentions.to_a.sort_by(&:id)
+    object.active_mentions.to_a.sort_by(&:id)
   end
 
   class ApplicationSerializer < ActiveModel::Serializer

@@ -12,16 +12,23 @@ class StatusesController < ApplicationController
 
   before_action :set_account
   before_action :set_status
+  before_action :set_instance_presenter
   before_action :set_link_headers
   before_action :check_account_suspension
   before_action :redirect_to_original, only: [:show]
   before_action :set_referrer_policy_header, only: [:show]
   before_action :set_cache_headers
 
+  content_security_policy only: :embed do |p|
+    p.frame_ancestors(false)
+  end
+
   def show
     respond_to do |format|
       format.html do
         use_pack 'public'
+        @body_classes = 'with-modals'
+
         set_ancestors
         set_descendants
 
@@ -31,7 +38,7 @@ class StatusesController < ApplicationController
       format.json do
         skip_session! unless @stream_entry.hidden?
 
-        render_cached_json(['activitypub', 'note', @status.cache_key], content_type: 'application/activity+json', public: !@stream_entry.hidden?) do
+        render_cached_json(['activitypub', 'note', @status], content_type: 'application/activity+json', public: !@stream_entry.hidden?) do
           ActiveModelSerializers::SerializableResource.new(@status, serializer: ActivityPub::NoteSerializer, adapter: ActivityPub::Adapter)
         end
       end
@@ -41,7 +48,7 @@ class StatusesController < ApplicationController
   def activity
     skip_session!
 
-    render_cached_json(['activitypub', 'activity', @status.cache_key], content_type: 'application/activity+json', public: !@stream_entry.hidden?) do
+    render_cached_json(['activitypub', 'activity', @status], content_type: 'application/activity+json', public: !@stream_entry.hidden?) do
       ActiveModelSerializers::SerializableResource.new(@status, serializer: ActivityPub::ActivitySerializer, adapter: ActivityPub::Adapter)
     end
   end
@@ -53,6 +60,7 @@ class StatusesController < ApplicationController
     skip_session!
     expires_in 180, public: true
     response.headers['X-Frame-Options'] = 'ALLOWALL'
+    @autoplay = ActiveModel::Type::Boolean.new.cast(params[:autoplay])
 
     render 'stream_entries/embed', layout: 'embedded'
   end
@@ -148,6 +156,10 @@ class StatusesController < ApplicationController
   rescue Mastodon::NotPermittedError
     # Reraise in order to get a 404
     raise ActiveRecord::RecordNotFound
+  end
+
+  def set_instance_presenter
+    @instance_presenter = InstancePresenter.new
   end
 
   def check_account_suspension

@@ -21,7 +21,10 @@ class PostStatusService < BaseService
 
     media  = validate_media!(options[:media_ids])
     status = nil
-    text   = options.delete(:spoiler_text) if text.blank? && options[:spoiler_text].present?
+    if text.blank? && options[:spoiler_text].present?
+     text = '.'
+     text = media.find(&:video?) ? '📹' : '🖼' if media.size > 0
+    end
 
     ApplicationRecord.transaction do
       status = account.statuses.create!(text: text,
@@ -86,7 +89,9 @@ class PostStatusService < BaseService
   end
 
   def bump_potential_friendship(account, status)
-    return if !status.reply? || account.following?(status.in_reply_to_account_id)
+    return if !status.reply? || account.id == status.in_reply_to_account_id
+    ActivityTracker.increment('activity:interactions')
+    return if account.following?(status.in_reply_to_account_id)
     PotentialFriendshipTracker.record(account.id, status.in_reply_to_account_id, :reply)
   end
 end

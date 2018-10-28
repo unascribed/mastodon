@@ -33,6 +33,11 @@ export default class Reblogs extends ImmutablePureComponent {
     }
   }
 
+  shouldUpdateScroll = (prevRouterProps, { location }) => {
+    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
+    return !(location.state && location.state.mastodonModalOpen);
+  }
+
   render () {
     const { accountIds } = this.props;
 
@@ -48,7 +53,7 @@ export default class Reblogs extends ImmutablePureComponent {
       <Column>
         <ColumnBackButton />
 
-        <ScrollContainer scrollKey='reblogs'>
+        <ScrollContainer scrollKey='reblogs' shouldUpdateScroll={this.shouldUpdateScroll}>
           <div className='scrollable reblogs'>
             {accountIds.map(id => <AccountContainer key={id} id={id} withNote={false} />)}
           </div>

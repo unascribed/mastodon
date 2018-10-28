@@ -14,6 +14,7 @@ import IconButton from 'flavours/glitch/components/icon_button';
 //  Utils.
 import Motion from 'flavours/glitch/util/optional_motion';
 import { assignHandlers } from 'flavours/glitch/util/react_helpers';
+import { isUserTouching } from 'flavours/glitch/util/is_mobile';
 
 //  Messages.
 const messages = defineMessages({
@@ -24,6 +25,10 @@ const messages = defineMessages({
   description: {
     defaultMessage: 'Describe for the visually impaired',
     id: 'upload_form.description',
+  },
+  crop: {
+    defaultMessage: 'Crop',
+    id: 'upload_form.focus',
   },
 });
 
@@ -37,11 +42,10 @@ const handlers = {
       onChangeDescription,
     } = this.props;
     const { dirtyDescription } = this.state;
+
+    this.setState({ dirtyDescription: null, focused: false });
+
     if (id && onChangeDescription && dirtyDescription !== null) {
-      this.setState({
-        dirtyDescription: null,
-        focused: false,
-      });
       onChangeDescription(id, dirtyDescription);
     }
   },
@@ -77,6 +81,17 @@ const handlers = {
       onRemove(id);
     }
   },
+
+  //  Opens the focal point modal.
+  handleFocalPointClick () {
+    const {
+      id,
+      onOpenFocalPointModal,
+    } = this.props;
+    if (id && onOpenFocalPointModal) {
+      onOpenFocalPointModal(id);
+    }
+  },
 };
 
 //  The component.
@@ -102,18 +117,25 @@ export default class ComposerUploadFormItem extends React.PureComponent {
       handleMouseEnter,
       handleMouseLeave,
       handleRemove,
+      handleFocalPointClick,
     } = this.handlers;
     const {
-      description,
       intl,
       preview,
+      focusX,
+      focusY,
+      mediaType,
     } = this.props;
     const {
       focused,
       hovered,
       dirtyDescription,
     } = this.state;
-    const computedClass = classNames('composer--upload_form--item', { active: hovered || focused });
+    const active = hovered || focused || isUserTouching();
+    const computedClass = classNames('composer--upload_form--item', { active });
+    const x = ((focusX /  2) + .5) * 100;
+    const y = ((focusY / -2) + .5) * 100;
+    const description = dirtyDescription || (dirtyDescription !== '' && this.props.description) || '';
 
     //  The result.
     return (
@@ -136,15 +158,15 @@ export default class ComposerUploadFormItem extends React.PureComponent {
               style={{
                 transform: `scale(${scale})`,
                 backgroundImage: preview ? `url(${preview})` : null,
+                backgroundPosition: `${x}% ${y}%`
               }}
             >
-              <IconButton
-                className='close'
-                icon='times'
-                onClick={handleRemove}
-                size={36}
-                title={intl.formatMessage(messages.undo)}
-              />
+              <div className={classNames('composer--upload_form--actions', { active })}>
+                <button className='icon-button' onClick={handleRemove}>
+                  <i className='fa fa-times' /> <FormattedMessage {...messages.undo} />
+                </button>
+                {mediaType === 'image' && <button className='icon-button' onClick={handleFocalPointClick}><i className='fa fa-crosshairs' /> <FormattedMessage {...messages.crop} /></button>}
+              </div>
               <label>
                 <span style={{ display: 'none' }}><FormattedMessage {...messages.description} /></span>
                 <input
@@ -154,7 +176,7 @@ export default class ComposerUploadFormItem extends React.PureComponent {
                   onFocus={handleFocus}
                   placeholder={intl.formatMessage(messages.description)}
                   type='text'
-                  value={dirtyDescription || description || ''}
+                  value={description}
                 />
               </label>
             </div>
@@ -171,7 +193,11 @@ ComposerUploadFormItem.propTypes = {
   description: PropTypes.string,
   id: PropTypes.string,
   intl: PropTypes.object.isRequired,
-  onChangeDescription: PropTypes.func,
-  onRemove: PropTypes.func,
+  onChangeDescription: PropTypes.func.isRequired,
+  onOpenFocalPointModal: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  focusX: PropTypes.number,
+  focusY: PropTypes.number,
+  mediaType: PropTypes.string,
   preview: PropTypes.string,
 };

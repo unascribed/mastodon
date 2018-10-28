@@ -5,9 +5,10 @@ class ActivityPub::ProcessAccountService < BaseService
 
   # Should be called with confirmed valid JSON
   # and WebFinger-resolved username and domain
-  def call(username, domain, json)
+  def call(username, domain, json, options = {})
     return if json['inbox'].blank? || unsupported_uri_scheme?(json['id'])
 
+    @options     = options
     @json        = json
     @uri         = @json['id']
     @username    = username
@@ -31,8 +32,9 @@ class ActivityPub::ProcessAccountService < BaseService
     return if @account.nil?
 
     after_protocol_change! if protocol_changed?
-    after_key_change! if key_changed?
+    after_key_change! if key_changed? && !@options[:signed_with_known_key]
     check_featured_collection! if @account.featured_collection_url.present?
+    check_links! unless @account.fields.empty?
 
     @account
   rescue Oj::ParseError
@@ -96,6 +98,10 @@ class ActivityPub::ProcessAccountService < BaseService
 
   def check_featured_collection!
     ActivityPub::SynchronizeFeaturedCollectionWorker.perform_async(@account.id)
+  end
+
+  def check_links!
+    VerifyAccountLinksWorker.perform_async(@account.id)
   end
 
   def actor_type
@@ -175,7 +181,7 @@ class ActivityPub::ProcessAccountService < BaseService
 
   def moved_account
     account   = ActivityPub::TagManager.instance.uri_to_resource(@json['movedTo'], Account)
-    account ||= ActivityPub::FetchRemoteAccountService.new.call(@json['movedTo'], id: true)
+    account ||= ActivityPub::FetchRemoteAccountService.new.call(@json['movedTo'], id: true, break_on_redirect: true)
     account
   end
 
@@ -226,7 +232,7 @@ class ActivityPub::ProcessAccountService < BaseService
     updated   = tag['updated']
     emoji     = CustomEmoji.find_by(shortcode: shortcode, domain: @account.domain)
 
-    return unless emoji.nil? || emoji.updated_at >= updated
+    return unless emoji.nil? || image_url != emoji.image_remote_url || (updated && emoji.updated_at >= updated)
 
     emoji ||= CustomEmoji.new(domain: @account.domain, shortcode: shortcode, uri: uri)
     emoji.image_remote_url = image_url

@@ -17,20 +17,23 @@ export default class LocalSettingsPageItem extends React.PureComponent {
     options: PropTypes.arrayOf(PropTypes.shape({
       value: PropTypes.string.isRequired,
       message: PropTypes.string.isRequired,
+      hint: PropTypes.string,
     })),
     settings: ImmutablePropTypes.map.isRequired,
+    placeholder: PropTypes.string,
   };
 
   handleChange = e => {
     const { target } = e;
-    const { item, onChange, options } = this.props;
+    const { item, onChange, options, placeholder } = this.props;
     if (options && options.length > 0) onChange(item, target.value);
+    else if (placeholder) onChange(item, target.value);
     else onChange(item, target.checked);
   }
 
   render () {
     const { handleChange } = this;
-    const { settings, item, id, options, children, dependsOn, dependsOnNot } = this.props;
+    const { settings, item, id, options, children, dependsOn, dependsOnNot, placeholder } = this.props;
     let enabled = true;
 
     if (dependsOn) {
@@ -46,41 +49,63 @@ export default class LocalSettingsPageItem extends React.PureComponent {
 
     if (options && options.length > 0) {
       const currentValue = settings.getIn(item);
-      const optionElems = options && options.length > 0 && options.map((opt) => (
-        <option
-          key={opt.value}
-          value={opt.value}
-        >
-          {opt.message}
-        </option>
-      ));
-      return (
-        <label className='glitch local-settings__page__item' htmlFor={id}>
-          <p>{children}</p>
-          <p>
-            <select
-              id={id}
-              disabled={!enabled}
+      const optionElems = options && options.length > 0 && options.map((opt) => {
+        let optionId = `${id}--${opt.value}`;
+        return (
+          <label htmlFor={optionId}>
+            <input type='radio'
+              name={id}
+              id={optionId}
+              value={opt.value}
               onBlur={handleChange}
               onChange={handleChange}
-              value={currentValue}
-            >
-              {optionElems}
-            </select>
-          </p>
-        </label>
+              checked={ currentValue === opt.value }
+              disabled={!enabled}
+            />
+            {opt.message}
+            {opt.hint && <span class='hint'>{opt.hint}</span>}
+          </label>
+        );
+      });
+      return (
+        <div class='glitch local-settings__page__item radio_buttons'>
+          <fieldset>
+            <legend>{children}</legend>
+            {optionElems}
+          </fieldset>
+        </div>
+      );
+    } else if (placeholder) {
+      return (
+        <div className='glitch local-settings__page__item string'>
+          <label htmlFor={id}>
+            <p>{children}</p>
+            <p>
+              <input
+                id={id}
+                type='text'
+                value={settings.getIn(item)}
+                placeholder={placeholder}
+                onChange={handleChange}
+                disabled={!enabled}
+              />
+            </p>
+          </label>
+        </div>
       );
     } else return (
-      <label className='glitch local-settings__page__item' htmlFor={id}>
-        <input
-          id={id}
-          type='checkbox'
-          checked={settings.getIn(item)}
-          onChange={handleChange}
-          disabled={!enabled}
-        />
-        {children}
-      </label>
+      <div className='glitch local-settings__page__item boolean'>
+        <label htmlFor={id}>
+          <input
+            id={id}
+            type='checkbox'
+            checked={settings.getIn(item)}
+            onChange={handleChange}
+            disabled={!enabled}
+          />
+          {children}
+        </label>
+      </div>
     );
   }
 

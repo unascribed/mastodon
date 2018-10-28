@@ -22,12 +22,17 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   private
 
   def process_status
-    status_params = process_status_params
+    @tags     = []
+    @mentions = []
+    @params   = {}
+
+    process_status_params
+    process_tags
+    process_audience
 
     ApplicationRecord.transaction do
-      @status = Status.create!(status_params)
-
-      process_tags(@status)
+      @status = Status.create!(@params)
+      attach_tags(@status)
     end
 
     resolve_thread(@status)
@@ -42,62 +47,98 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   end
 
   def process_status_params
-    {
-      uri: @object['id'],
-      url: object_url || @object['id'],
-      account: @account,
-      text: text_from_content || '',
-      language: detected_language,
-      spoiler_text: @object['summary'] || '',
-      created_at: @object['published'],
-      override_timestamps: @options[:override_timestamps],
-      reply: @object['inReplyTo'].present?,
-      sensitive: @object['sensitive'] || false,
-      visibility: visibility_from_audience,
-      thread: replied_to_status,
-      conversation: conversation_from_uri(@object['conversation']),
-      media_attachment_ids: process_attachments.take(4).map(&:id),
-    }
+    @params = begin
+      {
+        uri: @object['id'],
+        url: object_url || @object['id'],
+        account: @account,
+        text: text_from_content || '',
+        language: detected_language,
+        spoiler_text: text_from_summary || '',
+        created_at: @object['published'],
+        override_timestamps: @options[:override_timestamps],
+        reply: @object['inReplyTo'].present?,
+        sensitive: @object['sensitive'] || false,
+        visibility: visibility_from_audience,
+        thread: replied_to_status,
+        conversation: conversation_from_uri(@object['conversation']),
+        media_attachment_ids: process_attachments.take(4).map(&:id),
+      }
+    end
   end
 
-  def process_tags(status)
+  def process_audience
+    (as_array(@object['to']) + as_array(@object['cc'])).uniq.each do |audience|
+      next if audience == ActivityPub::TagManager::COLLECTIONS[:public]
+
+      # Unlike with tags, there is no point in resolving accounts we don't already
+      # know here, because silent mentions would only be used for local access
+      # control anyway
+      account = account_from_uri(audience)
+
+      next if account.nil? || @mentions.any? { |mention| mention.account_id == account.id }
+
+      @mentions << Mention.new(account: account, silent: true)
+
+      # If there is at least one silent mention, then the status can be considered
+      # as a limited-audience status, and not strictly a direct message
+      next unless @params[:visibility] == :direct
+
+      @params[:visibility] = :limited
+    end
+  end
+
+  def attach_tags(status)
+    @tags.each do |tag|
+      status.tags << tag
+      TrendingTags.record_use!(tag, status.account, status.created_at) if status.public_visibility?
+    end
+
+    @mentions.each do |mention|
+      mention.status = status
+      mention.save
+    end
+  end
+
+  def process_tags
     return if @object['tag'].nil?
 
     as_array(@object['tag']).each do |tag|
       if equals_or_includes?(tag['type'], 'Hashtag')
-        process_hashtag tag, status
+        process_hashtag tag
       elsif equals_or_includes?(tag['type'], 'Mention')
-        process_mention tag, status
+        process_mention tag
       elsif equals_or_includes?(tag['type'], 'Emoji')
-        process_emoji tag, status
+        process_emoji tag
       end
     end
   end
 
-  def process_hashtag(tag, status)
+  def process_hashtag(tag)
     return if tag['name'].blank?
 
     hashtag = tag['name'].gsub(/\A#/, '').mb_chars.downcase
     hashtag = Tag.where(name: hashtag).first_or_create(name: hashtag)
 
-    return if status.tags.include?(hashtag)
+    return if @tags.include?(hashtag)
 
-    status.tags << hashtag
-    TrendingTags.record_use!(hashtag, status.account, status.created_at) if status.public_visibility?
+    @tags << hashtag
   rescue ActiveRecord::RecordInvalid
     nil
   end
 
-  def process_mention(tag, status)
+  def process_mention(tag)
     return if tag['href'].blank?
 
     account = account_from_uri(tag['href'])
-    account = FetchRemoteAccountService.new.call(tag['href'], id: false) if account.nil?
+    account = ::FetchRemoteAccountService.new.call(tag['href'], id: false) if account.nil?
+
     return if account.nil?
-    account.mentions.create(status: status)
+
+    @mentions << Mention.new(account: account, silent: false)
   end
 
-  def process_emoji(tag, _status)
+  def process_emoji(tag)
     return if skip_download?
     return if tag['name'].blank? || tag['icon'].blank? || tag['icon']['url'].blank?
 
@@ -107,7 +148,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     updated   = tag['updated']
     emoji     = CustomEmoji.find_by(shortcode: shortcode, domain: @account.domain)
 
-    return unless emoji.nil? || emoji.updated_at >= updated
+    return unless emoji.nil? || image_url != emoji.image_remote_url || (updated && emoji.updated_at >= updated)
 
     emoji ||= CustomEmoji.new(domain: @account.domain, shortcode: shortcode, uri: uri)
     emoji.image_remote_url = image_url
@@ -193,6 +234,14 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     end
   end
 
+  def text_from_summary
+    if @object['summary'].present?
+      @object['summary']
+    elsif summary_language_map?
+      @object['summaryMap'].values.first
+    end
+  end
+
   def text_from_name
     if @object['name'].present?
       @object['name']
@@ -206,6 +255,8 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
       @object['contentMap'].keys.first
     elsif name_language_map?
       @object['nameMap'].keys.first
+    elsif summary_language_map?
+      @object['summaryMap'].keys.first
     elsif supported_object_type?
       LanguageDetector.instance.detect(text_from_content, @account)
     end
@@ -221,6 +272,10 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     else
       url_candidate
     end
+  end
+
+  def summary_language_map?
+    @object['summaryMap'].is_a?(Hash) && !@object['summaryMap'].empty?
   end
 
   def content_language_map?

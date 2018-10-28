@@ -70,6 +70,7 @@ class Account < ApplicationRecord
 
   # Remote user validations
   validates :username, uniqueness: { scope: :domain, case_sensitive: true }, if: -> { !local? && will_save_change_to_username? }
+  validates :username, format: { with: /\A#{USERNAME_RE}\z/i }, if: -> { !local? && will_save_change_to_username? }
 
   # Local user validations
   validates :username, format: { with: /\A[a-z0-9_]+\z/i }, length: { maximum: 55 }, if: -> { local? && will_save_change_to_username? }
@@ -90,6 +91,10 @@ class Account < ApplicationRecord
   # Pinned statuses
   has_many :status_pins, inverse_of: :account, dependent: :destroy
   has_many :pinned_statuses, -> { reorder('status_pins.created_at DESC') }, through: :status_pins, class_name: 'Status', source: :status
+
+  # Endorsements
+  has_many :account_pins, inverse_of: :account, dependent: :destroy
+  has_many :endorsed_accounts, through: :account_pins, class_name: 'Account', source: :target_account
 
   # Media
   has_many :media_attachments, dependent: :destroy
@@ -191,6 +196,13 @@ class Account < ApplicationRecord
     ResolveAccountService.new.call(acct)
   end
 
+  def suspend!
+    transaction do
+      user&.disable! if local?
+      update!(suspended: true)
+    end
+  end
+
   def unsuspend!
     transaction do
       user&.enable! if local?
@@ -214,11 +226,19 @@ class Account < ApplicationRecord
   end
 
   def fields_attributes=(attributes)
-    fields = []
+    fields     = []
+    old_fields = self[:fields] || []
 
     if attributes.is_a?(Hash)
       attributes.each_value do |attr|
         next if attr[:name].blank?
+
+        previous = old_fields.find { |item| item['value'] == attr[:value] }
+
+        if previous && previous['verified_at'].present?
+          attr[:verified_at] = previous['verified_at']
+        end
+
         fields << attr
       end
     end
@@ -226,13 +246,18 @@ class Account < ApplicationRecord
     self[:fields] = fields
   end
 
-  def build_fields
-    return if fields.size >= 4
+  DEFAULT_FIELDS_SIZE = 4
 
-    raw_fields = self[:fields] || []
-    add_fields = 4 - raw_fields.size
-    add_fields.times { raw_fields << { name: '', value: '' } }
-    self.fields = raw_fields
+  def build_fields
+    return if fields.size >= DEFAULT_FIELDS_SIZE
+
+    tmp = self[:fields] || []
+
+    (DEFAULT_FIELDS_SIZE - tmp.size).times do
+      tmp << { name: '', value: '' }
+    end
+
+    self.fields = tmp
   end
 
   def magic_key
@@ -285,17 +310,52 @@ class Account < ApplicationRecord
   end
 
   class Field < ActiveModelSerializers::Model
-    attributes :name, :value, :account, :errors
+    attributes :name, :value, :verified_at, :account, :errors
 
-    def initialize(account, attr)
-      @account = account
-      @name    = attr['name'].strip[0, 255]
-      @value   = attr['value'].strip[0, 255]
-      @errors  = {}
+    def initialize(account, attributes)
+      @account     = account
+      @attributes  = attributes
+      @name        = attributes['name'].strip[0, string_limit]
+      @value       = attributes['value'].strip[0, string_limit]
+      @verified_at = attributes['verified_at']&.to_datetime
+      @errors      = {}
+    end
+
+    def verified?
+      verified_at.present?
+    end
+
+    def value_for_verification
+      @value_for_verification ||= begin
+        if account.local?
+          value
+        else
+          ActionController::Base.helpers.strip_tags(value)
+        end
+      end
+    end
+
+    def verifiable?
+      value_for_verification.present? && value_for_verification.start_with?('http://', 'https://')
+    end
+
+    def mark_verified!
+      @verified_at = Time.now.utc
+      @attributes['verified_at'] = @verified_at
     end
 
     def to_h
-      { name: @name, value: @value }
+      { name: @name, value: @value, verified_at: @verified_at }
+    end
+
+    private
+
+    def string_limit
+      if account.local?
+        255
+      else
+        2047
+      end
     end
   end
 

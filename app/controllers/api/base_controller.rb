@@ -7,6 +7,8 @@ class Api::BaseController < ApplicationController
   include RateLimitHeaders
 
   skip_before_action :store_current_location
+  skip_before_action :check_user_permissions
+
   protect_from_forgery with: :null_session
 
   rescue_from ActiveRecord::RecordInvalid, Mastodon::ValidationError do |e|
@@ -51,8 +53,8 @@ class Api::BaseController < ApplicationController
     [params[:limit].to_i.abs, default_limit * 2].min
   end
 
-  def truthy_param?(key)
-    ActiveModel::Type::Boolean.new.cast(params[key])
+  def params_slice(*keys)
+    params.slice(*keys).permit(*keys)
   end
 
   def current_resource_owner

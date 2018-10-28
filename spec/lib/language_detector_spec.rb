@@ -42,6 +42,7 @@ describe LanguageDetector do
 
   describe 'detect' do
     let(:account_without_user_locale) { Fabricate(:user, locale: nil).account }
+    let(:account_remote) { Fabricate(:account, domain: 'joinmastodon.org') }
 
     it 'detects english language for basic strings' do
       strings = [
@@ -57,7 +58,7 @@ describe LanguageDetector do
     end
 
     it 'detects spanish language' do
-      string = 'Obtener un Hola y bienvenidos a Mastodon'
+      string = 'Obtener un Hola y bienvenidos a Mastodon. Obtener un Hola y bienvenidos a Mastodon. Obtener un Hola y bienvenidos a Mastodon. Obtener un Hola y bienvenidos a Mastodon'
       result = described_class.instance.detect(string, account_without_user_locale)
 
       expect(result).to eq :es
@@ -86,11 +87,11 @@ describe LanguageDetector do
           account = double(user_locale: 'fr')
           result  = described_class.instance.detect('', account)
 
-          expect(result).to eq :fr
+          expect(result).to eq nil
         end
 
         it 'uses nil when account is present but has no locale' do
-          result  = described_class.instance.detect('', account_without_user_locale)
+          result = described_class.instance.detect('', account_without_user_locale)
 
           expect(result).to eq nil
         end
@@ -99,6 +100,15 @@ describe LanguageDetector do
       describe 'with an `en` default locale' do
         it 'uses nil for undetectable string' do
           result = described_class.instance.detect('', account_without_user_locale)
+
+          expect(result).to eq nil
+        end
+      end
+
+      describe 'remote user' do
+        it 'nil for foreign user when language is not present' do
+          string = '안녕하세요'
+          result = described_class.instance.detect(string, account_remote)
 
           expect(result).to eq nil
         end
