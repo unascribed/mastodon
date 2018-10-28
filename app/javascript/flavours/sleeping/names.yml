@@ -1,11 +1,8 @@
 en:
   flavours:
     sleeping:
-      description: The default flavour for Sleeping Town.
-      name: Sleeping
+      description: The default flavour for Sleeping Town. Colors and brightness are configured in App Settings.
+      name: Sleeping v2
   skins:
     sleeping:
-      lighter: Noon (Lighter)
-      light: Dawn (Light)
-      default: Dusk (Dark)
-      dark: Midnight (Darker)
+      sleeping: Sleeping

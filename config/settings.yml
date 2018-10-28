@@ -33,7 +33,7 @@ defaults: &defaults
   system_font_ui: false
   noindex: false
   flavour: 'sleeping'
-  skin: 'medium'
+  skin: 'sleeping'
   notification_emails:
     follow: false
     reblog: false

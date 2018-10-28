@@ -1,90 +1,14 @@
-@import 'material_colors';
-@import '../../glitch/styles/mixins';
-@import 'glitch_variables';
-
-@import '../../../styles/fonts/roboto';
-@import '../../../styles/fonts/roboto-mono';
-@import '../../../styles/fonts/montserrat';
-
-@import '../../glitch/styles/reset';
-@import '../../glitch/styles/basics';
-@import '../../glitch/styles/containers';
-@import '../../glitch/styles/lists';
-@import '../../glitch/styles/modal';
-@import '../../glitch/styles/footer';
-@import '../../glitch/styles/compact_header';
-@import '../../glitch/styles/landing_strip';
-@import '../../glitch/styles/forms';
-@import '../../glitch/styles/accounts';
-@import '../../glitch/styles/stream_entries';
-@import '../../glitch/styles/components/index';
-@import '../../glitch/styles/about';
-@import '../../glitch/styles/tables';
-@import '../../glitch/styles/admin';
-@import '../../glitch/styles/rtl';
-
-$primary: #000 !default;
-$accent: #000 !default;
-
-$ui-base-light-color: #000 !default;
-$ui-base-lightest-color: #000 !default;
-$ui-base-dark-color: #000 !default;
-
-@function contrast($bg, $dark: #000, $light: #fff) {
-  $luma: (red($bg) * 299 + green($bg) * 587 + blue($bg) * 114) / 1000;
-  
-  @if $luma >= 128 {
-    @return $dark;
-  } @else {
-    @return $light;
-  }
-}
-
-@mixin bg-contrast($bg, $dark: #000, $light: #fff) {
-  background-color: $bg;
-  color: contrast($bg, $dark, $light);
-}
-
-*, *:after, *:before {
-  /* NO. JUST DON'T. */
-  text-shadow: none !important;
-}
-
-body {
-  --sleeping-primary-default: $primary;
-  --sleeping-accent-default: $accent;
-  --sleeping-link-default: $accent;
-  
-  --sleeping-primary: $primary;
-  --sleeping-primary-contrast: contrast($primary);
-  --sleeping-primary-light: lighten($primary, 4%);
-  --sleeping-primary-light-contrast: contrast(lighten($primary, 4%));
-  --sleeping-primary-lighter: lighten($primary, 6%);
-  --sleeping-primary-lighter-contrast: contrast(lighten($primary, 6%));
-  --sleeping-primary-lightest: lighten($primary, 12%);
-  --sleeping-primary-lightest-contrast: contrast(lighten($primary, 12%));
-  
-  --sleeping-accent: $accent;
-  --sleeping-accent-contrast: contrast($accent);
-  --sleeping-accent-light: lighten($accent, 4%);
-  --sleeping-accent-light-contrast: contrast(lighten($accent, 4%));
-  --sleeping-accent-lighter: lighten($accent, 6%);
-  --sleeping-accent-lighter-contrast: contrast(lighten($accent, 6%));
-  --sleeping-accent-lightest: lighten($accent, 12%);
-  --sleeping-accent-lightest-contrast: contrast(lighten($accent, 12%));
-  
-  --sleeping-link: $accent;
-  --sleeping-link-contrast: contrast($accent);
-  --sleeping-link-light: lighten($accent, 4%);
-  --sleeping-link-light-contrast: contrast(lighten($accent, 4%));
-  --sleeping-link-lighter: lighten($accent, 6%);
-  --sleeping-link-lighter-contrast: contrast(lighten($accent, 6%));
-  --sleeping-link-lightest: lighten($accent, 12%);
-  --sleeping-link-lightest-contrast: contrast(lighten($accent, 12%));
-}
-
-#sleeping-settings {
+.glitch.local-settings__navigation__item.sleeping {
   display: block !important;
+}
+.ui {
+  background: var(--sleeping-background-dark);
+}
+#sleeping-brightness {
+  background: linear-gradient(to right, #263238 0%, #607D8B 50%, #ECEFF1 100%);
+  background-size: 100% 4px;
+  background-repeat: no-repeat;
+  background-position: center bottom;
 }
 
 .status__reply-icon {
@@ -98,6 +22,7 @@ body {
 .st_all_emojis .emojione {
   width: 32px;
   height: 32px;
+  margin: 0;
 }
 .st_custom_emoji_wrapper {
   position: relative;
@@ -122,13 +47,13 @@ body {
 }
 
 .account__header {
-    background-size: auto 238px;
-    background-position: center top;
-    background-repeat: no-repeat;
+  background-size: auto 238px;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 .account__header > div {
-  // i'm old fashioned, shoot me
+  /* i'm old fashioned, shoot me */
   display: block;
   background-color: transparent;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
@@ -161,11 +86,11 @@ body {
   vertical-align: bottom;
   font-size: 24px;
   font-weight: 300;
-  color: $white;
+  color: #FFF;
 }
 
 .account__header .account__header__username {
-  color: $white;
+  color: #FFF;
   opacity: 0.7;
 }
 
@@ -173,14 +98,15 @@ body {
   clear: both;
   text-align: center;
   padding-top: 10px;
-  color: $white;
+  color: #FFF;
 }
 
 body .column-header__notif-cleaning-buttons button,
 body .column-header__notif-cleaning-buttons button.active,
 body .column-header__notif-cleaning-buttons button:hover,
 body .column-header__notif-cleaning-buttons button.active:hover {
-  @include bg-contrast($ui-base-light-color);
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
 }
 body .column-header__notif-cleaning-buttons button:hover {
   color: var(--sleeping-accent);
@@ -289,11 +215,13 @@ body .column-header__notif-cleaning-buttons button.active {
 .column-header__collapsible-inner,
 .column-settings__section,
 .setting-text {
-  @include bg-contrast($ui-base-light-color);
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
 }
 
 .onboarding-modal, .error-modal, .embed-modal {
-  @include bg-contrast($ui-base-color);
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
 }
 
 .onboarding-modal__dot {
@@ -316,12 +244,6 @@ body .column-header__notif-cleaning-buttons button.active {
   margin: 10px 5px;
 }
 
-.icon-button:hover,
-.icon-button:active,
-.icon-button:focus {
-  color: lighten($ui-base-lighter-color, 15%);
-}
-
 .account__section-headline a,
 .activity-stream-tabs a {
   color: inherit;
@@ -337,7 +259,7 @@ body .column-header__notif-cleaning-buttons button.active {
 .activity-stream-tabs a.active {
   color: inherit;
   opacity: 1;
-  border-bottom: 4px $ui-highlight-color solid;
+  border-bottom: 4px var(--sleeping-accent) solid;
   padding-bottom: 11px;
 }
 
@@ -345,7 +267,11 @@ body .column-header__notif-cleaning-buttons button.active {
   display: none
 }
 
-.drawer--header > * {
+.drawer--header > *,
+.status__display-name,
+.detailed-status__display-name,
+.detailed-status__display-name strong,
+.detailed-status__display-name {
   color: inherit;
 }
 
@@ -364,10 +290,19 @@ body .column-header__notif-cleaning-buttons button.active {
 .simple_form .block-button {
   background: var(--sleeping-accent);
   color: var(--sleeping-accent-contrast);
-  &:hover, &:active, &:focus {
-    background: var(--sleeping-accent-light);
-    color: var(--sleeping-accent-light-contrast);
-  }
+}
+
+.simple_form button:hover,
+.simple_form button:active,
+.simple_form button:focus,
+.simple_form .button:hover,
+.simple_form .button:active,
+.simple_form .button:focus,
+.simple_form .block-button:hover,
+.simple_form .block-button:active,
+.simple_form .block-button:focus {
+  background: var(--sleeping-accent-light);
+  color: var(--sleeping-accent-light-contrast);
 }
 
 .button {
@@ -375,7 +310,7 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .composer--textarea > label .textarea:disabled {
-  background: $clr-blue-grey-300;
+  background: var(--sleeping-background-lighter);
 }
 
 
@@ -399,54 +334,47 @@ body .column-header__notif-cleaning-buttons button.active {
   position: absolute;
   top: 0; bottom: 0;
   left: 0; right: 0;
-  background: linear-gradient(rgba($ui-base-color, 0), rgba($ui-base-color, 0.75));
   pointer-events: none;
-}
-.status.collapsed:focus > .status__content:after {
-  background: linear-gradient(rgba(lighten($ui-base-color, 4%), 0), rgba(lighten($ui-base-color, 4%), 0.75));
-}
-.status.status-direct.collapsed > .status__content:after {
-  background: linear-gradient(rgba(lighten($ui-base-color, 8%), 0), rgba(lighten($ui-base-color, 8%), 0.75));
+  filter: blur(2px);
 }
 
 .status__visibility-icon.fa-globe,
 .composer--options--dropdown--content--item .fa-globe {
-  color: $clr-blue-700;
+  color: #1976D2;
 }
 
 .status__visibility-icon.fa-unlock-alt,
 .composer--options--dropdown--content--item .fa-unlock-alt {
-  color: $clr-green-700;
+  color: #388E3C;
 }
 
 .status__visibility-icon.fa-lock,
 .composer--options--dropdown--content--item .fa-lock {
-  color: $clr-amber-700;
+  color: #FFA000;
 }
 
 .status__visibility-icon.fa-envelope,
 .composer--options--dropdown--content--item .fa-envelope {
-  color: $clr-red-700;
+  color: #D32F2F;
 }
 
-.composer--options--dropdown--content--item > .content {
-  color: #000;
+.composer--options--dropdown--content--item {
+  color: #000 !important;
 }
 .composer--options--dropdown--content--item > .content > span {
   opacity: 0.7;
 }
-.composer--options--dropdown--content--item:hover > .content,
-.composer--options--dropdown--content--item.active > .content,
-.composer--options--dropdown--content--item:hover > .content strong,
-.composer--options--dropdown--content--item.active > .content strong,
-.composer--options--dropdown--content--item > .content strong,
+.composer--options--dropdown--content--item:hover {
+  color: var(--sleeping-primary-contrast) !important;
+}
 .status.light .display-name strong,
 .status.light .status__display-name,
 .onboarding-modal__page p,
 .composer--options--dropdown--content--item,
 .onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__next, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__next, .error-modal__footer .onboarding-modal__nav.onboarding-modal__done, .error-modal__footer .onboarding-modal__nav.onboarding-modal__next, .error-modal__footer .error-modal__nav.onboarding-modal__done, .error-modal__footer .error-modal__nav.onboarding-modal__next,
 .composer--reply > header > .account.small,
-.composer--reply > header > .account.small {
+.composer--reply > header > .account.small,
+.getting-started p {
   color: inherit;
 }
 
@@ -517,28 +445,29 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 button[aria-label=Bookmark].active {
-  color: $clr-purple-500 !important;
-  &:hover, &:focus, &:active {
-    color: lighten($clr-purple-500, 12%) !important;
-  }
+  color: #9C27B0 !important;
 }
-button[aria-label=Favourite].active {
-  & > i {
-    color: $gold-star !important;
-    transition: color 0.2s;
-  }
-  &:hover, &:focus, &:active {
-    & > i {
-      color: lighten($gold-star, 12%) !important;
-    }
-  }
+button[aria-label=Bookmark].active:hover,
+button[aria-label=Bookmark].active:focus,
+button[aria-label=Bookmark].active:active {
+  color: #BA68C8 !important;
+}
+button[aria-label=Favourite].active > i {
+  color: #FFC107 !important;
+  transition: color 0.2s;
+}
+button[aria-label=Favourite].active:hover > i,
+button[aria-label=Favourite].active:focus > i,
+button[aria-label=Favourite].active:active > i {
+  color: #FFD54F !important;
+  transition: color 0.2s;
 }
 
 .notification__favourite-icon-wrapper .fa-star {
-  color: $gold-star;
+  color: #FFC107;
 }
 .notification__favourite-icon-wrapper .fa-retweet {
-  color: $clr-light-blue-500;
+  color: #03A9F4;
 }
 
 .contents > .account__header {
@@ -549,9 +478,9 @@ button[aria-label=Favourite].active {
   background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
   box-sizing: border-box;
   color: #FFF;
-  & > .acct {
-    color: #FFF;
-  }
+}
+.account__header > div.drawer--account > .acct {
+  color: #FFF;
 }
 
 .drawer {
@@ -564,19 +493,19 @@ button[aria-label=Favourite].active {
   max-height: 205px;
   margin-top: auto;
 }
-.drawer.mbstobon-0, .drawer.mbstobon-1 {
-  & > .contents > .mastodon {
-    background-image: url(~images/elephant_ui_sleep.svg) !important;
-    background-size: 293px 615px;
-    background-position: 0px 0px;
-  }
-  & > .contents > .mastodon:active {
-    background-image: url(~images/elephant_ui_sleep.svg) !important;
-    background-position: 0px -205px;
-  }
+.drawer.mbstobon-0 > .contents > .mastodon,
+.drawer.mbstobon-1 > .contents > .mastodon {
+  background-image: url(/images/elephant_ui_sleep.svg) !important;
+  background-size: 293px 615px;
+  background-position: 0px 0px;
+}
+.drawer.mbstobon-0 > .contents > .mastodon:active,
+.drawer.mbstobon-1 > .contents > .mastodon:active {
+  background-image: url(/images/elephant_ui_sleep.svg) !important;
+  background-position: 0px -205px;
 }
 .drawer.mbstobon-2 > .contents > .mastodon {
-  background-image: url(~images/elephant_ui_sleep.svg) !important;
+  background-image: url(/images/elephant_ui_sleep.svg) !important;
   background-size: 293px 615px;
   background-position: 0px -410px;
 }
@@ -590,13 +519,14 @@ button[aria-label=Favourite].active {
   background: none;
 }
 .column {
-  background: $ui-base-color;
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
 }
 .ui, .column:before {
-    background-image: none !important;
-    background-attachment: fixed;
-    background-repeat: repeat no-repeat;
-    background-position: bottom left;
+  background-image: none !important;
+  background-attachment: fixed;
+  background-repeat: repeat no-repeat;
+  background-position: bottom left;
 }
 .setting-text.light {
   background: #FFF;
@@ -612,9 +542,9 @@ button[aria-label=Favourite].active {
 .composer--reply > .content a {
   color: var(--sleeping-link);
 }
-.status, .notification-follow, .detailed-status__action-bar {
+.status, .notification-follow, .detailed-status__action-bar, .load-gap {
   border-bottom-width: 8px;
-  border-bottom-color: darken($ui-base-color, 7%);;
+  border-bottom-color: var(--sleeping-background-dark);
 }
 .wide .column:last-child {
   padding: 0;
@@ -640,7 +570,7 @@ button[aria-label=Favourite].active {
 }
 
 .status__info__icons {
-  color: $primary-text-color;
+  color: var(--sleeping-background-lightest);
 }
 
 .activity-stream .detailed-status.light .detailed-status__display-name .display-name strong,
@@ -659,11 +589,17 @@ button[aria-label=Favourite].active {
 }
 
 .glitch.local-settings {
-  @include bg-contrast($ui-base-color);
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
 }
 .glitch.local-settings__navigation,
 .glitch.local-settings__navigation__item{
-  @include bg-contrast($ui-base-lighter-color);
+  background: var(--sleeping-background-lighter);
+  color: var(--sleeping-background-lighter-contrast);
+}
+.glitch.local-settings__navigation__item:hover{
+  background: var(--sleeping-background-lightest);
+  color: var(--sleeping-background-lightest-contrast);
 }
 .glitch.local-settings__navigation__item.active {
   background: var(--sleeping-primary);
@@ -672,4 +608,105 @@ button[aria-label=Favourite].active {
 
 .glitch.local-settings__navigation__item.sleeping {
   display: block !important;
+}
+
+.glitch.local-settings span.hint {
+  color: var(--sleeping-background-contrast);
+  opacity: 0.5;
+}
+.getting-started {
+  background: none;
+  color: var(--sleeping-background-contrast);
+}
+.getting-started a {
+  color: inherit;
+  opacity: 0.7;
+}
+.column-subheading {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+}
+.column-link {
+  background: var(--sleeping-background-lighter);
+  color: var(--sleeping-background-lighter-contrast);
+}
+.status__display-name strong, .account__display-name strong {
+  color: var(--sleeping-background-contrast);
+}
+.display-name__account {
+  color: var(--sleeping-background-contrast);
+  opacity: 0.5;
+}
+.drawer--search input {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+}
+.icon-button,
+.load-more,
+.status__prepend,
+.status__relative-time {
+  color: inherit;
+  opacity: 0.7;
+}
+.icon-button:hover,
+.icon-button:active,
+.icon-button:focus {
+  color: inherit;
+  opacity: 1;
+}
+.load-more:hover {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+}
+
+button.icon-button i.fa-retweet,
+button.icon-button i.fa-retweet:hover,
+button.icon-button.disabled i.fa-retweet,
+button.icon-button.disabled i.fa-retweet:hover,
+.status-direct button.icon-button.disabled i.fa-retweet,
+.status-direct button.icon-button.disabled i.fa-retweet:hover {
+  background-image: url(/sleeping/boost.svg);
+}
+
+.sleeping-background-contrast-is-dark button.icon-button i.fa-retweet,
+.sleeping-background-contrast-is-dark button.icon-button i.fa-retweet:hover,
+.sleeping-background-contrast-is-dark button.icon-button.disabled i.fa-retweet,
+.sleeping-background-contrast-is-dark button.icon-button.disabled i.fa-retweet:hover,
+.sleeping-background-contrast-is-dark .status-direct button.icon-button.disabled i.fa-retweet,
+.sleeping-background-contrast-is-dark .status-direct button.icon-button.disabled i.fa-retweet:hover {
+  background-image: url(/sleeping/boost-dark.svg);
+}
+
+button.icon-button i.fa-retweet {
+  background-size: 22px 684px;
+  background-position: 0px 0px;
+  transition: background-position 0.9s steps(35);
+}
+.no-reduce-motion button.icon-button.active i.fa-retweet {
+  background-size: 22px 684px;
+  background-position: 0px -665px;
+  transition: background-position 0.9s steps(35);
+}
+.status.status-direct {
+  background: transparent;
+  position: relative;
+}
+.status.status-direct:before {
+  content: "";
+  background: var(--sleeping-primary);
+  opacity: 0.2;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+.notification__message {
+  color: var(--sleeping-background-contrast);
+}
+.focusable:focus,
+.detailed-status,
+.detailed-status__action-bar {
+  background: var(--sleeping-background-lighter);
+  color: var(--sleeping-background-lighter-contrast);
+}
+.detailed-status__action-bar {
+  border-top: none;
 }

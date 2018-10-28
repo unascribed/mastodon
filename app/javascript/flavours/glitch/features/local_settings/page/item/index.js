@@ -68,7 +68,7 @@ export default class LocalSettingsPageItem extends React.PureComponent {
         );
       });
       return (
-        <div class='glitch local-settings__page__item radio_buttons'>
+        <div className='glitch local-settings__page__item radio_buttons'>
           <fieldset>
             <legend>{children}</legend>
             {optionElems}

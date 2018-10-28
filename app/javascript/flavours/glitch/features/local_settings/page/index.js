@@ -310,13 +310,15 @@ export default class LocalSettingsPage extends React.PureComponent {
       <div className='glitch local-settings__page sleeping'>
         <h1>Sleeping</h1>
         <section>
-          <h2>Color</h2>
+          <h2>Appearance</h2>
           <label htmlFor="sleeping-primary">Primary color</label>
           <input type="color" id="sleeping-primary"/> <button id="sleeping-reset-primary">Reset</button>
           <label htmlFor="sleeping-accent">Accent color</label>
           <input type="color" id="sleeping-accent"/> <button id="sleeping-reset-accent">Reset</button>
           <label htmlFor="sleeping-link">Link color</label>
           <input type="color" id="sleeping-link"/> <button id="sleeping-reset-link">Reset</button>
+          <label htmlFor="sleeping-brightness">Brightness</label>
+          <input type="range" id="sleeping-brightness" min="-1" max="1" defaultValue="-0.5" step="any"/>
         </section>
       </div>
     ),

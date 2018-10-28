@@ -46,7 +46,7 @@ export default class LocalSettingsNavigation extends React.PureComponent {
           index={1}
           onNavigate={onNavigate}
           icon='pencil'
-          title={intl.formatMessage(messages.compose)}
+          title="Compose box"
         />
         <LocalSettingsNavigationItem
           active={index === 2}
@@ -73,6 +73,7 @@ export default class LocalSettingsNavigation extends React.PureComponent {
           active={index === 5}
           index={5}
           onNavigate={onNavigate}
+          textIcon='zZ'
           title="Sleeping"
           className="sleeping"
         />
