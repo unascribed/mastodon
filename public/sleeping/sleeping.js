@@ -119,34 +119,43 @@ window.sleepingInit = function(convert) {
 		},
 		setColors: function(name, hex) {
 			sleeping.setColor(name, hex);
-			sleeping.setColor(name+"-light", sleeping.lighten(hex, 4));
-			sleeping.setColor(name+"-lighter", sleeping.lighten(hex, 6));
-			sleeping.setColor(name+"-lightest", sleeping.lighten(hex, 12));
+			sleeping.setColor(name+"-light", sleeping.lighten(hex, 10));
+			sleeping.setColor(name+"-lighter", sleeping.lighten(hex, 20));
+			sleeping.setColor(name+"-lightest", sleeping.lighten(hex, 30));
 		},
 		setBrightness: function(t) {
-			var mid = "#607D8B";
+			var whi = "#FFFFFF";
 			var bri = "#ECEFF1";
+			var mid = "#607D8B";
 			var dar = "#1A2327";
-			if (t > 0) {
-				sleeping.setColor("background-dark", sleeping.lerpColor(mid, bri, t+0.08));
-				sleeping.setColor("background", sleeping.lerpColor(mid, bri, t));
-				sleeping.setColor("background-light", sleeping.lerpColor(mid, bri, t-0.08));
-				sleeping.setColor("background-lighter", sleeping.lerpColor(mid, bri, t-0.16));
-				sleeping.setColor("background-lightest", sleeping.lerpColor(mid, bri, t-0.32));
+			var bla = "#000000";
+			function setLerp(base, end, t) {
+				sleeping.setColor("background-dark", sleeping.lerpColor(base, end, t+0.1));
+				sleeping.setColor("background", sleeping.lerpColor(base, end, t));
+				sleeping.setColor("background-light", sleeping.lerpColor(base, end, t-0.1));
+				sleeping.setColor("background-lighter", sleeping.lerpColor(base, end, t-0.2));
+				sleeping.setColor("background-lightest", sleeping.lerpColor(base, end, t-0.3));
+			}
+			if (t > 0.9) {
+				t = (t-0.9)*10;
+				setLerp(bri, whi, t);
+			} else if (t > 0) {
+				setLerp(mid, bri, t);
 			} else {
 				t = -t;
-				sleeping.setColor("background-dark", sleeping.lerpColor(mid, dar, t+0.08));
-				sleeping.setColor("background", sleeping.lerpColor(mid, dar, t));
-				sleeping.setColor("background-light", sleeping.lerpColor(mid, dar, t-0.08));
-				sleeping.setColor("background-lighter", sleeping.lerpColor(mid, dar, t-0.16));
-				sleeping.setColor("background-lightest", sleeping.lerpColor(mid, dar, t-0.32));
+				if (t > 0.9) {
+					t = (t-0.9)*10;
+					setLerp(dar, bla, t);
+				} else {
+					setLerp(mid, dar, t);
+				}
 			}
 		},
 		lighten: function(hex, pct) {
 			var hsl = convert(hex).hsl;
-			hsl.L += pct;
-			if (hsl.L > 100) hsl.L = 100;
-			if (hsl.L < 0) hsl.L = 0;
+			hsl.l += pct;
+			if (hsl.l > 100) hsl.l = 100;
+			if (hsl.l < 0) hsl.l = 0;
 			return convert(hsl).hex;
 		},
 		getLuma: function(hex) {
@@ -154,6 +163,8 @@ window.sleepingInit = function(convert) {
 			return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
 		},
 		lerp: function(a, b, t) {
+			if (t < 0) t = 0;
+			if (t > 1) t = 1;
 			return a + t * (b - a);
 		},
 		lerpColor: function(ahex, bhex, t) {

@@ -5,7 +5,7 @@
   background: var(--sleeping-background-dark);
 }
 #sleeping-brightness {
-  background: linear-gradient(to right, #263238 0%, #607D8B 50%, #ECEFF1 100%);
+  background: linear-gradient(to right, #000000 0%, #263238 10%, #607D8B 50%, #ECEFF1 90%, #FFFFFF 100%);
   background-size: 100% 4px;
   background-repeat: no-repeat;
   background-position: center bottom;
@@ -57,11 +57,12 @@
   display: block;
   background-color: transparent;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
-  background-size: 100% 100px;
-  background-position: center 138px;
+  background-size: cover;
+  background-position: center bottom;
   background-repeat: no-repeat;
   text-align: start;
-  padding-top: 138px;
+  padding: 10px;
+  height: 100%;
 }
 
 .account__header .account__header__display-name,
@@ -201,7 +202,8 @@ body .column-header__notif-cleaning-buttons button.active {
 .onboarding-modal__page-four__columns .column-header,
 .onboarding-modal__paginator,
 .error-modal__footer,
-.column-header > .column-header__back-button {
+.column-header > .column-header__back-button,
+.tabs-bar {
   background-color: var(--sleeping-primary);
   color: var(--sleeping-primary-contrast);
 }
@@ -271,8 +273,18 @@ body .column-header__notif-cleaning-buttons button.active {
 .status__display-name,
 .detailed-status__display-name,
 .detailed-status__display-name strong,
-.detailed-status__display-name {
+.detailed-status__display-name,
+.muted .status__content p,
+.detailed-status__meta {
   color: inherit;
+}
+
+.detailed-status__meta {
+  opacity: 0.5;
+}
+
+.muted .status__content a {
+  color: var(--sleeping-link);
 }
 
 .dropdown-menu__item a {
@@ -328,14 +340,10 @@ body .column-header__notif-cleaning-buttons button.active {
 
 .status.collapsed > .status__content {
   margin: 10px 0;
+  opacity: 0.4;
 }
 .status.collapsed > .status__content:after {
-  content: "";
-  position: absolute;
-  top: 0; bottom: 0;
-  left: 0; right: 0;
-  pointer-events: none;
-  filter: blur(2px);
+  display: none;
 }
 
 .status__visibility-icon.fa-globe,
@@ -630,6 +638,10 @@ button[aria-label=Favourite].active:active > i {
   background: var(--sleeping-background-lighter);
   color: var(--sleeping-background-lighter-contrast);
 }
+.column-link:hover {
+  background: var(--sleeping-background-lightest);
+  color: var(--sleeping-background-lightest-contrast);
+}
 .status__display-name strong, .account__display-name strong {
   color: var(--sleeping-background-contrast);
 }
@@ -694,6 +706,7 @@ button.icon-button i.fa-retweet {
 .status.status-direct:before {
   content: "";
   background: var(--sleeping-primary);
+  z-index: -1;
   opacity: 0.2;
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -703,10 +716,109 @@ button.icon-button i.fa-retweet {
 }
 .focusable:focus,
 .detailed-status,
-.detailed-status__action-bar {
+.detailed-status__action-bar,
+.focusable:focus .detailed-status,
+.focusable:focus .detailed-status__action-bar {
   background: var(--sleeping-background-lighter);
   color: var(--sleeping-background-lighter-contrast);
 }
 .detailed-status__action-bar {
   border-top: none;
+}
+
+.account__header {
+  background-size: auto 238px;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+.account__header > div {
+  /* i'm old fashioned, shoot me */
+  display: block;
+  background-color: var(--sleeping-background);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
+  background-size: 100% 100px;
+  background-position: center 138px;
+  background-repeat: no-repeat;
+  text-align: start;
+  padding-top: 138px;
+}
+
+.account__header .account__header__display-name,
+.account__header .account__header__username, {
+  width: auto;
+  max-width: calc(100% - 110px);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+
+.account--follows-info,
+.account--muted-info,
+.account--blocked-info{
+  color: #FFF;
+}
+
+.account__header .account__header__display-name {
+  display: table-cell;
+  height: 75px;
+  vertical-align: bottom;
+  font-size: 24px;
+  font-weight: 300;
+  color: #FFF;
+}
+
+.account__header .account__header__username {
+  color: #FFF;
+  opacity: 0.7;
+}
+
+.account__header .account__header__content {
+  clear: both;
+  text-align: center;
+  padding-top: 10px;
+  color: var(--sleeping-background-contrast);
+}
+
+.contents .drawer--account {
+  padding: 10px;
+}
+
+.account__action-bar__tab.active {
+  border-bottom-color: var(--sleeping-accent);
+}
+
+.account__action-bar__tab > span,
+.account__action-bar__tab strong {
+  color: var(--sleeping-background-contrast);
+}
+
+.composer--options .icon-button, .composer--options .text-icon-button {
+  color: var(--sleeping-primary-contrast);
+}
+.composer--options > hr {
+  border-left-color: var(--sleeping-primary-contrast);
+}
+
+.drawer--search input:focus {
+  background: var(--sleeping-background-lightest);
+  color: var(--sleeping-background-lightest-contrast);
+}
+
+.drawer--search > .icon {
+  color: var(--sleeping-background-lighter-contrast);
+}
+.status__content .status__content__spoiler-link {
+  background: var(--sleeping-primary);
+  color: var(--sleeping-primary-contrast);
+}
+.status__content .status__content__spoiler-link:hover {
+  background: var(--sleeping-primary-light);
+  color: var(--sleeping-primary-light-contrast);
+}
+
+.button:active, .button:focus, .button:hover {
+  background: var(--sleeping-accent-light);
+  color: var(--sleeping-accent-light-contrast);
 }
