@@ -147,6 +147,7 @@ class GettingStarted extends ImmutablePureComponent {
               <li><a href='https://docs.joinmastodon.org' target='_blank'><FormattedMessage id='getting_started.documentation' defaultMessage='Documentation' /></a> · </li>
               <li><a href='/auth/sign_out' data-method='delete'><FormattedMessage id='navigation_bar.logout' defaultMessage='Logout' /></a></li>
             </ul>
+          </div>
 
           <p>
             <FormattedMessage
