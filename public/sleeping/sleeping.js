@@ -8,6 +8,16 @@ window.sleepingInit = function(convert) {
 				var dummy = document.createElement('div');
 				dummy.innerHTML = html;
 				if (dummy.childNodes.length == 0) return html;
+				if (localStorage["sleeping-verbose-handles"] === "true") {
+					var allMentions = dummy.querySelectorAll('.mention');
+					for (var i = 0; i < allMentions.length; i++) {
+						var mention = allMentions[i];
+						var split = mention.pathname.split('/');
+						var last = split[split.length-1];
+						if (last.indexOf('@') == 0) last = last.substring(1);
+						mention.querySelector('span').textContent = last+'@'+mention.host;
+					}
+				}
 				var allEmojos = dummy.querySelectorAll('.emojione')
 				for (var i = 0; i < allEmojos.length; i++) {
 					var emojo = allEmojos[i];
@@ -54,15 +64,18 @@ window.sleepingInit = function(convert) {
 		settingsHook: function(idx) {
 			if (idx == 5) {
 				requestAnimationFrame(function() {
+					document.querySelector('.local-settings__page.sleeping').innerHTML = '<h1>Sleeping</h1><section><h2>Appearance</h2><label for="sleeping-primary">Primary color</label><input type="color" id="sleeping-primary"> <button id="sleeping-reset-primary">Reset</button><label for="sleeping-accent">Accent color</label><input type="color" id="sleeping-accent"> <button id="sleeping-reset-accent">Reset</button><label for="sleeping-link">Link color</label><input type="color" id="sleeping-link"> <button id="sleeping-reset-link">Reset</button><label for="sleeping-brightness">Brightness</label><input type="range" id="sleeping-brightness" min="-1" max="1" step="0.005" value="-0.5"></section><section><h2>Misc</h2><label for="sleeping-verbose-handles"><input type="checkbox" id="sleeping-verbose-handles"/> Verbose handles (experimental) (reload to apply changes)</label></section>';
 					var primary = document.getElementById("sleeping-primary");
 					var accent = document.getElementById("sleeping-accent");
 					var link = document.getElementById("sleeping-link");
 					var brightness = document.getElementById("sleeping-brightness");
+					var verbose = document.getElementById("sleeping-verbose-handles");
 					brightness.step = 0.005;
 					primary.value = getComputedStyle(document.body).getPropertyValue("--sleeping-primary").trim();
 					accent.value = getComputedStyle(document.body).getPropertyValue("--sleeping-accent").trim();
 					link.value = getComputedStyle(document.body).getPropertyValue("--sleeping-link").trim();
 					brightness.value = Number(localStorage["sleeping-brightness"] || "-0.5");
+					verbose.checked = localStorage["sleeping-verbose-handles"] === "true";
 					primary.addEventListener('input', function() {
 						sleeping.setColors("primary", primary.value);
 						localStorage["sleeping-primary-color"] = primary.value;
@@ -78,6 +91,9 @@ window.sleepingInit = function(convert) {
 					brightness.addEventListener('input', function() {
 						sleeping.setBrightness(brightness.valueAsNumber);
 						localStorage["sleeping-brightness"] = brightness.value;
+					});
+					verbose.addEventListener('change', function() {
+						localStorage["sleeping-verbose-handles"] = verbose.checked;
 					});
 					
 					document.getElementById("sleeping-reset-primary").addEventListener('click', function() {
@@ -102,7 +118,7 @@ window.sleepingInit = function(convert) {
 			var contrast = sleeping.getLuma(hex) > 128 ? "#000" : "#FFF";
 			document.body.style.setProperty("--sleeping-"+name, hex);
 			document.body.style.setProperty("--sleeping-"+name+"-contrast", contrast);
-			if (name == "primary") {
+			if (name == "primary-lighter") {
 				var hack = document.getElementById("sleeping-css-hack");
 				if (hack == null) {
 					hack = document.createElement("style");
@@ -110,12 +126,11 @@ window.sleepingInit = function(convert) {
 					document.head.appendChild(hack);
 				}
 				hack.appendChild(document.createTextNode('.ui { background-image: url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="'+convert(hex).cssrgb+'"/></svg>\') !important; }'));
-			} else if (name == "background") {
-				if (contrast == "#000") {
-					document.body.classList.add("sleeping-background-contrast-is-dark");
-				} else {
-					document.body.classList.remove("sleeping-background-contrast-is-dark");
-				}
+			}
+			if (contrast == "#000") {
+				document.body.classList.add("sleeping-"+name+"-contrast-is-dark");
+			} else {
+				document.body.classList.remove("sleeping-"+name+"-contrast-is-dark");
 			}
 		},
 		setColors: function(name, hex) {

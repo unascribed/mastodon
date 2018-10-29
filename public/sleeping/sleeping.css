@@ -1,5 +1,5 @@
 body:after {
-  content: "S146";
+  content: "z176";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -676,9 +676,12 @@ button[aria-label=Favourite].active:active > i {
   color: inherit;
   opacity: 0.7;
 }
-.icon-button:hover,
-.icon-button:active,
-.icon-button:focus {
+.icon-button.disabled {
+  opacity: 0.35;
+}
+.icon-button:hover:not(.disabled),
+.icon-button:active:not(.disabled),
+.icon-button:focus:not(.disabled) {
   color: inherit;
   opacity: 1;
 }
@@ -690,19 +693,57 @@ button[aria-label=Favourite].active:active > i {
 button.icon-button i.fa-retweet,
 button.icon-button i.fa-retweet:hover,
 button.icon-button.disabled i.fa-retweet,
-button.icon-button.disabled i.fa-retweet:hover,
-.status-direct button.icon-button.disabled i.fa-retweet,
-.status-direct button.icon-button.disabled i.fa-retweet:hover {
+button.icon-button.disabled i.fa-retweet:hover {
   background-image: url(/sleeping/boost.svg);
 }
 
 .sleeping-background-contrast-is-dark button.icon-button i.fa-retweet,
 .sleeping-background-contrast-is-dark button.icon-button i.fa-retweet:hover,
 .sleeping-background-contrast-is-dark button.icon-button.disabled i.fa-retweet,
-.sleeping-background-contrast-is-dark button.icon-button.disabled i.fa-retweet:hover,
+.sleeping-background-contrast-is-dark button.icon-button.disabled i.fa-retweet:hover {
+  background-image: url(/sleeping/boost-dark.svg);
+}
+
+.status-direct button.icon-button.disabled i.fa-retweet,
+.status-direct button.icon-button.disabled i.fa-retweet:hover {
+  background: url(/sleeping/envelope.svg);
+  background-size: auto 19px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .sleeping-background-contrast-is-dark .status-direct button.icon-button.disabled i.fa-retweet,
 .sleeping-background-contrast-is-dark .status-direct button.icon-button.disabled i.fa-retweet:hover {
-  background-image: url(/sleeping/boost-dark.svg);
+  background: url(/sleeping/envelope-dark.svg);
+  background-size: auto 19px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.status-private button.icon-button.disabled i.fa-retweet,
+.status-private button.icon-button.disabled i.fa-retweet:hover {
+  background: url(/sleeping/lock.svg);
+  background-size: auto 17px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.sleeping-background-contrast-is-dark .status-private button.icon-button.disabled i.fa-retweet,
+.sleeping-background-contrast-is-dark .status-private button.icon-button.disabled i.fa-retweet:hover {
+  background: url(/sleeping/lock-dark.svg);
+  background-size: auto 17px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.status-private button.icon-button i.fa-retweet,
+.status-private button.icon-button i.fa-retweet:hover {
+  background-image: url(/sleeping/boost-locked.svg);
+}
+
+.sleeping-background-contrast-is-dark .status-private button.icon-button i.fa-retweet,
+.sleeping-background-contrast-is-dark .status-private button.icon-button i.fa-retweet:hover {
+  background-image: url(/sleeping/boost-locked-dark.svg);
 }
 
 button.icon-button i.fa-retweet {
@@ -845,9 +886,84 @@ button.icon-button i.fa-retweet {
 
 .composer--textarea > label .textarea,
 .composer--spoiler input {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-lighter);
+  color: var(--sleeping-background-lighter-contrast);
 }
 .composer--publisher > .count {
+  color: var(--sleeping-background-lighter-contrast);
+}
+
+.boost-modal, .doodle-modal, .favourite-modal, .confirmation-modal, .report-modal, .actions-modal, .mute-modal {
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
+}
+.status.light .status__content a {
+  color: var(--sleeping-link);
+}
+.status.light .status__content {
+  color: inherit;
+}
+.emoji-button img {
+  opacity: 0;
+}
+.emoji-button {
+  background: url('/sleeping/emoji.svg');
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+.emoji-button:hover {
+  opacity: 1;
+}
+.sleeping-background-lighter-contrast-is-dark .emoji-button {
+  background: url('/sleeping/emoji-dark.svg');
+}
+.emoji-mart-bar:first-child {
+  background: var(--sleeping-primary);
+}
+.emoji-mart-anchors {
+  color: var(--sleeping-primary-contrast);
+}
+.emoji-mart-anchor {
+  opacity: 0.5;
+}
+.emoji-mart-anchor.emoji-mart-anchor-selected {
+  color: var(--sleeping-primary-contrast);
+  opacity: 1;
+}
+.emoji-mart-anchor-bar {
+  background: var(--sleeping-accent);
+}
+.emoji-mart-search, .emoji-picker-dropdown__menu, .emoji-mart-scroll {
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
+}
+.emoji-mart-category-label span {
+  background: none;
+}
+.emoji-mart-search input {
+  background: var(--sleeping-background-light);
   color: var(--sleeping-background-light-contrast);
+  border: none;
+}
+
+.account__disclaimer {
+  color: #FFF;
+  background: #FF5722;
+  font-weight: bold;
+}
+.account__disclaimer > span {
+  display: none;
+}
+.account__disclaimer:before {
+  content: "This user is from a remote instance, and sleeping.town may not have all of their profile information or toots, and the information that is available may be outdated.";
+}
+.account__disclaimer > a > span:after {
+  content: " on remote instance";
+}
+.composer--reply {
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
+}
+.composer--reply > .content {
+  color: inherit;
 }
