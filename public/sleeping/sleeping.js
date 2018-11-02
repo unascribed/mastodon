@@ -36,46 +36,76 @@ window.sleepingInit = function(convert) {
 					wrapper.classList.add('emojione');
 					if (emojo.parentNode) emojo.parentNode.replaceChild(wrapper, emojo);
 				}
-				function recurse(node) {
-					if (node.classList && node.classList.contains('mention')) return true;
-					if (node.classList && node.classList.contains('emojione')) return true;
-					if (node.childNodes.length == 0) {
-						if (node.textContent.trim().replace(/\u200B/g, '').length != 0) {
-							return false;
-						}
+			function recurse(node) {
+				if (node.classList && node.classList.contains('mention')) return true;
+				if (node.classList && node.classList.contains('emojione')) return true;
+				if (node.childNodes.length == 0) {
+					if (node.textContent.trim().replace(/\u200B/g, '').length != 0) {
+						return false;
 					}
-					for (var i = 0; i < node.childNodes.length; i++) {
-						if (!recurse(node.childNodes[i])) return false;
-					}
-					return true;
 				}
-				var everythingIsEmojos = recurse(dummy);
-				if (everythingIsEmojos) {
-					dummy.childNodes[0].classList.add('st_all_emojis');
+				for (var i = 0; i < node.childNodes.length; i++) {
+					if (!recurse(node.childNodes[i])) return false;
 				}
-				return dummy.innerHTML;
-			} catch (e) {
-				// rather than making the app die horrifically, just return the input unchanged
-				console.error(e);
-				console.error("An internal error occurred while attempting to process custom emojis.");
-				return html;
+				return true;
 			}
-		},
-		settingsHook: function(idx) {
-			if (idx == 5) {
-				requestAnimationFrame(function() {
-					document.querySelector('.local-settings__page.sleeping').innerHTML = '<h1>Sleeping</h1><section><h2>Appearance</h2><label for="sleeping-primary">Primary color</label><input type="color" id="sleeping-primary"> <button id="sleeping-reset-primary">Reset</button><label for="sleeping-accent">Accent color</label><input type="color" id="sleeping-accent"> <button id="sleeping-reset-accent">Reset</button><label for="sleeping-link">Link color</label><input type="color" id="sleeping-link"> <button id="sleeping-reset-link">Reset</button><label for="sleeping-brightness">Brightness</label><input type="range" id="sleeping-brightness" min="-1" max="1" step="0.005" value="-0.5"></section><section><h2>Misc</h2><label for="sleeping-verbose-handles"><input type="checkbox" id="sleeping-verbose-handles"/> Verbose handles (experimental) (reload to apply changes)</label></section>';
+			var everythingIsEmojos = recurse(dummy);
+			if (everythingIsEmojos) {
+				dummy.childNodes[0].classList.add('st_all_emojis');
+			}
+			return dummy.innerHTML;
+		} catch (e) {
+			// rather than making the app die horrifically, just return the input unchanged
+			console.error(e);
+			console.error("An internal error occurred while attempting to process custom emojis.");
+			return html;
+		}
+	},
+	settingsHook: function(idx) {
+		if (idx == 5) {
+			requestAnimationFrame(function() {
+				document.querySelector('.local-settings__page.sleeping').innerHTML = `
+<h1>Sleeping</h1>
+<section>
+<h2>Appearance</h2>
+	<label for="sleeping-primary">Primary color</label>
+	<input type="color" id="sleeping-primary"> <button id="sleeping-reset-primary">Reset</button>
+	<label for="sleeping-accent">Accent color</label>
+	<input type="color" id="sleeping-accent"> <button id="sleeping-reset-accent">Reset</button>
+	<label for="sleeping-link">Link color</label><input type="color" id="sleeping-link"> <button id="sleeping-reset-link">Reset</button>
+	<label for="sleeping-brightness">Brightness</label>
+	<input type="range" id="sleeping-brightness" min="-1" max="1" step="0.005" value="-0.5">
+	<label for="sleeping-text-contrast">Text contrast</label>
+	<input type="range" id="sleeping-text-contrast" min="0" max="1" step="0.005" value="1"> <button id="sleeping-reset-text-contrast">Reset</button>
+	<label for="sleeping-contrast">Contrast</label>
+	<input type="range" id="sleeping-contrast" min="0" max="4" step="0.005" value="1"> <button id="sleeping-reset-contrast">Reset</button>
+	<label for="sleeping-invert-compose">
+		<input type="checkbox" id="sleeping-invert-compose"/> Stark compose box
+	</label>
+</section>
+<section>
+	<h2>Misc</h2>
+	<label for="sleeping-verbose-handles">
+		<input type="checkbox" id="sleeping-verbose-handles"/> Verbose handles (experimental) (reload to apply changes)
+	</label>
+</section>`;
+					// TODO this is a mess
 					var primary = document.getElementById("sleeping-primary");
 					var accent = document.getElementById("sleeping-accent");
 					var link = document.getElementById("sleeping-link");
 					var brightness = document.getElementById("sleeping-brightness");
+					var textContrast = document.getElementById("sleeping-text-contrast");
+					var contrast = document.getElementById("sleeping-contrast");
 					var verbose = document.getElementById("sleeping-verbose-handles");
-					brightness.step = 0.005;
+					var invertCompose = document.getElementById("sleeping-invert-compose");
 					primary.value = getComputedStyle(document.body).getPropertyValue("--sleeping-primary").trim();
 					accent.value = getComputedStyle(document.body).getPropertyValue("--sleeping-accent").trim();
 					link.value = getComputedStyle(document.body).getPropertyValue("--sleeping-link").trim();
 					brightness.value = Number(localStorage["sleeping-brightness"] || "-0.5");
+					textContrast.value = Number(localStorage["sleeping-text-contrast"] || "1");
+					contrast.value = Number(localStorage["sleeping-contrast"] || "1");
 					verbose.checked = localStorage["sleeping-verbose-handles"] === "true";
+					invertCompose.checked = localStorage["sleeping-invert-compose"] === "true";
 					primary.addEventListener('input', function() {
 						sleeping.setColors("primary", primary.value);
 						localStorage["sleeping-primary-color"] = primary.value;
@@ -89,11 +119,31 @@ window.sleepingInit = function(convert) {
 						localStorage["sleeping-link-color"] = link.value;
 					});
 					brightness.addEventListener('input', function() {
-						sleeping.setBrightness(brightness.valueAsNumber);
+						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
 						localStorage["sleeping-brightness"] = brightness.value;
+					});
+					textContrast.addEventListener('input', function() {
+						sleeping.setColors("primary", primary.value);
+						sleeping.setColors("accent", accent.value);
+						sleeping.setColors("link", link.value);
+						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
+						document.body.style.setProperty("--sleeping-text-contrast", textContrast.value);
+						localStorage["sleeping-text-contrast"] = textContrast.value;
+					});
+					contrast.addEventListener('input', function() {
+						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
+						localStorage["sleeping-contrast"] = contrast.value;
 					});
 					verbose.addEventListener('change', function() {
 						localStorage["sleeping-verbose-handles"] = verbose.checked;
+					});
+					invertCompose.addEventListener('change', function() {
+						if (invertCompose.checked) {
+							document.body.classList.add("sleeping-invert-compose");
+						} else {
+							document.body.classList.remove("sleeping-invert-compose");
+						}
+						localStorage["sleeping-invert-compose"] = invertCompose.checked;
 					});
 					
 					document.getElementById("sleeping-reset-primary").addEventListener('click', function() {
@@ -111,13 +161,29 @@ window.sleepingInit = function(convert) {
 						link.value = defaultLink;
 						localStorage["sleeping-link-color"] = defaultLink;
 					});
+					document.getElementById("sleeping-reset-text-contrast").addEventListener('click', function() {
+						textContrast.value = 1;
+						sleeping.setColors("primary", primary.value);
+						sleeping.setColors("accent", accent.value);
+						sleeping.setColors("link", link.value);
+						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
+						document.body.style.setProperty("--sleeping-text-contrast", textContrast.value);
+						localStorage["sleeping-text-contrast"] = textContrast.value;
+					});
+					document.getElementById("sleeping-reset-contrast").addEventListener('click', function() {
+						contrast.value = 1;
+						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
+						localStorage["sleeping-contrast"] = contrast.value;
+					});
 				});
 			}
 		},
 		setColor: function(name, hex) {
-			var contrast = sleeping.getLuma(hex) > 128 ? "#000" : "#FFF";
+			var textContrast = Number(localStorage["sleeping-text-contrast"] || "1");
+			var luma = sleeping.getLuma(hex);
+			var contrastColor = "rgba("+(luma > 128 ? "0, 0, 0" : "255, 255, 255")+", "+textContrast+")";
 			document.body.style.setProperty("--sleeping-"+name, hex);
-			document.body.style.setProperty("--sleeping-"+name+"-contrast", contrast);
+			document.body.style.setProperty("--sleeping-"+name+"-contrast", contrastColor);
 			if (name == "primary-lighter") {
 				var hack = document.getElementById("sleeping-css-hack");
 				if (hack == null) {
@@ -127,7 +193,7 @@ window.sleepingInit = function(convert) {
 				}
 				hack.appendChild(document.createTextNode('.ui { background-image: url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="'+convert(hex).cssrgb+'"/></svg>\') !important; }'));
 			}
-			if (contrast == "#000") {
+			if (luma > 128) {
 				document.body.classList.add("sleeping-"+name+"-contrast-is-dark");
 			} else {
 				document.body.classList.remove("sleeping-"+name+"-contrast-is-dark");
@@ -139,7 +205,7 @@ window.sleepingInit = function(convert) {
 			sleeping.setColor(name+"-lighter", sleeping.lighten(hex, 20));
 			sleeping.setColor(name+"-lightest", sleeping.lighten(hex, 30));
 		},
-		setBrightness: function(t) {
+		setBrightness: function(t, c) {
 			var whi = "#FFFFFF";
 			var bri = "#ECEFF1";
 			var mid = "#607D8B";
@@ -157,16 +223,16 @@ window.sleepingInit = function(convert) {
 			}
 			if (t > 0.9) {
 				t = (t-0.9)*10;
-				setLerp(bri, whi, t, -1);
+				setLerp(bri, whi, t, -c);
 			} else if (t > 0) {
-				setLerp(mid, bri, t, -1);
+				setLerp(mid, bri, t, -c);
 			} else {
 				t = -t;
 				if (t > 0.9) {
 					t = (t-0.9)*10;
-					setLerp(dar, bla, t, 1);
+					setLerp(dar, bla, t, c);
 				} else {
-					setLerp(mid, dar, t, 1);
+					setLerp(mid, dar, t, c);
 				}
 			}
 		},
@@ -200,8 +266,17 @@ window.sleepingInit = function(convert) {
 	var accent = localStorage["sleeping-accent-color"] || defaultAccent;
 	var link = localStorage["sleeping-link-color"] || defaultLink;
 	var brightness = Number(localStorage["sleeping-brightness"] || "-0.5");
+	var textContrast = Number(localStorage["sleeping-text-contrast"] || "1");
+	var contrast = Number(localStorage["sleeping-contrast"] || "1");
+	var invertCompose = localStorage["sleeping-invert-compose"] === "true";
 	sleeping.setColors("primary", primary);
 	sleeping.setColors("accent", accent);
 	sleeping.setColors("link", link);
-	sleeping.setBrightness(brightness);
+	sleeping.setBrightness(brightness, contrast);
+	document.body.style.setProperty("--sleeping-text-contrast", textContrast);
+	if (invertCompose) {
+		document.body.classList.add("sleeping-invert-compose");
+	} else {
+		document.body.classList.remove("sleeping-invert-compose");
+	}
 }
