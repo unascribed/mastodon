@@ -1,5 +1,5 @@
 body:after {
-  content: "z186";
+  content: "z187";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -1038,4 +1038,8 @@ button.icon-button i.fa-retweet {
 .focusable:focus {
   background: var(--sleeping-background-light);
   color: var(--sleeping-background-light-contrast);
+}
+.getting-started__footer p,
+.getting-started__footer p a {
+  color: inherit;
 }
