@@ -1,4 +1,5 @@
 {
+  "account.add_or_remove_from_list": "Add or Remove from lists",
   "account.badges.bot": "Бот",
   "account.block": "Заблокувати @{name}",
   "account.block_domain": "Заглушити {domain}",
@@ -95,7 +96,6 @@
   "confirmations.reply.message": "Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?",
   "confirmations.unfollow.confirm": "Відписатися",
   "confirmations.unfollow.message": "Ви впевнені, що хочете відписатися від {name}?",
-  "conversation.last_message": "Last message:",
   "embed.instructions": "Інтегруйте цей статус на вашому вебсайті, скопіювавши код нижче.",
   "embed.preview": "Ось як він виглядатиме:",
   "emoji_button.activity": "Заняття",
@@ -315,6 +315,8 @@
   "status.show_more_all": "Show more for all",
   "status.unmute_conversation": "Зняти глушення з діалогу",
   "status.unpin": "Unpin from profile",
+  "suggestions.dismiss": "Dismiss suggestion",
+  "suggestions.header": "You might be interested in…",
   "tabs_bar.federated_timeline": "Глобальна",
   "tabs_bar.home": "Головна",
   "tabs_bar.local_timeline": "Локальна",

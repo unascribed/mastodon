@@ -1,4 +1,5 @@
 {
+  "account.add_or_remove_from_list": "Add or Remove from lists",
   "account.badges.bot": "Bot",
   "account.block": "Engelle @{name}",
   "account.block_domain": "Hide everything from {domain}",
@@ -95,7 +96,6 @@
   "confirmations.reply.message": "Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?",
   "confirmations.unfollow.confirm": "Unfollow",
   "confirmations.unfollow.message": "Are you sure you want to unfollow {name}?",
-  "conversation.last_message": "Last message:",
   "embed.instructions": "Embed this status on your website by copying the code below.",
   "embed.preview": "Here is what it will look like:",
   "emoji_button.activity": "Aktivite",
@@ -315,6 +315,8 @@
   "status.show_more_all": "Show more for all",
   "status.unmute_conversation": "Unmute conversation",
   "status.unpin": "Unpin from profile",
+  "suggestions.dismiss": "Dismiss suggestion",
+  "suggestions.header": "You might be interested in…",
   "tabs_bar.federated_timeline": "Federe",
   "tabs_bar.home": "Ana sayfa",
   "tabs_bar.local_timeline": "Yerel",

@@ -578,6 +578,9 @@
         "id": "account.unendorse"
       },
       {
+        "id": "account.add_or_remove_from_list"
+      },
+      {
         "defaultMessage": "Information below may reflect the user's profile incompletely.",
         "id": "account.disclaimer_full"
       },
@@ -873,6 +876,14 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Dismiss suggestion",
+        "id": "suggestions.dismiss"
+      },
+      {
+        "defaultMessage": "You might be interested in…",
+        "id": "suggestions.header"
+      },
+      {
         "defaultMessage": "People",
         "id": "search_results.accounts"
       },
@@ -1046,15 +1057,6 @@
       }
     ],
     "path": "app/javascript/mastodon/features/compose/index.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "Last message:",
-        "id": "conversation.last_message"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/direct_timeline/components/conversation.json"
   },
   {
     "descriptors": [
@@ -1444,6 +1446,19 @@
       }
     ],
     "path": "app/javascript/mastodon/features/keyboard_shortcuts/index.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Remove from list",
+        "id": "lists.account.remove"
+      },
+      {
+        "defaultMessage": "Add to list",
+        "id": "lists.account.add"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/list_adder/components/list.json"
   },
   {
     "descriptors": [

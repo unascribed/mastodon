@@ -15,7 +15,6 @@ import settings from './settings';
 import local_settings from './local_settings';
 import push_notifications from './push_notifications';
 import status_lists from './status_lists';
-import cards from './cards';
 import mutes from './mutes';
 import reports from './reports';
 import contexts from './contexts';
@@ -27,6 +26,7 @@ import height_cache from './height_cache';
 import custom_emojis from './custom_emojis';
 import lists from './lists';
 import listEditor from './list_editor';
+import listAdder from './list_adder';
 import filters from './filters';
 import pinnedAccountsEditor from './pinned_accounts_editor';
 
@@ -47,7 +47,6 @@ const reducers = {
   settings,
   local_settings,
   push_notifications,
-  cards,
   mutes,
   reports,
   contexts,
@@ -59,6 +58,7 @@ const reducers = {
   custom_emojis,
   lists,
   listEditor,
+  listAdder,
   filters,
   pinnedAccountsEditor,
 };

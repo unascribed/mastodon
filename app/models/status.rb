@@ -84,6 +84,17 @@ class Status < ApplicationRecord
   scope :including_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced: true }) }
   scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { account.excluded_from_timeline_domains.blank? ? left_outer_joins(:account) : left_outer_joins(:account).where('accounts.domain IS NULL OR accounts.domain NOT IN (?)', account.excluded_from_timeline_domains) }
+  scope :tagged_with_all, ->(tags) {
+    Array(tags).map(&:id).map(&:to_i).reduce(self) do |result, id|
+      result.joins("INNER JOIN statuses_tags t#{id} ON t#{id}.status_id = statuses.id AND t#{id}.tag_id = #{id}")
+    end
+  }
+  scope :tagged_with_none, ->(tags) {
+    Array(tags).map(&:id).map(&:to_i).reduce(self) do |result, id|
+      result.joins("LEFT OUTER JOIN statuses_tags t#{id} ON t#{id}.status_id = statuses.id AND t#{id}.tag_id = #{id}")
+            .where("t#{id}.tag_id IS NULL")
+    end
+  }
 
   scope :not_local_only, -> { where(local_only: [false, nil]) }
 
@@ -93,6 +104,7 @@ class Status < ApplicationRecord
                    :conversation,
                    :status_stat,
                    :tags,
+                   :preview_cards,
                    :stream_entry,
                    active_mentions: :account,
                    reblog: [
@@ -100,6 +112,7 @@ class Status < ApplicationRecord
                      :application,
                      :stream_entry,
                      :tags,
+                     :preview_cards,
                      :media_attachments,
                      :conversation,
                      :status_stat,
@@ -165,6 +178,10 @@ class Status < ApplicationRecord
 
   def target
     reblog
+  end
+
+  def preview_card
+    preview_cards.first
   end
 
   def title
@@ -240,10 +257,6 @@ class Status < ApplicationRecord
   before_validation :set_local
 
   class << self
-    def cache_ids
-      left_outer_joins(:status_stat).select('statuses.id, greatest(statuses.updated_at, status_stats.updated_at) AS updated_at')
-    end
-
     def selectable_visibilities
       visibilities.keys - %w(direct limited)
     end
