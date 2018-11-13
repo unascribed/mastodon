@@ -9,7 +9,7 @@ window.sleepingInit = function(convert) {
 				dummy.innerHTML = html;
 				if (dummy.childNodes.length == 0) return html;
 				if (localStorage["sleeping-verbose-handles"] === "true") {
-					var allMentions = dummy.querySelectorAll('.mention');
+					var allMentions = dummy.querySelectorAll('.mention:not(.hashtag)');
 					for (var i = 0; i < allMentions.length; i++) {
 						var mention = allMentions[i];
 						var split = mention.pathname.split('/');

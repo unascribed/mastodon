@@ -1,5 +1,5 @@
 body:after {
-  content: "z182";
+  content: "z186";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -960,4 +960,82 @@ button.icon-button i.fa-retweet {
 }
 .composer--reply > .content {
   color: inherit;
+}
+
+.drawer--results,
+.drawer--results > section h5 span {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+}
+.drawer--results > header {
+  background: var(--sleeping-background-lighter);
+  color: var(--sleeping-background-lighter-contrast);
+}
+.drawer--results > section {
+  background: transparent;
+}
+.account,
+.trends__item {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+.sleeping-background-lighter-contrast-is-dark .account,
+.sleeping-background-lighter-contrast-is-dark .trends__item{
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+}
+.trends__item__name a,
+.account__header__fields a {
+  color: var(--sleeping-link);
+}
+
+.column-header.active .column-header__icon,
+.icon-button.active,
+.confirmation-modal__action-bar .confirmation-modal__cancel-button, .confirmation-modal__action-bar .mute-modal__cancel-button, .mute-modal__action-bar .confirmation-modal__cancel-button, .mute-modal__action-bar .mute-modal__cancel-button {
+  color: var(--sleeping-accent);
+}
+
+.confirmation-modal__action-bar .confirmation-modal__cancel-button:hover, .confirmation-modal__action-bar .confirmation-modal__cancel-button:focus, .confirmation-modal__action-bar .confirmation-modal__cancel-button:active, .confirmation-modal__action-bar .mute-modal__cancel-button:hover, .confirmation-modal__action-bar .mute-modal__cancel-button:focus, .confirmation-modal__action-bar .mute-modal__cancel-button:active, .mute-modal__action-bar .confirmation-modal__cancel-button:hover, .mute-modal__action-bar .confirmation-modal__cancel-button:focus, .mute-modal__action-bar .confirmation-modal__cancel-button:active, .mute-modal__action-bar .mute-modal__cancel-button:hover, .mute-modal__action-bar .mute-modal__cancel-button:focus, .mute-modal__action-bar .mute-modal__cancel-button:active {
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
+}
+
+.trends__item__sparkline path {
+  stroke: var(--sleeping-accent) !important;
+}
+.trends__item__current {
+  color: inherit;
+}
+.account--action-button {
+  color: #FFF !important;
+}
+
+.account__header .account__header__fields dt {
+  background: var(--sleeping-background-lighter);
+  color: var(--sleeping-background-lighter-contrast);
+}
+
+.account__header .account__header__fields dd {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+}
+
+.account__header .account__header__fields dl {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
+  border: none;
+}
+
+.account__header .account__header__fields dd.verified {
+  background: var(--sleeping-accent-lighter);
+  color: var(--sleeping-accent-lighter-contrast);
+  border: none;
+}
+
+.account__header__fields .verified__mark,
+.account__header__fields .verified a {
+  color: var(--sleeping-accent-lighter-contrast);
+}
+
+.focusable:focus {
+  background: var(--sleeping-background-light);
+  color: var(--sleeping-background-light-contrast);
 }
