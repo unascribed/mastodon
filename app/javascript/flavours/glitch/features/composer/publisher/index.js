@@ -46,7 +46,7 @@ export default function ComposerPublisher ({
   //  The result.
   return (
     <div className={computedClass}>
-      <span className='count'>{diff}</span>
+      <span className='count'>{countText === '∞' ? '∞' : diff}</span>
       {sideArm && sideArm !== 'none' ? (
         <Button
           className='side_arm'

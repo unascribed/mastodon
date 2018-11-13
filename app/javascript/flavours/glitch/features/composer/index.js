@@ -493,7 +493,7 @@ class Composer extends React.Component {
           spoiler={spoilersAlwaysOn ? (spoilerText && spoilerText.length > 0) : spoiler}
         />
         <ComposerPublisher
-          countText={`${spoilerText}${countableText(text)}${advancedOptions && advancedOptions.get('do_not_federate') ? ' 👁️' : ''}`}
+          countText={spoilerText ? '∞' : `${spoilerText}${countableText(text)}${advancedOptions && advancedOptions.get('do_not_federate') ? ' 👁️' : ''}`}
           disabled={disabledButton}
           intl={intl}
           onSecondarySubmit={handleSecondarySubmit}
