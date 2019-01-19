@@ -34,12 +34,14 @@ module StreamEntriesHelper
     end
   end
 
-  def account_badge(account)
+  def account_badge(account, all: false)
     if account.bot?
       content_tag(:div, content_tag(:div, t('accounts.roles.bot'), class: 'account-role bot'), class: 'roles')
-    elsif Setting.show_staff_badge && account.user_staff?
+    elsif (Setting.show_staff_badge && account.user_staff?) || all
       content_tag(:div, class: 'roles') do
-        if account.user_admin?
+        if all && !account.user_staff?
+          content_tag(:div, t('admin.accounts.roles.user'), class: 'account-role')
+        elsif account.user_admin?
           content_tag(:div, t('accounts.roles.admin'), class: 'account-role admin')
         elsif account.user_moderator?
           content_tag(:div, t('accounts.roles.moderator'), class: 'account-role moderator')
@@ -58,8 +60,12 @@ module StreamEntriesHelper
     end
   end
 
+  def hide_followers_count?(account)
+    Setting.hide_followers_count || account.user&.setting_hide_followers_count
+  end
+
   def account_description(account)
-    prepend_str = [
+    prepend_stats = [
       [
         number_to_human(account.statuses_count, strip_insignificant_zeros: true),
         I18n.t('accounts.posts', count: account.statuses_count),
@@ -69,14 +75,16 @@ module StreamEntriesHelper
         number_to_human(account.following_count, strip_insignificant_zeros: true),
         I18n.t('accounts.following', count: account.following_count),
       ].join(' '),
+    ]
 
-      [
+    unless hide_followers_count?(account)
+      prepend_stats << [
         number_to_human(account.followers_count, strip_insignificant_zeros: true),
         I18n.t('accounts.followers', count: account.followers_count),
-      ].join(' '),
-    ].join(', ')
+      ].join(' ')
+    end
 
-    [prepend_str, account.note].join(' · ')
+    [prepend_stats.join(', '), account.note].join(' · ')
   end
 
   def media_summary(status)

@@ -30,6 +30,7 @@ import {
   closeModal,
   openModal,
 } from 'flavours/glitch/actions/modal';
+import { changeLocalSetting } from 'flavours/glitch/actions/local_settings';
 
 //  Components.
 import ComposerOptions from './options';
@@ -82,6 +83,7 @@ function mapStateToProps (state) {
     focusDate: state.getIn(['compose', 'focusDate']),
     caretPosition: state.getIn(['compose', 'caretPosition']),
     isSubmitting: state.getIn(['compose', 'is_submitting']),
+    isChangingUpload: state.getIn(['compose', 'is_changing_upload']),
     isUploading: state.getIn(['compose', 'is_uploading']),
     layout: state.getIn(['local_settings', 'layout']),
     media: state.getIn(['compose', 'media_attachments']),
@@ -160,15 +162,16 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
   onSelectSuggestion(position, token, suggestion) {
     dispatch(selectComposeSuggestion(position, token, suggestion));
   },
-  onMediaDescriptionConfirm() {
+  onMediaDescriptionConfirm(routerHistory) {
     dispatch(openModal('CONFIRM', {
       message: intl.formatMessage(messages.missingDescriptionMessage),
       confirm: intl.formatMessage(messages.missingDescriptionConfirm),
-      onConfirm: () => dispatch(submitCompose()),
+      onConfirm: () => dispatch(submitCompose(routerHistory)),
+      onDoNotAsk: () => dispatch(changeLocalSetting(['confirm_missing_media_description'], false)),
     }));
   },
-  onSubmit() {
-    dispatch(submitCompose());
+  onSubmit(routerHistory) {
+    dispatch(submitCompose(routerHistory));
   },
   onUndoUpload(id) {
     dispatch(undoUploadCompose(id));
@@ -229,6 +232,7 @@ const handlers = {
       onChangeText,
       onSubmit,
       isSubmitting,
+      isChangingUpload,
       isUploading,
       media,
       anyMedia,
@@ -244,7 +248,7 @@ const handlers = {
     }
 
     // Submit disabled:
-    if (isSubmitting || isUploading || (!text.trim().length && !anyMedia)) {
+    if (isSubmitting || isUploading || isChangingUpload || (!text.trim().length && !anyMedia)) {
       return;
     }
 
@@ -257,9 +261,9 @@ const handlers = {
           inputs[firstWithoutDescription].focus();
         }
       }
-      onMediaDescriptionConfirm();
+      onMediaDescriptionConfirm(this.context.router ? this.context.router.history : null);
     } else if (onSubmit) {
-      onSubmit();
+      onSubmit(this.context.router ? this.context.router.history : null);
     }
   },
 
@@ -387,6 +391,7 @@ class Composer extends React.Component {
       anyMedia,
       intl,
       isSubmitting,
+      isChangingUpload,
       isUploading,
       layout,
       media,
@@ -419,7 +424,7 @@ class Composer extends React.Component {
       spoilersAlwaysOn,
     } = this.props;
 
-    let disabledButton = isSubmitting || isUploading || (!text.trim().length && !anyMedia);
+    let disabledButton = isSubmitting || isUploading || isChangingUpload || (!text.trim().length && !anyMedia);
 
     return (
       <div className='composer'>
@@ -520,6 +525,7 @@ Composer.propTypes = {
   focusDate: PropTypes.instanceOf(Date),
   caretPosition: PropTypes.number,
   isSubmitting: PropTypes.bool,
+  isChangingUpload: PropTypes.bool,
   isUploading: PropTypes.bool,
   layout: PropTypes.string,
   media: ImmutablePropTypes.list,
@@ -563,6 +569,10 @@ Composer.propTypes = {
   onUnmount: PropTypes.func,
   onUpload: PropTypes.func,
   onMediaDescriptionConfirm: PropTypes.func,
+};
+
+Composer.contextTypes = {
+  router: PropTypes.object,
 };
 
 //  Connecting and export.

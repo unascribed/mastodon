@@ -1,19 +1,16 @@
-# config/app.yml for rails-settings-cached
-#
-# This file contains default values, and does not need to be edited
-# when configuring an instance.  These settings may be changed by an
-# Administrator using the Web UI.
-#
-# For more information, see docs/Running-Mastodon/Administration-guide.md
-#
+# This file contains default values, and does not need to be edited. All
+# important settings can be changed from the admin interface.
+
 defaults: &defaults
   site_title: 'Sleeping Town'
+  site_short_description: ''
   site_description: ''
   site_extended_description: ''
   site_terms: ''
   site_contact_username: ''
   site_contact_email: ''
   open_registrations: true
+  profile_directory: true
   closed_registrations_message: ''
   open_deletion: true
   timeline_preview: false
@@ -32,8 +29,10 @@ defaults: &defaults
   reduce_motion: false
   system_font_ui: false
   noindex: false
+  hide_followers_count: false
   flavour: 'sleeping'
   skin: 'sleeping'
+  aggregate_reblogs: true
   notification_emails:
     follow: false
     reblog: false
@@ -53,6 +52,8 @@ defaults: &defaults
     - root
     - webmaster
     - administrator
+    - mod
+    - moderator
   disallowed_hashtags: # space separated string or list of hashtags without the hash
   bootstrap_timeline_accounts: ''
   activity_api_enabled: true
@@ -60,6 +61,7 @@ defaults: &defaults
   show_known_fediverse_at_about_page: true
   st_email_fwd: false
   st_avatar_as_favicon: false
+
 development:
   <<: *defaults
 

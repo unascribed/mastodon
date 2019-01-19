@@ -30,6 +30,8 @@ class Form::AdminSettings
     :show_staff_badge=,
     :bootstrap_timeline_accounts,
     :bootstrap_timeline_accounts=,
+    :hide_followers_count,
+    :hide_followers_count=,
     :flavour,
     :flavour=,
     :skin,
@@ -46,6 +48,8 @@ class Form::AdminSettings
     :preview_sensitive_media=,
     :custom_css,
     :custom_css=,
+    :profile_directory,
+    :profile_directory=,
     to: Setting
   )
 

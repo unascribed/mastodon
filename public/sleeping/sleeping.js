@@ -51,13 +51,19 @@ window.sleepingInit = function(convert) {
 			}
 			var everythingIsEmojos = recurse(dummy);
 			if (everythingIsEmojos) {
-				dummy.childNodes[0].classList.add('st_all_emojis');
+				for (var i = 0; i < dummy.children.length; i++) {
+					dummy.children[i].classList.add('st_all_emojis');
+				}
 			}
 			return dummy.innerHTML;
 		} catch (e) {
 			// rather than making the app die horrifically, just return the input unchanged
 			console.error(e);
-			console.error("An internal error occurred while attempting to process custom emojis.");
+			console.error("An internal error occurred while attempting to process a status.");
+			if (!window.sleeping.hasNagged) {
+				window.sleeping.hasNagged = true;
+				alert("An internal error occurred in the Sleeping theme while processing a status.\nThe page will continue to work, and any further errors will be ignored.\n\nPlease report this issue to Una (@unascribed@sleeping.town). Include a screenshot of your JavaScript console (press F12 to show it)");
+			}
 			return html;
 		}
 	},
@@ -67,45 +73,75 @@ window.sleepingInit = function(convert) {
 				document.querySelector('.local-settings__page.sleeping').innerHTML = `
 <h1>Sleeping</h1>
 <section>
-<h2>Appearance</h2>
-	<label for="sleeping-primary">Primary color</label>
-	<input type="color" id="sleeping-primary"> <button id="sleeping-reset-primary">Reset</button>
-	<label for="sleeping-accent">Accent color</label>
-	<input type="color" id="sleeping-accent"> <button id="sleeping-reset-accent">Reset</button>
-	<label for="sleeping-link">Link color</label><input type="color" id="sleeping-link"> <button id="sleeping-reset-link">Reset</button>
-	<label for="sleeping-brightness">Brightness</label>
-	<input type="range" id="sleeping-brightness" min="-1" max="1" step="0.005" value="-0.5">
+	<h2>Colors</h2>
+	<table style="table-layout: fixed; width: 100%">
+		<tr>
+			<th>Primary</th>
+			<th>Accent</th>
+			<th>Link</th>
+			<th>Background</th>
+		</tr>
+		<tr>
+			<td><input type="color" id="sleeping-primary"></td>
+			<td><input type="color" id="sleeping-accent"></td>
+			<td><input type="color" id="sleeping-link"></td>
+			<td><input type="color" id="sleeping-background"></td>
+		</tr>
+		<tr>
+			<td><button id="sleeping-reset-primary">Reset</button></td>
+			<td><button id="sleeping-reset-accent">Reset</button></td>
+			<td><button id="sleeping-reset-link">Reset</button></td>
+			<td><button id="sleeping-reset-background">Reset</button></td>
+		</tr>
+	</table>
 	<label for="sleeping-text-contrast">Text contrast</label>
-	<input type="range" id="sleeping-text-contrast" min="0" max="1" step="0.005" value="1"> <button id="sleeping-reset-text-contrast">Reset</button>
+	<input type="range" id="sleeping-text-contrast" min="0.3333" max="1" step="0.005" value="1"> <button id="sleeping-reset-text-contrast">Reset</button>
 	<label for="sleeping-contrast">Contrast</label>
 	<input type="range" id="sleeping-contrast" min="0" max="4" step="0.005" value="1"> <button id="sleeping-reset-contrast">Reset</button>
-	<label for="sleeping-invert-compose">
-		<input type="checkbox" id="sleeping-invert-compose"/> Stark compose box
-	</label>
+	<label for="sleeping-compose-color">Compose box color</label>
+	<select id="sleeping-compose-color">
+		<option value="default">Automatic</option>
+		<option value="invert">Automatic Stark</option>
+		<option value="black">Black</option>
+		<option value="white">White</option>
+	</select>
+	<label for="sleeping-algorithm">Shade algorithm</label>
+	<select id="sleeping-algorithm">
+		<option value="auto">Automatic</option>
+		<option value="simple">Simple Lighten</option>
+		<option value="simple-invert">Simple Darken</option>
+		<option value="advanced">Advanced Lighten</option>
+		<option value="advanced-invert">Advanced Darken</option>
+	</select><br/>
+	<small>Automatic chooses a Simple algorithm based on the brightness of the background color. Advanced uses a more complex algorithm based around how the eye perceives color, but can produce unexpected results.</small>
 </section>
 <section>
 	<h2>Misc</h2>
-	<label for="sleeping-verbose-handles">
-		<input type="checkbox" id="sleeping-verbose-handles"/> Verbose handles (experimental) (reload to apply changes)
-	</label>
+	<div class="glitch local-settings__page__item boolean">
+		<label for="sleeping-verbose-handles">
+			<input type="checkbox" id="sleeping-verbose-handles"/> Verbose handles (experimental) (reload to apply changes)
+		</label>
+	</div>
 </section>`;
-					// TODO this is a mess
+					// TODO this is a gigantic mess
 					var primary = document.getElementById("sleeping-primary");
 					var accent = document.getElementById("sleeping-accent");
 					var link = document.getElementById("sleeping-link");
-					var brightness = document.getElementById("sleeping-brightness");
+					var background = document.getElementById("sleeping-background");
 					var textContrast = document.getElementById("sleeping-text-contrast");
 					var contrast = document.getElementById("sleeping-contrast");
 					var verbose = document.getElementById("sleeping-verbose-handles");
-					var invertCompose = document.getElementById("sleeping-invert-compose");
+					var composeColor = document.getElementById("sleeping-compose-color");
+					var algorithm = document.getElementById("sleeping-algorithm");
 					primary.value = getComputedStyle(document.body).getPropertyValue("--sleeping-primary").trim();
 					accent.value = getComputedStyle(document.body).getPropertyValue("--sleeping-accent").trim();
 					link.value = getComputedStyle(document.body).getPropertyValue("--sleeping-link").trim();
-					brightness.value = Number(localStorage["sleeping-brightness"] || "-0.5");
+					background.value = localStorage["sleeping-background-color"] || sleeping.getLegacyBackgroundColor(Number(localStorage["sleeping-brightness"] || "-0.5"));
 					textContrast.value = Number(localStorage["sleeping-text-contrast"] || "1");
 					contrast.value = Number(localStorage["sleeping-contrast"] || "1");
 					verbose.checked = localStorage["sleeping-verbose-handles"] === "true";
-					invertCompose.checked = localStorage["sleeping-invert-compose"] === "true";
+					composeColor.value = localStorage["sleeping-compose-color"] || (localStorage["sleeping-invert-compose"] === "true" ? "invert" : "default");
+					algorithm.value = localStorage["sleeping-algorithm"] || "auto";
 					primary.addEventListener('input', function() {
 						sleeping.setColors("primary", primary.value);
 						localStorage["sleeping-primary-color"] = primary.value;
@@ -118,32 +154,41 @@ window.sleepingInit = function(convert) {
 						sleeping.setColors("link", link.value);
 						localStorage["sleeping-link-color"] = link.value;
 					});
-					brightness.addEventListener('input', function() {
-						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
-						localStorage["sleeping-brightness"] = brightness.value;
+					background.addEventListener('input', function() {
+						sleeping.setColors("background", background.value);
+						localStorage["sleeping-background-color"] = background.value;
 					});
 					textContrast.addEventListener('input', function() {
+						localStorage["sleeping-text-contrast"] = textContrast.value;
+						document.body.style.setProperty("--sleeping-text-contrast", textContrast.value);
 						sleeping.setColors("primary", primary.value);
 						sleeping.setColors("accent", accent.value);
 						sleeping.setColors("link", link.value);
-						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
-						document.body.style.setProperty("--sleeping-text-contrast", textContrast.value);
-						localStorage["sleeping-text-contrast"] = textContrast.value;
+						sleeping.setColors("background", background.value);
 					});
 					contrast.addEventListener('input', function() {
-						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
 						localStorage["sleeping-contrast"] = contrast.value;
+						sleeping.setColors("primary", primary.value);
+						sleeping.setColors("accent", accent.value);
+						sleeping.setColors("link", link.value);
+						sleeping.setColors("background", background.value);
 					});
 					verbose.addEventListener('change', function() {
 						localStorage["sleeping-verbose-handles"] = verbose.checked;
 					});
-					invertCompose.addEventListener('change', function() {
-						if (invertCompose.checked) {
-							document.body.classList.add("sleeping-invert-compose");
-						} else {
-							document.body.classList.remove("sleeping-invert-compose");
-						}
-						localStorage["sleeping-invert-compose"] = invertCompose.checked;
+					composeColor.addEventListener('change', function() {
+						document.body.classList.remove("sleeping-invert-compose");
+						document.body.classList.remove("sleeping-black-compose");
+						document.body.classList.remove("sleeping-white-compose");
+						document.body.classList.add("sleeping-"+composeColor.value+"-compose");
+						localStorage["sleeping-compose-color"] = composeColor.value;
+					});
+					algorithm.addEventListener('input', function() {
+						localStorage["sleeping-algorithm"] = algorithm.value;
+						sleeping.setColors("primary", primary.value);
+						sleeping.setColors("accent", accent.value);
+						sleeping.setColors("link", link.value);
+						sleeping.setColors("background", background.value);
 					});
 					
 					document.getElementById("sleeping-reset-primary").addEventListener('click', function() {
@@ -161,19 +206,28 @@ window.sleepingInit = function(convert) {
 						link.value = defaultLink;
 						localStorage["sleeping-link-color"] = defaultLink;
 					});
+					document.getElementById("sleeping-reset-background").addEventListener('click', function() {
+						var def = sleeping.getLegacyBackgroundColor(-0.5);
+						sleeping.setColors("background", def);
+						background.value = def;
+						localStorage["sleeping-background-color"] = def;
+					});
 					document.getElementById("sleeping-reset-text-contrast").addEventListener('click', function() {
 						textContrast.value = 1;
+						document.body.style.setProperty("--sleeping-text-contrast", textContrast.value);
+						localStorage["sleeping-text-contrast"] = textContrast.value;
 						sleeping.setColors("primary", primary.value);
 						sleeping.setColors("accent", accent.value);
 						sleeping.setColors("link", link.value);
-						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
-						document.body.style.setProperty("--sleeping-text-contrast", textContrast.value);
-						localStorage["sleeping-text-contrast"] = textContrast.value;
+						sleeping.setColors("background", background.value);
 					});
 					document.getElementById("sleeping-reset-contrast").addEventListener('click', function() {
 						contrast.value = 1;
-						sleeping.setBrightness(brightness.valueAsNumber, contrast.value);
 						localStorage["sleeping-contrast"] = contrast.value;
+						sleeping.setColors("primary", primary.value);
+						sleeping.setColors("accent", accent.value);
+						sleeping.setColors("link", link.value);
+						sleeping.setColors("background", background.value);
 					});
 				});
 			}
@@ -191,7 +245,7 @@ window.sleepingInit = function(convert) {
 					hack.id = "sleeping-css-hack";
 					document.head.appendChild(hack);
 				}
-				hack.appendChild(document.createTextNode('.ui { background-image: url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="'+convert(hex).cssrgb+'"/></svg>\') !important; }'));
+				hack.appendChild(document.createTextNode('.ui { background-image: url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="'+convert(hex).cssrgb+'"/></svg>\') !important; background-repeat: no-repeat; }'));
 			}
 			if (luma > 128) {
 				document.body.classList.add("sleeping-"+name+"-contrast-is-dark");
@@ -200,48 +254,68 @@ window.sleepingInit = function(convert) {
 			}
 		},
 		setColors: function(name, hex) {
+			var contrast = Number(localStorage["sleeping-contrast"] || "1");
+			sleeping.setColor(name+"-minus10", sleeping.lighten(hex, -10*contrast));
+			sleeping.setColor(name+"-minus5", sleeping.lighten(hex, -5*contrast));
 			sleeping.setColor(name, hex);
-			sleeping.setColor(name+"-light", sleeping.lighten(hex, 10));
-			sleeping.setColor(name+"-lighter", sleeping.lighten(hex, 20));
-			sleeping.setColor(name+"-lightest", sleeping.lighten(hex, 30));
+			sleeping.setColor(name+"-plus2h", sleeping.lighten(hex, 2.5*contrast));
+			sleeping.setColor(name+"-plus5", sleeping.lighten(hex, 5*contrast));
+			sleeping.setColor(name+"-plus10", sleeping.lighten(hex, 10*contrast));
+			sleeping.setColor(name+"-plus15", sleeping.lighten(hex, 15*contrast));
+			sleeping.setColor(name+"-plus20", sleeping.lighten(hex, 15*contrast));
 		},
-		setBrightness: function(t, c) {
+		getLegacyBackgroundColor: function(t, c) {
 			var whi = "#FFFFFF";
 			var bri = "#ECEFF1";
 			var mid = "#607D8B";
 			var dar = "#1A2327";
 			var bla = "#000000";
-			function setLerp(base, end, t, signum) {
-				var col = sleeping.lerpColor(base, end, t);
-				var c = col.rgb;
-				var hex = col.hex;
-				sleeping.setColor("background-dark", sleeping.lighten(c, -5*signum));
-				sleeping.setColor("background", hex);
-				sleeping.setColor("background-light", sleeping.lighten(c, 5*signum));
-				sleeping.setColor("background-lighter", sleeping.lighten(c, 15*signum));
-				sleeping.setColor("background-lightest", sleeping.lighten(c, 20*signum));
+			function lerp(base, end, t, signum) {
+				return sleeping.lerpColor(base, end, t).hex;
 			}
 			if (t > 0.9) {
 				t = (t-0.9)*10;
-				setLerp(bri, whi, t, -c);
+				return lerp(bri, whi, t, -c);
 			} else if (t > 0) {
-				setLerp(mid, bri, t, -c);
+				return lerp(mid, bri, t, -c);
 			} else {
 				t = -t;
 				if (t > 0.9) {
 					t = (t-0.9)*10;
-					setLerp(dar, bla, t, c);
+					return lerp(dar, bla, t, c);
 				} else {
-					setLerp(mid, dar, t, c);
+					return lerp(mid, dar, t, c);
 				}
 			}
 		},
 		lighten: function(col, pct) {
-			var hsl = convert(col).hsl;
-			hsl.l += pct;
-			if (hsl.l > 100) hsl.l = 100;
-			if (hsl.l < 0) hsl.l = 0;
-			return convert(hsl).hex;
+			function inner(col, pct, alg) {
+				if (/-invert$/.exec(alg)) pct = -pct;
+				if (/^advanced/.exec(alg)) {
+					var cielab = convert(col).cielab;
+					cielab.L += pct;
+					if (cielab.L > 100) cielab.L = 100;
+					if (cielab.L < 0) cielab.L = 0;
+					return convert(cielab).hex;
+				} else {
+					var hsl = convert(col).hsl;
+					hsl.l += pct;
+					if (hsl.l > 100) hsl.l = 100;
+					if (hsl.l < 0) hsl.l = 0;
+					return convert(hsl).hex;
+				}
+			}
+			var alg = localStorage["sleeping-algorithm"];
+			if ("auto" === alg) {
+				var luma = sleeping.getLuma(localStorage["sleeping-background-color"] || sleeping.getLegacyBackgroundColor(Number(localStorage["sleeping-brightness"] || "-0.5")));
+				if (luma > 128) {
+					return inner(col, -pct, "simple");
+				} else {
+					return inner(col, pct, "simple");
+				}
+			} else {
+				return inner(col, pct, alg);
+			}
 		},
 		getLuma: function(col) {
 			var rgb = convert(col).rgb;
@@ -265,18 +339,21 @@ window.sleepingInit = function(convert) {
 	var primary = localStorage["sleeping-primary-color"] || defaultPrimary;
 	var accent = localStorage["sleeping-accent-color"] || defaultAccent;
 	var link = localStorage["sleeping-link-color"] || defaultLink;
-	var brightness = Number(localStorage["sleeping-brightness"] || "-0.5");
+	var background = localStorage["sleeping-background-color"] || sleeping.getLegacyBackgroundColor(Number(localStorage["sleeping-brightness"] || "-0.5"));
 	var textContrast = Number(localStorage["sleeping-text-contrast"] || "1");
 	var contrast = Number(localStorage["sleeping-contrast"] || "1");
-	var invertCompose = localStorage["sleeping-invert-compose"] === "true";
+	var composeColor = localStorage["sleeping-compose-color"] || (localStorage["sleeping-invert-compose"] === "true" ? "invert" : "default");
 	sleeping.setColors("primary", primary);
 	sleeping.setColors("accent", accent);
 	sleeping.setColors("link", link);
-	sleeping.setBrightness(brightness, contrast);
+	sleeping.setColors("background", background);
 	document.body.style.setProperty("--sleeping-text-contrast", textContrast);
-	if (invertCompose) {
-		document.body.classList.add("sleeping-invert-compose");
-	} else {
-		document.body.classList.remove("sleeping-invert-compose");
-	}
+	document.body.classList.add("sleeping-"+composeColor+"-compose");
+	
+	var vanillaFlavor = document.querySelector("#flavours #vanilla .fa");
+	var glitchFlavor = document.querySelector("#flavours #glitch .fa");
+	var sleepingFlavor = document.querySelector("#flavours #sleeping .fa");
+	if (vanillaFlavor) vanillaFlavor.className = "fa fa-fw fa-circle";
+	if (glitchFlavor) glitchFlavor.className = "fa fa-fw fa-align-center";
+	if (sleepingFlavor) sleepingFlavor.className = "fa fa-fw fa-bed";
 }

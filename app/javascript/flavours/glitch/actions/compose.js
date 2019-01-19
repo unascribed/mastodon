@@ -116,7 +116,7 @@ export function directCompose(account, router) {
   };
 };
 
-export function submitCompose() {
+export function submitCompose(routerHistory) {
   return function (dispatch, getState) {
     let status = getState().getIn(['compose', 'text'], '');
     let media  = getState().getIn(['compose', 'media_attachments']);
@@ -142,6 +142,12 @@ export function submitCompose() {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
       },
     }).then(function (response) {
+      if (routerHistory && routerHistory.location.pathname === '/statuses/new'
+          && window.history.state
+          && !getState().getIn(['compose', 'advanced_options', 'threaded_mode'])) {
+        routerHistory.goBack();
+      }
+
       dispatch(insertIntoTagHistory(response.data.tags, status));
       dispatch(submitComposeSuccess({ ...response.data }));
 

@@ -95,6 +95,14 @@ export default class LocalSettingsPage extends React.PureComponent {
           >
             <FormattedMessage id='settings.navbar_under' defaultMessage='Navbar at the bottom (Mobile only)' />
           </LocalSettingsPageItem>
+          <LocalSettingsPageItem
+            settings={settings}
+            item={['swipe_to_change_columns']}
+            id='mastodon-settings--swipe_to_change_columns'
+            onChange={onChange}
+          >
+            <FormattedMessage id='settings.swipe_to_change_columns' defaultMessage='Allow swiping to change columns (Mobile only)' />
+          </LocalSettingsPageItem>
         </section>
       </div>
     ),
@@ -125,6 +133,14 @@ export default class LocalSettingsPage extends React.PureComponent {
           onChange={onChange}
         >
           <FormattedMessage id='settings.confirm_missing_media_description' defaultMessage='Show confirmation dialog before sending toots lacking media descriptions' />
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
+          item={['confirm_before_clearing_draft']}
+          id='mastodon-settings--confirm_before_clearing_draft'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.confirm_before_clearing_draft' defaultMessage='Show confirmation dialog before overwriting the message being composed' />
         </LocalSettingsPageItem>
         <LocalSettingsPageItem
           settings={settings}

@@ -177,7 +177,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     updated   = tag['updated']
     emoji     = CustomEmoji.find_by(shortcode: shortcode, domain: @account.domain)
 
-    return unless emoji.nil? || image_url != emoji.image_remote_url || (updated && emoji.updated_at >= updated)
+    return unless emoji.nil? || image_url != emoji.image_remote_url || (updated && updated >= emoji.updated_at)
 
     emoji ||= CustomEmoji.new(domain: @account.domain, shortcode: shortcode, uri: uri)
     emoji.image_remote_url = image_url
@@ -210,7 +210,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   end
 
   def resolve_thread(status)
-    return unless status.reply? && status.thread.nil?
+    return unless status.reply? && status.thread.nil? && Request.valid_url?(in_reply_to_uri)
     ThreadResolveWorker.perform_async(status.id, in_reply_to_uri)
   end
 

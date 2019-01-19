@@ -1,0 +1,259 @@
+body {
+  /* for when js is disabled and sleeping.js can't initialize defaults */
+  --sleeping-primary-minus10:#00635a; --sleeping-primary-minus10-contrast:rgba(255`255, 255, 1); --sleeping-primary-minus5:#007d71; --sleeping-primary-minus5-contrast:rgba(255, 255, 255, 1); --sleeping-primary:#009688; --sleeping-primary-contrast:rgba(255, 255, 255, 1); --sleeping-primary-plus2h:#00a394; --sleeping-primary-plus2h-contrast:rgba(255, 255, 255, 1); --sleeping-primary-plus5:#00b09f; --sleeping-primary-plus5-contrast:rgba(255, 255, 255, 1); --sleeping-primary-plus10:#00c9b7; --sleeping-primary-plus10-contrast:rgba(0, 0, 0, 1); --sleeping-primary-plus15:#00e3ce; --sleeping-primary-plus15-contrast:rgba(0, 0, 0, 1); --sleeping-primary-plus20:#00e3ce; --sleeping-primary-plus20-contrast:rgba(0, 0, 0, 1); --sleeping-accent-minus10:#c1134d; --sleeping-accent-minus10-contrast:rgba(255, 255, 255, 1); --sleeping-accent-minus5:#d81556; --sleeping-accent-minus5-contrast:rgba(255, 255, 255, 1); --sleeping-accent:#E91E63; --sleeping-accent-contrast:rgba(255, 255, 255, 1); --sleeping-accent-plus2h:#ea2a6a; --sleeping-accent-plus2h-contrast:rgba(255, 255, 255, 1); --sleeping-accent-plus5:#eb3572; --sleeping-accent-plus5-contrast:rgba(255, 255, 255, 1); --sleeping-accent-plus10:#ee4c82; --sleeping-accent-plus10-contrast:rgba(0, 0, 0, 1); --sleeping-accent-plus15:#f06492; --sleeping-accent-plus15-contrast:rgba(0, 0, 0, 1); --sleeping-accent-plus20:#f06492; --sleeping-accent-plus20-contrast:rgba(0, 0, 0, 1); --sleeping-link-minus10:#c1134d; --sleeping-link-minus10-contrast:rgba(255, 255, 255, 1); --sleeping-link-minus5:#d81556; --sleeping-link-minus5-contrast:rgba(255, 255, 255, 1); --sleeping-link:#E91E63; --sleeping-link-contrast:rgba(255, 255, 255, 1); --sleeping-link-plus2h:#ea2a6a; --sleeping-link-plus2h-contrast:rgba(255, 255, 255, 1); --sleeping-link-plus5:#eb3572; --sleeping-link-plus5-contrast:rgba(255, 255, 255, 1); --sleeping-link-plus10:#ee4c82; --sleeping-link-plus10-contrast:rgba(0, 0, 0, 1); --sleeping-link-plus15:#f06492; --sleeping-link-plus15-contrast:rgba(0, 0, 0, 1); --sleeping-link-plus20:#f06492; --sleeping-link-plus20-contrast:rgba(0, 0, 0, 1); --sleeping-background-minus10:#28353b; --sleeping-background-minus10-contrast:rgba(255, 255, 255, 1); --sleeping-background-minus5:#33424a; --sleeping-background-minus5-contrast:rgba(255, 255, 255, 1); --sleeping-background:#3d5059; --sleeping-background-contrast:rgba(255, 255, 255, 1); --sleeping-background-plus2h:#425761; --sleeping-background-plus2h-contrast:rgba(255, 255, 255, 1); --sleeping-background-plus5:#475d68; --sleeping-background-plus5-contrast:rgba(255, 255, 255, 1); --sleeping-background-plus10:#526b77; --sleeping-background-plus10-contrast:rgba(255, 255, 255, 1); --sleeping-background-plus15:#5c7986; --sleeping-background-plus15-contrast:rgba(255, 255, 255, 1); --sleeping-background-plus20:#5c7986; --sleeping-background-plus20-contrast:rgba(255, 255, 255, 1); --sleeping-text-contrast:1;
+}
+
+body.flavour-sleeping {
+  position: relative;
+  z-index: -5;
+}
+.flavour-sleeping .public-layout {
+  margin-top: -10px;
+  padding-top: 10px;
+  background: var(--sleeping-background-minus10);
+  color: var(--sleeping-background-minus10-contrast);
+  position: relative;
+  z-index: -2;
+  min-height: 100vh;
+}
+.flavour-sleeping .landing-page {
+  background: var(--sleeping-background-minus10);
+  color: var(--sleeping-background-minus10-contrast);
+  min-height: 100vh;
+}
+.flavour-sleeping .public-layout .header,
+.flavour-sleeping .account__section-headline {
+  background: var(--sleeping-primary);
+  color: var(--sleeping-primary-contrast);
+}
+.flavour-sleeping .public-layout .header .nav-button {
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
+}
+.flavour-sleeping .public-layout .header .nav-button[href^="https://joinmastodon.org"] {
+  display: none;
+}
+.flavour-sleeping .button.logo-button svg {
+  display: none;
+}
+.flavour-sleeping .public-layout .public-account-header__tabs__tabs .counter {
+  color: inherit;
+  border-color: inherit;
+}
+.flavour-sleeping .public-layout .public-account-header__bar::before,
+.flavour-sleeping .activity-stream .entry,
+.flavour-sleeping .hero-widget__text,
+.flavour-sleeping .public-layout .public-account-bio,
+.flavour-sleeping .nothing-here,
+.flavour-sleeping .landing-page__information,
+.flavour-sleeping .landing-page__forms,
+.flavour-sleeping .landing-page #mastodon-timeline,
+.flavour-sleeping .landing-page__call-to-action,
+.flavour-sleeping .landing-page .separator-or span,
+.flavour-sleeping .box-widget,
+.flavour-sleeping .contact-widget,
+.flavour-sleeping .landing-page__information.contact-widget {
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
+}
+.flavour-sleeping .public-layout .public-account-header__tabs__tabs .counter.active::after {
+  border-color: var(--sleeping-accent);
+}
+.flavour-sleeping .button.logo-button {
+  background: var(--sleeping-accent);
+  color: var(--sleeping-accent-contrast);
+}
+.flavour-sleeping .button.logo-button:active,
+.flavour-sleeping .button.logo-button:focus,
+.flavour-sleeping .button.logo-button:hover {
+  background: var(--sleeping-accent-plus5);
+  color: var(--sleeping-accent-plus5-contrast);
+}
+.flavour-sleeping .public-layout .public-account-header__bar .avatar img {
+  border-color: var(--sleeping-background);
+}
+.flavour-sleeping .public-layout .footer,
+.flavour-sleeping .public-layout .footer h4,
+.flavour-sleeping .public-layout .footer ul a,
+.flavour-sleeping .public-layout .footer .grid .column-2 h4 a,
+.flavour-sleeping .brand,
+.flavour-sleeping .status__prepend .status__display-name strong,
+.flavour-sleeping .embed .status .status__relative-time,
+.flavour-sleeping .public-layout .status .status__relative-time,
+.flavour-sleeping .landing-page__short-description h1 small,
+.flavour-sleeping .landing-page .closed-registrations-message,
+.flavour-sleeping .landing-page .closed-registrations-message p,
+.flavour-sleeping .landing-page p, .landing-page li,
+.flavour-sleeping .landing-page__short-description p a,
+.flavour-sleeping .rich-formatting,
+.flavour-sleeping .rich-formatting p,
+.flavour-sleeping .rich-formatting li,
+.flavour-sleeping .status__display-name{
+  color: inherit;
+}
+.flavour-sleeping .landing-page__short-description h1 small span {
+  color: var(--sleeping-primary-plus10);
+}
+.flavour-sleeping .public-layout .footer ul a,
+.flavour-sleeping .public-layout .footer .grid .column-2 h4 a {
+  opacity: 0.7;
+}
+.flavour-sleeping .public-layout .footer ul a:hover {
+  opacity: 1;
+}
+.flavour-sleeping .public-layout .footer .brand svg path {
+  fill: currentColor;
+}
+.flavour-sleeping .public-layout .status__action-bar__counter__label {
+  display: none;
+}
+.flavour-sleeping .account__header__fields dt {
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
+  border: none;
+}
+.flavour-sleeping .account__header__fields dl {
+  border: none;
+}
+.flavour-sleeping .public-layout .public-account-bio .account__header__fields a,
+.flavour-sleeping .rich-formatting a {
+  color: var(--sleeping-link);
+}
+.flavour-sleeping .account__header__fields dd {
+  color: inherit;
+}
+.flavour-sleeping .public-layout .header .brand:hover,
+.flavour-sleeping .public-layout .header .brand:focus,
+.flavour-sleeping .public-layout .header .brand:active {
+  background: var(--sleeping-primary-plus5);
+  color: var(--sleeping-primary-plus5-contrast);
+}
+.flavour-sleeping .public-layout .header .brand:after {
+  content: "Sleeping Town";
+  font-size: 18px;
+  position: relative;
+  top: 2px;
+}
+.flavour-sleeping .public-layout .header .brand {
+  text-decoration: none;
+}
+.flavour-sleeping .public-layout .header .brand img {
+  display: none;
+}
+.flavour-sleeping .column-4 {
+  display: none;
+}
+.flavour-sleeping .landing-page__forms > a:nth-child(2) {
+  display: none;
+}
+.flavour-sleeping .landing-page__call-to-action {
+  height: 215px;
+}
+.flavour-sleeping .landing-page__mascot:after {
+  content: "";
+  background-image: url(/packs/elephant_ui_sleep-2a47b395df33bff685bb995d0c455758.svg);
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  width: 273px;
+  height: 205px;
+  display: inline-block;
+}
+.flavour-sleeping .landing-page__mascot img {
+  display: none;
+}
+.flavour-sleeping a.button {
+  text-decoration: none !important;
+}
+.flavour-sleeping a.button:nth-child(5) {
+  background: #009688;
+  color: #FFF !important;
+}
+.flavour-sleeping a.button:nth-child(5):hover,
+.flavour-sleeping a.button:nth-child(5):active {
+  background: #26A69A;
+}
+.flavour-sleeping .button.button-alternative-2 {
+  background: #607D8B;
+  color: #FFF !important;
+}
+.flavour-sleeping .button.button-alternative-2:hover,
+.flavour-sleeping .button.button-alternative-2:active {
+  background: #78909C;
+}
+.flavour-sleeping .button.button-primary {
+  background: #E91E63;
+  color: #FFF !important;
+}
+.flavour-sleeping .button.button-primary:hover,
+.flavour-sleeping .button.button-primary:active {
+  background: #EC407A;
+}
+
+.flavour-sleeping dd.verified {
+  background: var(--sleeping-primary) !important;
+  color: var(--sleeping-primary-contrast) !important;
+  border: none  !important;
+}
+
+.flavour-sleeping .verified__mark,
+.flavour-sleeping .verified a {
+  color: var(--sleeping-primary-contrast) !important;
+}
+
+.flavour-sleeping .account__section-headline a,
+.flavour-sleeping .activity-stream-tabs a {
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.6s;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-bottom: none;
+  padding-bottom: 15px;
+}
+.flavour-sleeping .account__section-headline a.active,
+.flavour-sleeping .activity-stream-tabs a.active {
+  color: inherit;
+  opacity: 1;
+  border-bottom: 4px var(--sleeping-accent) solid;
+  padding-bottom: 11px;
+}
+
+.flavour-sleeping .account__section-headline a.active::before,
+.flavour-sleeping .account__section-headline a.active::after, {
+  display: none
+}
+.flavour-sleeping .display-name__account {
+  color: var(--sleeping-background-contrast);
+  opacity: 0.5;
+}
+.flavour-sleeping .icon-button,
+.flavour-sleeping .load-more,
+.flavour-sleeping .status__prepend,
+.flavour-sleeping .status__relative-time,
+.flavour-sleeping .detailed-status__meta {
+  color: inherit;
+  opacity: 0.7;
+}
+.flavour-sleeping .detailed-status,
+.flavour-sleeping .detailed-status__action-bar,
+.flavour-sleeping .focusable:focus .detailed-status,
+.flavour-sleeping .focusable:focus .detailed-status__action-bar,
+.flavour-sleeping .load-more:hover {
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
+}
+.flavour-sleeping .detailed-status__action-bar {
+  border-top: none;
+}
+.flavour-sleeping .status__content .status__content__spoiler-link {
+  background: var(--sleeping-primary);
+  color: var(--sleeping-primary-contrast);
+}
+.flavour-sleeping .status__content .status__content__spoiler-link:hover {
+  background: var(--sleeping-primary-plus5);
+  color: var(--sleeping-primary-plus5-contrast);
+}
+.flavour-sleeping .status__content a,
+.flavour-sleeping .composer--reply > .content a {
+  color: var(--sleeping-link);
+}

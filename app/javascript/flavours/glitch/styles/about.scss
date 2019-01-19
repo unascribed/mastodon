@@ -1270,8 +1270,7 @@ $small-breakpoint: 960px;
       }
 
       #mastodon-timeline {
-        display: block;
-        width: 100vw;
+        display: flex;
         height: 100vh;
         border-radius: 0;
       }

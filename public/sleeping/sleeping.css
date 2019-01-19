@@ -1,5 +1,5 @@
 body:after {
-  content: "z187";
+  content: "z192";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -12,7 +12,7 @@ body:after {
   display: block !important;
 }
 .ui {
-  background: var(--sleeping-background-dark);
+  background: var(--sleeping-background-minus5);
 }
 #sleeping-brightness {
   background: linear-gradient(to right, #000000 0%, #263238 10%, #607D8B 50%, #ECEFF1 90%, #FFFFFF 100%);
@@ -20,6 +20,7 @@ body:after {
   background-repeat: no-repeat;
   background-position: center bottom;
 }
+
 
 .status__reply-icon {
   display: none;
@@ -97,8 +98,8 @@ body .column-header__notif-cleaning-buttons button,
 body .column-header__notif-cleaning-buttons button.active,
 body .column-header__notif-cleaning-buttons button:hover,
 body .column-header__notif-cleaning-buttons button.active:hover {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 body .column-header__notif-cleaning-buttons button:hover {
   color: var(--sleeping-accent);
@@ -201,18 +202,20 @@ body .column-header__notif-cleaning-buttons button.active {
 
 .drawer--header a:focus,
 .drawer--header a:hover {
-  background-color: var(--sleeping-primary-light);
-  color: var(--sleeping-primary-light-contrast);
+  background-color: var(--sleeping-primary-plus5);
+  color: var(--sleeping-primary-plus5-contrast);
 }
 
 .column-header__collapsible-inner,
 .column-settings__section,
 .setting-text {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 
-.onboarding-modal, .error-modal, .embed-modal {
+.onboarding-modal,
+.error-modal,
+.embed-modal {
   background: var(--sleeping-background);
   color: var(--sleeping-background-contrast);
 }
@@ -288,8 +291,7 @@ body .column-header__notif-cleaning-buttons button.active {
   color: #000;
 }
 
-.button,
-.admin-wrapper .sidebar ul ul a.selected {
+.button {
   background: var(--sleeping-accent);
   color: var(--sleeping-accent-contrast);
 }
@@ -310,8 +312,8 @@ body .column-header__notif-cleaning-buttons button.active {
 .simple_form .block-button:hover,
 .simple_form .block-button:active,
 .simple_form .block-button:focus {
-  background: var(--sleeping-accent-light);
-  color: var(--sleeping-accent-light-contrast);
+  background: var(--sleeping-accent-plus5);
+  color: var(--sleeping-accent-plus5-contrast);
 }
 
 .button {
@@ -319,7 +321,7 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .composer--textarea > label .textarea:disabled {
-  background: var(--sleeping-background-lighter);
+  background: var(--sleeping-background-plus10);
 }
 
 
@@ -376,7 +378,14 @@ body .column-header__notif-cleaning-buttons button.active {
 .status.light .status__display-name,
 .onboarding-modal__page p,
 .composer--options--dropdown--content--item,
-.onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__next, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__done, .onboarding-modal__paginator .error-modal__nav.onboarding-modal__next, .error-modal__footer .onboarding-modal__nav.onboarding-modal__done, .error-modal__footer .onboarding-modal__nav.onboarding-modal__next, .error-modal__footer .error-modal__nav.onboarding-modal__done, .error-modal__footer .error-modal__nav.onboarding-modal__next,
+.onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__done,
+.onboarding-modal__paginator .onboarding-modal__nav.onboarding-modal__next,
+.onboarding-modal__paginator .error-modal__nav.onboarding-modal__done,
+.onboarding-modal__paginator .error-modal__nav.onboarding-modal__next,
+.error-modal__footer .onboarding-modal__nav.onboarding-modal__done,
+.error-modal__footer .onboarding-modal__nav.onboarding-modal__next,
+.error-modal__footer .error-modal__nav.onboarding-modal__done,
+.error-modal__footer .error-modal__nav.onboarding-modal__next,
 .composer--reply > header > .account.small,
 .composer--reply > header > .account.small,
 .getting-started p {
@@ -412,7 +421,18 @@ body .column-header__notif-cleaning-buttons button.active {
   transition: background 0.4s, color 0.4s, box-shadow 0.4s;
 }
 
-.onboarding-modal__paginator .onboarding-modal__nav:hover, .onboarding-modal__paginator .onboarding-modal__nav:focus, .onboarding-modal__paginator .onboarding-modal__nav:active, .onboarding-modal__paginator .error-modal__nav:hover, .onboarding-modal__paginator .error-modal__nav:focus, .onboarding-modal__paginator .error-modal__nav:active, .error-modal__footer .onboarding-modal__nav:hover, .error-modal__footer .onboarding-modal__nav:focus, .error-modal__footer .onboarding-modal__nav:active, .error-modal__footer .error-modal__nav:hover, .error-modal__footer .error-modal__nav:focus, .error-modal__footer .error-modal__nav:active {
+.onboarding-modal__paginator .onboarding-modal__nav:hover,
+.onboarding-modal__paginator .onboarding-modal__nav:focus,
+.onboarding-modal__paginator .onboarding-modal__nav:active,
+.onboarding-modal__paginator .error-modal__nav:hover,
+.onboarding-modal__paginator .error-modal__nav:focus,
+.onboarding-modal__paginator .error-modal__nav:active,
+.error-modal__footer .onboarding-modal__nav:hover,
+.error-modal__footer .onboarding-modal__nav:focus,
+.error-modal__footer .onboarding-modal__nav:active,
+.error-modal__footer .error-modal__nav:hover,
+.error-modal__footer .error-modal__nav:focus,
+.error-modal__footer .error-modal__nav:active {
   background: rgba(255, 255, 255, 0.35);
   color: #000 !important;
 }
@@ -424,8 +444,8 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .onboarding-modal__done:hover, .onboarding-modal__done:active {
-  background: var(--sleeping-accent-light) !important;
-  color: var(--sleeping-accent-light-contrast) !important;
+  background: var(--sleeping-accent-plus5) !important;
+  color: var(--sleeping-accent-plus5-contrast) !important;
 }
 
 .boost-modal__action-bar > div,
@@ -439,14 +459,14 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .composer--options--dropdown--content--item:hover {
-  background: var(--sleeping-primary-lighter);
-  color: var(--sleeping-primary-lighter-contrast);
+  background: var(--sleeping-primary-plus10);
+  color: var(--sleeping-primary-plus10-contrast);
 }
 .composer--options--dropdown--content--item.active,
 .composer--options--dropdown.open > .value,
 .composer--options--dropdown--content--item.active:hover{
-  background: var(--sleeping-primary-lightest);
-  color: var(--sleeping-primary-lightest-contrast);
+  background: var(--sleeping-primary-plus15);
+  color: var(--sleeping-primary-plus15-contrast);
 }
 
 button[aria-label=Bookmark].active {
@@ -527,7 +547,8 @@ button[aria-label=Favourite].active:active > i {
   background: var(--sleeping-background);
   color: var(--sleeping-background-contrast);
 }
-.ui, .column:before {
+.ui,
+.column:before {
   background-image: none !important;
   background-attachment: fixed;
   background-repeat: repeat no-repeat;
@@ -537,7 +558,8 @@ button[aria-label=Favourite].active:active > i {
   background: #FFF;
   color: #000;
 }
-.setting-text.light:focus, .setting-text.light:active {
+.setting-text.light:focus,
+.setting-text.light:active {
   color: #000;
 }
 .status__content {
@@ -547,9 +569,12 @@ button[aria-label=Favourite].active:active > i {
 .composer--reply > .content a {
   color: var(--sleeping-link);
 }
-.status, .notification-follow, .detailed-status__action-bar, .load-gap {
+.status,
+.notification-follow,
+.detailed-status__action-bar,
+.load-gap {
   border-bottom-width: 8px;
-  border-bottom-color: var(--sleeping-background-dark);
+  border-bottom-color: var(--sleeping-background-minus5);
 }
 .wide .column:last-child {
   padding: 0;
@@ -565,7 +590,9 @@ button[aria-label=Favourite].active:active > i {
   padding-left: 10px;
 }
 
-.dropdown-menu__item a:focus, .dropdown-menu__item a:hover, .dropdown-menu__item a:active {
+.dropdown-menu__item a:focus,
+.dropdown-menu__item a:hover,
+.dropdown-menu__item a:active {
   background: var(--sleeping-accent);
   color: var(--sleeping-accent-contrast);
 }
@@ -575,7 +602,7 @@ button[aria-label=Favourite].active:active > i {
 }
 
 .status__info__icons {
-  color: var(--sleeping-background-lightest);
+  color: var(--sleeping-background-plus15);
 }
 
 .activity-stream .detailed-status.light .detailed-status__display-name .display-name strong,
@@ -599,12 +626,12 @@ button[aria-label=Favourite].active:active > i {
 }
 .glitch.local-settings__navigation,
 .glitch.local-settings__navigation__item{
-  background: var(--sleeping-background-lighter);
-  color: var(--sleeping-background-lighter-contrast);
+  background: var(--sleeping-background-plus10);
+  color: var(--sleeping-background-plus10-contrast);
 }
 .glitch.local-settings__navigation__item:hover{
-  background: var(--sleeping-background-lightest);
-  color: var(--sleeping-background-lightest-contrast);
+  background: var(--sleeping-background-plus15);
+  color: var(--sleeping-background-plus15-contrast);
 }
 .glitch.local-settings__navigation__item.active {
   background: var(--sleeping-primary);
@@ -628,16 +655,16 @@ button[aria-label=Favourite].active:active > i {
   opacity: 0.7;
 }
 .column-subheading {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 .column-link {
-  background: var(--sleeping-background-lighter);
-  color: var(--sleeping-background-lighter-contrast);
+  background: var(--sleeping-background-plus10);
+  color: var(--sleeping-background-plus10-contrast);
 }
 .column-link:hover {
-  background: var(--sleeping-background-lightest);
-  color: var(--sleeping-background-lightest-contrast);
+  background: var(--sleeping-background-plus15);
+  color: var(--sleeping-background-plus15-contrast);
 }
 .status__display-name strong, .account__display-name strong {
   color: var(--sleeping-background-contrast);
@@ -647,8 +674,8 @@ button[aria-label=Favourite].active:active > i {
   opacity: 0.5;
 }
 .drawer--search input {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 .icon-button,
 .load-more,
@@ -667,8 +694,8 @@ button[aria-label=Favourite].active:active > i {
   opacity: 1;
 }
 .load-more:hover {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 
 button.icon-button i.fa-retweet,
@@ -757,8 +784,8 @@ button.icon-button i.fa-retweet {
 .detailed-status__action-bar,
 .focusable:focus .detailed-status,
 .focusable:focus .detailed-status__action-bar {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 .detailed-status__action-bar {
   border-top: none;
@@ -840,25 +867,27 @@ button.icon-button i.fa-retweet {
 }
 
 .drawer--search input:focus {
-  background: var(--sleeping-background-lightest);
-  color: var(--sleeping-background-lightest-contrast);
+  background: var(--sleeping-background-plus15);
+  color: var(--sleeping-background-plus15-contrast);
 }
 
 .drawer--search > .icon {
-  color: var(--sleeping-background-lighter-contrast);
+  color: var(--sleeping-background-plus10-contrast);
 }
 .status__content .status__content__spoiler-link {
   background: var(--sleeping-primary);
   color: var(--sleeping-primary-contrast);
 }
 .status__content .status__content__spoiler-link:hover {
-  background: var(--sleeping-primary-light);
-  color: var(--sleeping-primary-light-contrast);
+  background: var(--sleeping-primary-plus5);
+  color: var(--sleeping-primary-plus5-contrast);
 }
 
-.button:active, .button:focus, .button:hover {
-  background: var(--sleeping-accent-light);
-  color: var(--sleeping-accent-light-contrast);
+.button:active,
+.button:focus,
+.button:hover {
+  background: var(--sleeping-accent-plus5);
+  color: var(--sleeping-accent-plus5-contrast);
 }
 
 #sleeping-brightness {
@@ -867,38 +896,52 @@ button.icon-button i.fa-retweet {
 
 .composer--textarea > label .textarea,
 .composer--spoiler input {
-  background: var(--sleeping-background-lighter);
-  color: var(--sleeping-background-lighter-contrast);
+  background: var(--sleeping-background-plus10);
+  color: var(--sleeping-background-plus10-contrast);
 }
 .composer--publisher > .count {
-  color: var(--sleeping-background-lighter-contrast);
+  color: var(--sleeping-background-plus10-contrast);
 }
 
 .sleeping-invert-compose .composer--textarea > label .textarea,
-.sleeping-invert-compose .composer--spoiler input {
+.sleeping-invert-compose .composer--spoiler input,
+.sleeping-white-compose .composer--textarea > label .textarea,
+.sleeping-white-compose .composer--spoiler input {
   background: #FFF;
   color: #000;
 }
-.sleeping-invert-compose .composer--publisher > .count {
+.sleeping-invert-compose .composer--publisher > .count, 
+.sleeping-white-compose .composer--publisher > .count {
   color: #000;
 }
-.sleeping-invert-compose .emoji-button {
+.sleeping-invert-compose .emoji-button,
+.sleeping-white-compose .emoji-button {
   background-image: url('/sleeping/emoji-dark.svg') !important;
 }
 
 .sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--textarea > label .textarea,
-.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--spoiler input {
+.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--spoiler input,
+.sleeping-black-compose .composer--textarea > label .textarea,
+.sleeping-black-compose .composer--spoiler input {
   background: #000;
   color: #FFF;
 }
-.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--publisher > .count {
+.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--publisher > .count,
+.sleeping-black-compose .composer--publisher > .count {
   color: #FFF;
 }
-.sleeping-invert-compose.sleeping-background-contrast-is-dark .emoji-button {
+.sleeping-invert-compose.sleeping-background-contrast-is-dark .emoji-button,
+.sleeping-black-compose .emoji-button {
   background-image: url('/sleeping/emoji.svg') !important;
 }
 
-.boost-modal, .doodle-modal, .favourite-modal, .confirmation-modal, .report-modal, .actions-modal, .mute-modal {
+.boost-modal,
+.doodle-modal,
+.favourite-modal,
+.confirmation-modal,
+.report-modal,
+.actions-modal,
+.mute-modal {
   background: var(--sleeping-background);
   color: var(--sleeping-background-contrast);
 }
@@ -919,7 +962,7 @@ button.icon-button i.fa-retweet {
 .emoji-button:hover {
   opacity: 1;
 }
-.sleeping-background-lighter-contrast-is-dark .emoji-button {
+.sleeping-background-plus10-contrast-is-dark .emoji-button {
   background: url('/sleeping/emoji-dark.svg');
 }
 .emoji-mart-bar:first-child {
@@ -938,7 +981,9 @@ button.icon-button i.fa-retweet {
 .emoji-mart-anchor-bar {
   background: var(--sleeping-accent);
 }
-.emoji-mart-search, .emoji-picker-dropdown__menu, .emoji-mart-scroll {
+.emoji-mart-search,
+.emoji-picker-dropdown__menu,
+.emoji-mart-scroll {
   background: var(--sleeping-background);
   color: var(--sleeping-background-contrast);
 }
@@ -946,8 +991,8 @@ button.icon-button i.fa-retweet {
   background: none;
 }
 .emoji-mart-search input {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
   border: none;
 }
 
@@ -964,12 +1009,12 @@ button.icon-button i.fa-retweet {
 
 .drawer--results,
 .drawer--results > section h5 span {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 .drawer--results > header {
-  background: var(--sleeping-background-lighter);
-  color: var(--sleeping-background-lighter-contrast);
+  background: var(--sleeping-background-plus10);
+  color: var(--sleeping-background-plus10-contrast);
 }
 .drawer--results > section {
   background: transparent;
@@ -978,8 +1023,8 @@ button.icon-button i.fa-retweet {
 .trends__item {
   border-bottom-color: rgba(255, 255, 255, 0.2);
 }
-.sleeping-background-lighter-contrast-is-dark .account,
-.sleeping-background-lighter-contrast-is-dark .trends__item{
+.sleeping-background-plus10-contrast-is-dark .account,
+.sleeping-background-plus10-contrast-is-dark .trends__item{
   border-bottom-color: rgba(0, 0, 0, 0.2);
 }
 .trends__item__name a,
@@ -989,11 +1034,24 @@ button.icon-button i.fa-retweet {
 
 .column-header.active .column-header__icon,
 .icon-button.active,
-.confirmation-modal__action-bar .confirmation-modal__cancel-button, .confirmation-modal__action-bar .mute-modal__cancel-button, .mute-modal__action-bar .confirmation-modal__cancel-button, .mute-modal__action-bar .mute-modal__cancel-button {
+.confirmation-modal__action-bar .confirmation-modal__cancel-button,
+.confirmation-modal__action-bar .mute-modal__cancel-button, .mute-modal__action-bar .confirmation-modal__cancel-button,
+.mute-modal__action-bar .mute-modal__cancel-button {
   color: var(--sleeping-accent);
 }
 
-.confirmation-modal__action-bar .confirmation-modal__cancel-button:hover, .confirmation-modal__action-bar .confirmation-modal__cancel-button:focus, .confirmation-modal__action-bar .confirmation-modal__cancel-button:active, .confirmation-modal__action-bar .mute-modal__cancel-button:hover, .confirmation-modal__action-bar .mute-modal__cancel-button:focus, .confirmation-modal__action-bar .mute-modal__cancel-button:active, .mute-modal__action-bar .confirmation-modal__cancel-button:hover, .mute-modal__action-bar .confirmation-modal__cancel-button:focus, .mute-modal__action-bar .confirmation-modal__cancel-button:active, .mute-modal__action-bar .mute-modal__cancel-button:hover, .mute-modal__action-bar .mute-modal__cancel-button:focus, .mute-modal__action-bar .mute-modal__cancel-button:active {
+.confirmation-modal__action-bar .confirmation-modal__cancel-button:hover,
+.confirmation-modal__action-bar .confirmation-modal__cancel-button:focus,
+.confirmation-modal__action-bar .confirmation-modal__cancel-button:active,
+.confirmation-modal__action-bar .mute-modal__cancel-button:hover,
+.confirmation-modal__action-bar .mute-modal__cancel-button:focus,
+.confirmation-modal__action-bar .mute-modal__cancel-button:active,
+.mute-modal__action-bar .confirmation-modal__cancel-button:hover,
+.mute-modal__action-bar .confirmation-modal__cancel-button:focus,
+.mute-modal__action-bar .confirmation-modal__cancel-button:active,
+.mute-modal__action-bar .mute-modal__cancel-button:hover,
+.mute-modal__action-bar .mute-modal__cancel-button:focus,
+.mute-modal__action-bar .mute-modal__cancel-button:active {
   background: var(--sleeping-accent);
   color: var(--sleeping-accent-contrast);
 }
@@ -1009,37 +1067,201 @@ button.icon-button i.fa-retweet {
 }
 
 .account__header .account__header__fields dt {
-  background: var(--sleeping-background-lighter);
-  color: var(--sleeping-background-lighter-contrast);
+  background: var(--sleeping-background-plus10);
+  color: var(--sleeping-background-plus10-contrast);
 }
 
 .account__header .account__header__fields dd {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 
 .account__header .account__header__fields dl {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
   border: none;
 }
 
-.account__header .account__header__fields dd.verified {
-  background: var(--sleeping-accent-lighter);
-  color: var(--sleeping-accent-lighter-contrast);
-  border: none;
+dd.verified {
+  background: var(--sleeping-primary) !important;
+  color: var(--sleeping-primary-contrast) !important;
+  border: none  !important;
 }
 
-.account__header__fields .verified__mark,
-.account__header__fields .verified a {
-  color: var(--sleeping-accent-lighter-contrast);
+.verified__mark,
+.verified a {
+  color: var(--sleeping-primary-contrast) !important;
 }
 
 .focusable:focus {
-  background: var(--sleeping-background-light);
-  color: var(--sleeping-background-light-contrast);
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
 }
 .getting-started__footer p,
-.getting-started__footer p a {
+.getting-started__footer p a,
+.getting-started__footer a {
   color: inherit;
+  opacity: 0.7;
+}
+
+.local-settings__page.sleeping th {
+  font-weight: bold;
+}
+.local-settings__page.sleeping td,
+.local-settings__page.sleeping th {
+  padding: 2px 4px;
+}
+.local-settings__page.sleeping td button {
+  width: 100%;
+  background: var(--sleeping-background-plus15);
+  color: var(--sleeping-background-plus15-contrast);
+  border: none;
+  padding: 4px;
+}
+.local-settings__page.sleeping input[type="color"] {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 100%;
+}
+
+body,
+body.admin {
+  background: var(--sleeping-background);
+  color: var(--sleeping-background-contrast);
+}
+.admin-wrapper .sidebar ul a.selected {
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
+}
+.admin-wrapper .sidebar ul .simple-navigation-active-leaf a {
+  background: var(--sleeping-primary);
+  color: var(--sleeping-primary-contrast);
+}
+.admin-wrapper .sidebar ul .simple-navigation-active-leaf a:hover {
+  background: var(--sleeping-primary-plus5);
+  color: var(--sleeping-primary-plus5-contrast);
+}
+.admin-wrapper .sidebar-wrapper {
+  background: var(--sleeping-background-plus2h);
+  color: var(--sleeping-background-plus2h-contrast);
+}
+.admin-wrapper .sidebar ul ul {
+  background: var(--sleeping-background-plus10);
+  color: var(--sleeping-background-plus10-contrast);
+}
+.admin-wrapper .sidebar ul a:hover {
+  background: var(--sleeping-background-plus15);
+  color: var(--sleeping-background-plus15-contrast);
+}
+.admin-wrapper .sidebar ul a {
+  color: inherit;
+}
+.simple_form .hint,
+.admin-wrapper .content .muted-hint,
+.simple_form p.hint {
+  color: inherit;
+  opacity: 0.7;
+}
+.quick-nav a {
+  color: var(--sleeping-accent);
+}
+.quick-nav a:hover,
+.quick-nav a:focus,
+.quick-nav a:active {
+  color: var(--sleeping-accent-plus5);
+}
+
+.simple_form select,
+.simple_form input[type="text"],
+.simple_form input[type="number"],
+.simple_form input[type="email"],
+.simple_form input[type="password"],
+.simple_form textarea {
+  background-color: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
+  border-color: var(--sleeping-background-contrast);
+}
+.sleeping-background-plus5-contrast-is-dark .simple_form select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14.933 18.467' height='19.698' width='15.929'><path d='M3.467 14.967l-3.393-3.5H14.86l-3.392 3.5c-1.866 1.925-3.666 3.5-4 3.5-.335 0-2.135-1.575-4-3.5zm.266-11.234L7.467 0 11.2 3.733l3.733 3.734H0l3.733-3.734z' fill='%23000000'/></svg>");
+}
+.simple_form select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14.933 18.467' height='19.698' width='15.929'><path d='M3.467 14.967l-3.393-3.5H14.86l-3.392 3.5c-1.866 1.925-3.666 3.5-4 3.5-.335 0-2.135-1.575-4-3.5zm.266-11.234L7.467 0 11.2 3.733l3.733 3.734H0l3.733-3.734z' fill='%23FFFFFF'/></svg>");
+}
+.admin-wrapper .content h4 {
+  color: var(--sleeping-primary-plus5);
+}
+
+.admin-wrapper .content .muted-hint a,
+.table a {
+  color: var(--sleeping-link);
+}
+
+.simple_form .input.with_label .label_input > label,
+.simple_form .input.with_block_label > label,
+.simple_form .check_boxes .checkbox label,
+.simple_form .input.with_floating_label .label_input > label,
+.simple_form .input.radio_buttons .radio label,
+.admin-wrapper .content h2 {
+  color: inherit;
+}
+.admin-wrapper .content h2 {
+  border-color: inherit;
+}
+.table th,
+.table td {
+  background: var(--sleeping-background-plus5);
+  color: var(--sleeping-background-plus5-contrast);
+}
+.table > thead > tr > th {
+  border-color: var(--sleeping-background-contrast);
+}
+button.table-action-link,
+a.table-action-link {
+  color: inherit;
+  opacity: 0.7;
+}
+button.table-action-link:hover,
+a.table-action-link:hover {
+  color: inherit;
+  opacity: 1;
+}
+.admin-wrapper .content > p {
+  color: inherit;
+}
+.table > tbody > tr:nth-child(2n+1) > td,
+.table > tbody > tr:nth-child(2n+1) > th {
+  background: transparent;
+  color: inherit;
+}
+.admin-wrapper .content > p strong {
+  color: inherit;
+}
+.simple_form .warning,
+.table-form .warning {
+  background: #FF5722;
+  color: #FFF;
+}
+.button:disabled {
+  background: #000 !important;
+  color: #FFF !important;
+  opacity: 0.25;
+}
+a[href="/admin/custom_emojis/new"] {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: scale(1.5);
+}
+.local-settings__page.sleeping label {
+  margin-top: 8px;
+}
+.local-settings__page.sleeping select {
+  margin-top: 4px;
+  margin-left: 8px;
+}
+.local-settings__page.sleeping small {
+  font-size: 10px;
+  line-height: 10px;
+  opacity: 0.7;
 }

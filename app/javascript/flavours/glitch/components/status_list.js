@@ -23,6 +23,7 @@ export default class StatusList extends ImmutablePureComponent {
     isPartial: PropTypes.bool,
     hasMore: PropTypes.bool,
     prepend: PropTypes.node,
+    alwaysPrepend: PropTypes.bool,
     emptyMessage: PropTypes.node,
     timelineId: PropTypes.string.isRequired,
   };
@@ -54,7 +55,7 @@ export default class StatusList extends ImmutablePureComponent {
   }
 
   handleLoadOlder = debounce(() => {
-    this.props.onLoadMore(this.props.statusIds.last());
+    this.props.onLoadMore(this.props.statusIds.size > 0 ? this.props.statusIds.last() : undefined);
   }, 300, { leading: true })
 
   _selectChild (index) {
@@ -121,7 +122,7 @@ export default class StatusList extends ImmutablePureComponent {
     }
 
     return (
-      <ScrollableList {...other} onLoadMore={onLoadMore && this.handleLoadOlder} ref={this.setRef}>
+      <ScrollableList {...other} showLoading={isLoading && statusIds.size === 0} onLoadMore={onLoadMore && this.handleLoadOlder} ref={this.setRef}>
         {scrollableContent}
       </ScrollableList>
     );

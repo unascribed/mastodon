@@ -43,6 +43,8 @@ class Settings::PreferencesController < Settings::BaseController
       :setting_system_font_ui,
       :setting_noindex,
       :setting_hide_network,
+      :setting_hide_followers_count,
+      :setting_aggregate_reblogs,
       :setting_st_email_fwd,
       :setting_st_avatar_as_favicon,
       notification_emails: %i(follow follow_request reblog favourite mention digest report),

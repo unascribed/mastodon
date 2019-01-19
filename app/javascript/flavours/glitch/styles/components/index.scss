@@ -597,6 +597,17 @@
   @supports(display: grid) { // hack to fix Chrome <57
     contain: strict;
   }
+
+  &--flex {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__append {
+    flex: 1 1 auto;
+    position: relative;
+    min-height: 120px;
+  }
 }
 
 .scrollable.fullscreen {
@@ -982,7 +993,6 @@
     transform: translateX(-50%);
     margin: 82px 0 0 50%;
     white-space: nowrap;
-    animation: loader-label 1.15s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
   }
 }
 
@@ -991,11 +1001,20 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 0;
-  height: 0;
+  width: 42px;
+  height: 42px;
   box-sizing: border-box;
+  background-color: transparent;
   border: 0 solid lighten($ui-base-color, 26%);
+  border-width: 6px;
   border-radius: 50%;
+}
+
+.no-reduce-motion .loading-indicator span {
+  animation: loader-label 1.15s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
+}
+
+.no-reduce-motion .loading-indicator__figure {
   animation: loader-figure 1.15s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
 }
 
@@ -1052,11 +1071,33 @@
 }
 
 .setting-toggle__label,
+.setting-radio__label,
 .setting-meta__label {
   color: $darker-text-color;
   display: inline-block;
   margin-bottom: 14px;
   margin-left: 8px;
+  vertical-align: middle;
+}
+
+.setting-radio {
+  display: block;
+  line-height: 18px;
+}
+
+.setting-radio__label {
+  margin-bottom: 0;
+}
+
+.column-settings__row legend {
+  color: $darker-text-color;
+  cursor: default;
+  display: block;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.setting-radio__input {
   vertical-align: middle;
 }
 
@@ -1231,3 +1272,4 @@ noscript {
 @import 'lists';
 @import 'emoji_picker';
 @import 'local_settings';
+@import 'error_boundary';
