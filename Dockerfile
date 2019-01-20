@@ -24,6 +24,10 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node /usr/local/bin/npm /usr/local/bin/npm
 COPY --from=node /opt/yarn-* /opt/yarn
 
+RUN addgroup -g ${GID} mastodon && adduser -h /mastodon -s /bin/sh -D -G mastodon -u ${UID} mastodon \
+ && mkdir -p /mastodon/public/system /mastodon/public/assets /mastodon/public/packs \
+ && chown -R mastodon:mastodon /mastodon/public
+
 RUN apk -U upgrade \
  && apk add -t build-dependencies \
     build-base \
@@ -66,27 +70,18 @@ RUN apk -U upgrade \
  && cd /mastodon \
  && rm -rf /tmp/* /var/cache/apk/*
 
-COPY Gemfile Gemfile.lock package.json yarn.lock .yarnclean /mastodon/
-COPY stack-fix.c /lib
-RUN gcc -shared -fPIC /lib/stack-fix.c -o /lib/stack-fix.so
-RUN rm /lib/stack-fix.c
+USER mastodon
+
+COPY --chown=mastodon:mastodon Gemfile Gemfile.lock package.json yarn.lock .yarnclean /mastodon/
 
 RUN bundle config build.nokogiri --use-system-libraries --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include \
  && bundle install -j$(getconf _NPROCESSORS_ONLN) --deployment --without test development \
  && yarn install --pure-lockfile --ignore-engines \
  && yarn cache clean
 
-RUN addgroup -g ${GID} mastodon && adduser -h /mastodon -s /bin/sh -D -G mastodon -u ${UID} mastodon \
- && mkdir -p /mastodon/public/system /mastodon/public/assets /mastodon/public/packs \
- && chown -R mastodon:mastodon /mastodon/public
-
-COPY . /mastodon
-
-RUN chown -R mastodon:mastodon /mastodon
+COPY --chown=mastodon:mastodon . /mastodon
 
 VOLUME /mastodon/public/system
-
-USER mastodon
 
 ENV LD_PRELOAD=/lib/stack-fix.so
 RUN OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder bundle exec rails assets:precompile

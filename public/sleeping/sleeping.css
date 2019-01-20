@@ -1,5 +1,5 @@
 body:after {
-  content: "z192";
+  content: "z193";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -195,7 +195,8 @@ body .column-header__notif-cleaning-buttons button.active {
 .onboarding-modal__paginator,
 .error-modal__footer,
 .column-header > .column-header__back-button,
-.tabs-bar {
+.tabs-bar,
+.notification__filter-bar {
   background-color: var(--sleeping-primary);
   color: var(--sleeping-primary-contrast);
 }
@@ -241,7 +242,8 @@ body .column-header__notif-cleaning-buttons button.active {
 }
 
 .account__section-headline a,
-.activity-stream-tabs a {
+.activity-stream-tabs a,
+.notification__filter-bar button {
   color: inherit;
   opacity: 0.7;
   transition: opacity 0.6s;
@@ -249,17 +251,20 @@ body .column-header__notif-cleaning-buttons button.active {
   font-weight: 500;
   border-bottom: none;
   padding-bottom: 15px;
+  background: none;
 }
 
 .account__section-headline a.active,
-.activity-stream-tabs a.active {
+.activity-stream-tabs a.active,
+.notification__filter-bar button.active {
   color: inherit;
   opacity: 1;
   border-bottom: 4px var(--sleeping-accent) solid;
   padding-bottom: 11px;
 }
 
-.account__section-headline a.active::before, .account__section-headline a.active::after {
+.account__section-headline a.active::before, .account__section-headline a.active::after,
+.notification__filter-bar button.active::before, .notification__filter-bar button.active::after{
   display: none
 }
 
@@ -509,7 +514,6 @@ button[aria-label=Favourite].active:active > i {
 }
 
 .drawer {
-  position: relative;
   padding-bottom: 0;
 }
 .mastodon {
@@ -518,23 +522,23 @@ button[aria-label=Favourite].active:active > i {
   max-height: 205px;
   margin-top: auto;
 }
-.drawer.mbstobon-0 > .contents > .mastodon,
-.drawer.mbstobon-1 > .contents > .mastodon {
+.drawer.mbstobon-0 .mastodon,
+.drawer.mbstobon-1 .mastodon {
   background-image: url(/images/elephant_ui_sleep.svg) !important;
   background-size: 293px 615px;
   background-position: 0px 0px;
 }
-.drawer.mbstobon-0 > .contents > .mastodon:active,
-.drawer.mbstobon-1 > .contents > .mastodon:active {
+.drawer.mbstobon-0 .mastodon:active,
+.drawer.mbstobon-1 .mastodon:active {
   background-image: url(/images/elephant_ui_sleep.svg) !important;
   background-position: 0px -205px;
 }
-.drawer.mbstobon-2 > .contents > .mastodon {
+.drawer.mbstobon-2 .mastodon {
   background-image: url(/images/elephant_ui_sleep.svg) !important;
   background-size: 293px 615px;
   background-position: 0px -410px;
 }
-.drawer > .contents {
+.drawer__inner__mastodon {
   background: none !important;
   overflow-x: visible;
   overflow-y: auto;
@@ -579,16 +583,7 @@ button[aria-label=Favourite].active:active > i {
 .wide .column:last-child {
   padding: 0;
 }
-.drawer:first-child {
-  padding-left: 0;
-}
-.drawer:first-child > * {
-  margin-left: 10px;
-}
-.drawer:first-child > .contents {
-  margin-left: 0;
-  padding-left: 10px;
-}
+
 
 .dropdown-menu__item a:focus,
 .dropdown-menu__item a:hover,
@@ -846,7 +841,7 @@ button.icon-button i.fa-retweet {
   color: var(--sleeping-background-contrast);
 }
 
-.contents .drawer--account {
+.drawer__inner .drawer--account {
   padding: 10px;
 }
 
@@ -1264,4 +1259,22 @@ a[href="/admin/custom_emojis/new"] {
   font-size: 10px;
   line-height: 10px;
   opacity: 0.7;
+}
+
+.drawer__inner {
+  background: none;
+}
+.mastodon {
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 293px !important;
+}
+.mobile .mastodon {
+  display: none;
+}
+.setting-meta__label, .setting-radio__label, .setting-toggle__label {
+  color: inherit !important; /* YOU DO NOT KNOW BETTER THAN YOUR PARENT ABOUT WHAT COLOR YOU SHOULD BE */
 }
