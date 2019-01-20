@@ -863,7 +863,7 @@ button.icon-button i.fa-retweet {
 
 .drawer--search input:focus {
   background: var(--sleeping-background-plus15);
-  color: var(--sleeping-background-plus15-contrast);
+  color: #9cccc3;
 }
 
 .drawer--search > .icon {
