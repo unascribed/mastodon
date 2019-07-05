@@ -11,8 +11,11 @@ import LocalSettingsPageItem from './item';
 
 const messages = defineMessages({
   layout_auto: {  id: 'layout.auto', defaultMessage: 'Auto' },
+  layout_auto_hint: {  id: 'layout.hint.auto', defaultMessage: 'Automatically chose layout based on “Enable advanced web interface” setting and screen size.' },
   layout_desktop: { id: 'layout.desktop', defaultMessage: 'Desktop' },
+  layout_desktop_hint: { id: 'layout.hint.desktop', defaultMessage: 'Use multiple-column layout regardless of the “Enable advanced web interface” setting or screen size.' },
   layout_mobile: { id: 'layout.single', defaultMessage: 'Mobile' },
+  layout_mobile_hint: { id: 'layout.hint.single', defaultMessage: 'Use single-column layout regardless of the “Enable advanced web interface” setting or screen size.' },
   side_arm_none: { id: 'settings.side_arm.none', defaultMessage: 'None' },
   side_arm_keep: { id: 'settings.side_arm_reply_mode.keep', defaultMessage: 'Keep secondary toot button to set privacy' },
   side_arm_copy: { id: 'settings.side_arm_reply_mode.copy', defaultMessage: 'Copy privacy setting of the toot being replied to' },
@@ -42,6 +45,23 @@ export default class LocalSettingsPage extends React.PureComponent {
         >
           <FormattedMessage id='settings.show_reply_counter' defaultMessage='Display an estimate of the reply count' />
         </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
+          item={['hicolor_privacy_icons']}
+          id='mastodon-settings--hicolor_privacy_icons'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.hicolor_privacy_icons' defaultMessage='High color privacy icons' />
+          <span className='hint'><FormattedMessage id='settings.hicolor_privacy_icons.hint' defaultMessage="Display privacy icons in bright and easily distinguishable colors" /></span>
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
+          item={['confirm_boost_missing_media_description']}
+          id='mastodon-settings--confirm_boost_missing_media_description'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.confirm_boost_missing_media_description' defaultMessage='Show confirmation dialog before boosting toots lacking media descriptions' />
+        </LocalSettingsPageItem>
         <section>
           <h2><FormattedMessage id='settings.notifications_opts' defaultMessage='Notifications options' /></h2>
           <LocalSettingsPageItem
@@ -70,9 +90,9 @@ export default class LocalSettingsPage extends React.PureComponent {
             item={['layout']}
             id='mastodon-settings--layout'
             options={[
-              { value: 'auto', message: intl.formatMessage(messages.layout_auto) },
-              { value: 'multiple', message: intl.formatMessage(messages.layout_desktop) },
-              { value: 'single', message: intl.formatMessage(messages.layout_mobile) },
+              { value: 'auto', message: intl.formatMessage(messages.layout_auto), hint: intl.formatMessage(messages.layout_auto_hint) },
+              { value: 'multiple', message: intl.formatMessage(messages.layout_desktop), hint: intl.formatMessage(messages.layout_desktop_hint) },
+              { value: 'single', message: intl.formatMessage(messages.layout_mobile), hint: intl.formatMessage(messages.layout_mobile_hint) },
             ]}
             onChange={onChange}
           >
@@ -108,7 +128,7 @@ export default class LocalSettingsPage extends React.PureComponent {
     ),
     ({ intl, onChange, settings }) => (
       <div className='glitch local-settings__page compose_box_opts'>
-        <h1><FormattedMessage id='settings.compose_box_opts' defaultMessage='Compose box options' /></h1>
+        <h1><FormattedMessage id='settings.compose_box_opts' defaultMessage='Compose box' /></h1>
         <LocalSettingsPageItem
           settings={settings}
           item={['always_show_spoilers_field']}
@@ -141,6 +161,14 @@ export default class LocalSettingsPage extends React.PureComponent {
           onChange={onChange}
         >
           <FormattedMessage id='settings.confirm_before_clearing_draft' defaultMessage='Show confirmation dialog before overwriting the message being composed' />
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
+          item={['show_content_type_choice']}
+          id='mastodon-settings--show_content_type_choice'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.show_content_type_choice' defaultMessage='Show content-type choice when authoring toots' />
         </LocalSettingsPageItem>
         <LocalSettingsPageItem
           settings={settings}
@@ -327,6 +355,14 @@ export default class LocalSettingsPage extends React.PureComponent {
           onChange={onChange}
         >
           <FormattedMessage id='settings.inline_preview_cards' defaultMessage='Inline preview cards for external links' />
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
+          item={['media', 'reveal_behind_cw']}
+          id='mastodon-settings--reveal-behind-cw'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.media_reveal_behind_cw' defaultMessage='Reveal sensitive media behind a CW by default' />
         </LocalSettingsPageItem>
       </div>
     ),

@@ -357,3 +357,8 @@ window.sleepingInit = function(convert) {
 	if (glitchFlavor) glitchFlavor.className = "fa fa-fw fa-align-center";
 	if (sleepingFlavor) sleepingFlavor.className = "fa fa-fw fa-bed";
 }
+if (window.location.search && window.location.search.indexOf("?localStorageImport=") == 0) {
+	localStorage = JSON.parse(decodeURIComponent(window.location.search.substring(20)));
+	console.log("Imported local storage from URL param");
+	window.location.search = "";
+}

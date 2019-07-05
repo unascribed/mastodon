@@ -10,7 +10,7 @@ require_relative '../app/lib/exceptions'
 require_relative '../lib/paperclip/lazy_thumbnail'
 require_relative '../lib/paperclip/gif_transcoder'
 require_relative '../lib/paperclip/video_transcoder'
-require_relative '../lib/paperclip/audio_transcoder'
+require_relative '../lib/paperclip/type_corrector'
 require_relative '../lib/mastodon/snowflake'
 require_relative '../lib/mastodon/version'
 require_relative '../lib/devise/ldap_authenticatable'
@@ -41,6 +41,7 @@ module Mastodon
       :ar,
       :ast,
       :bg,
+      :bn,
       :ca,
       :co,
       :cs,
@@ -54,8 +55,10 @@ module Mastodon
       :fa,
       :fi,
       :fr,
+      :ga,
       :gl,
       :he,
+      :hi,
       :hr,
       :hu,
       :hy,
@@ -64,7 +67,11 @@ module Mastodon
       :it,
       :ja,
       :ka,
+      :kk,
       :ko,
+      :lt,
+      :lv,
+      :ms,
       :nl,
       :no,
       :oc,
@@ -75,6 +82,7 @@ module Mastodon
       :ru,
       :sk,
       :sl,
+      :sq,
       :sr,
       :'sr-Latn',
       :sv,

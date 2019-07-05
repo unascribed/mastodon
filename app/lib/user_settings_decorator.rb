@@ -35,7 +35,10 @@ class UserSettingsDecorator
     user.settings['skin']                = skin_preference if change?('setting_skin')
     user.settings['hide_network']        = hide_network_preference if change?('setting_hide_network')
     user.settings['aggregate_reblogs']   = aggregate_reblogs_preference if change?('setting_aggregate_reblogs')
-    user.settings['st_email_fwd']            = st_email_fwd_preference if change?('setting_st_email_fwd')
+    user.settings['show_application']    = show_application_preference if change?('setting_show_application')
+    user.settings['advanced_layout']     = advanced_layout_preference if change?('setting_advanced_layout')
+    user.settings['default_content_type']= default_content_type_preference if change?('setting_default_content_type')
+    user.settings['use_blurhash']        = use_blurhash_preference if change?('setting_use_blurhash')
     user.settings['st_avatar_as_favicon']    = st_avatar_as_favicon_preference if change?('setting_st_avatar_as_favicon')
   end
 
@@ -111,12 +114,12 @@ class UserSettingsDecorator
     boolean_cast_setting 'setting_hide_network'
   end
 
+  def show_application_preference
+    boolean_cast_setting 'setting_show_application'
+  end
+
   def default_language_preference
     settings['setting_default_language']
-  end
-  
-  def st_email_fwd_preference
-    boolean_cast_setting 'setting_st_email_fwd'
   end
   
   def st_avatar_as_favicon_preference
@@ -125,6 +128,18 @@ class UserSettingsDecorator
 
   def aggregate_reblogs_preference
     boolean_cast_setting 'setting_aggregate_reblogs'
+  end
+
+  def advanced_layout_preference
+    boolean_cast_setting 'setting_advanced_layout'
+  end
+
+  def default_content_type_preference
+    settings['setting_default_content_type']
+  end
+
+  def use_blurhash_preference
+    boolean_cast_setting 'setting_use_blurhash'
   end
 
   def boolean_cast_setting(key)

@@ -18,7 +18,7 @@ import compareId from '../compare_id';
 const initialState = ImmutableMap({
   items: ImmutableList(),
   hasMore: true,
-  top: true,
+  top: false,
   unread: 0,
   isLoading: false,
 });
@@ -108,6 +108,7 @@ export default function notifications(state = initialState, action) {
   case NOTIFICATIONS_EXPAND_SUCCESS:
     return expandNormalizedNotifications(state, action.notifications, action.next);
   case ACCOUNT_BLOCK_SUCCESS:
+    return filterNotifications(state, action.relationship);
   case ACCOUNT_MUTE_SUCCESS:
     return action.relationship.muting_notifications ? filterNotifications(state, action.relationship) : state;
   case NOTIFICATIONS_CLEAR:

@@ -22,12 +22,79 @@
     margin: -3px 0 0;
   }
 
-  p {
+  p, pre, blockquote {
     margin-bottom: 20px;
     white-space: pre-wrap;
 
     &:last-child {
       margin-bottom: 0;
+    }
+  }
+
+  .status__content__text,
+  .e-content {
+
+    & > ul,
+    & > ol {
+      margin-bottom: 20px;
+    }
+
+    h1, h2, h3, h4, h5 {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    h1, h2 {
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+
+    h2 {
+      font-size: 1.1em;
+    }
+
+    h3, h4, h5 {
+      font-weight: 500;
+    }
+
+    blockquote {
+      padding-left: 10px;
+      border-left: 3px solid $darker-text-color;
+      color: $darker-text-color;
+      white-space: normal;
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    b, strong {
+      font-weight: 700;
+    }
+
+    em, i {
+      font-style: italic;
+    }
+
+    sub {
+      font-size: smaller;
+      text-align: sub;
+    }
+
+    ul, ol {
+      margin-left: 1em;
+
+      p {
+        margin: 0;
+      }
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+
+    ol {
+      list-style-type: decimal;
     }
   }
 
@@ -148,7 +215,7 @@
     outline: 0;
     background: lighten($ui-base-color, 4%);
 
-    .status.status-direct {
+    &.status.status-direct:not(.read) {
       background: lighten($ui-base-color, 12%);
 
       &.muted {
@@ -188,8 +255,9 @@
     margin-top: 8px;
   }
 
-  &.status-direct {
+  &.status-direct:not(.read) {
     background: lighten($ui-base-color, 8%);
+    border-bottom-color: lighten($ui-base-color, 12%);
   }
 
   &.light {
@@ -272,7 +340,7 @@
     &:focus > .status__content:after {
       background: linear-gradient(rgba(lighten($ui-base-color, 4%), 0), rgba(lighten($ui-base-color, 4%), 1));
     }
-    &.status-direct> .status__content:after {
+    &.status-direct:not(.read)> .status__content:after {
       background: linear-gradient(rgba(lighten($ui-base-color, 8%), 0), rgba(lighten($ui-base-color, 8%), 1));
     }
 
@@ -357,6 +425,7 @@
 
 .status__info__account {
   display: flex;
+  align-items: center;
 }
 
 .status-check-box {
@@ -537,7 +606,7 @@
   }
 }
 
-.status__display-name,
+a.status__display-name,
 .reply-indicator__display-name,
 .detailed-status__display-name,
 .account__display-name {
@@ -591,7 +660,8 @@
 
 .muted {
   .status__content p,
-  .status__content a {
+  .status__content a,
+  .status__content__text {
     color: $dark-text-color;
   }
 
@@ -643,7 +713,7 @@
 
     & > div {
       background: rgba($base-shadow-color, 0.6);
-      border-radius: 4px;
+      border-radius: 8px;
       padding: 12px 9px;
       flex: 0 0 auto;
       display: flex;
@@ -654,19 +724,18 @@
     button,
     a {
       display: inline;
-      color: $primary-text-color;
+      color: $secondary-text-color;
       background: transparent;
       border: 0;
-      padding: 0 5px;
+      padding: 0 8px;
       text-decoration: none;
-      opacity: 0.6;
       font-size: 18px;
       line-height: 18px;
 
       &:hover,
       &:active,
       &:focus {
-        opacity: 1;
+        color: $primary-text-color;
       }
     }
 

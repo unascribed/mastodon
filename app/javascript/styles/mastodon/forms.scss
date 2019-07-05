@@ -68,6 +68,23 @@ code {
         top: 2px;
         left: 0;
       }
+
+      label a {
+        color: $highlight-text-color;
+        text-decoration: underline;
+
+        &:hover,
+        &:active,
+        &:focus {
+          text-decoration: none;
+        }
+      }
+
+      .recommended {
+        position: absolute;
+        margin: 0 4px;
+        margin-top: -2px;
+      }
     }
   }
 
@@ -305,7 +322,7 @@ code {
       box-shadow: none;
     }
 
-    &:focus:invalid {
+    &:focus:invalid:not(:placeholder-shown) {
       border-color: lighten($error-red, 12%);
     }
 
@@ -344,6 +361,10 @@ code {
       color: lighten($error-red, 12%);
       margin-top: 4px;
     }
+  }
+
+  .input.disabled {
+    opacity: 0.5;
   }
 
   .actions {
@@ -392,6 +413,10 @@ code {
       background-color: darken($ui-highlight-color, 5%);
     }
 
+    &:disabled:hover {
+      background-color: $ui-primary-color;
+    }
+
     &.negative {
       background: $error-value-color;
 
@@ -419,9 +444,13 @@ code {
     background: darken($ui-base-color, 10%) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14.933 18.467' height='19.698' width='15.929'><path d='M3.467 14.967l-3.393-3.5H14.86l-3.392 3.5c-1.866 1.925-3.666 3.5-4 3.5-.335 0-2.135-1.575-4-3.5zm.266-11.234L7.467 0 11.2 3.733l3.733 3.734H0l3.733-3.734z' fill='#{hex-color(lighten($ui-base-color, 12%))}'/></svg>") no-repeat right 8px center / auto 16px;
     border: 1px solid darken($ui-base-color, 14%);
     border-radius: 4px;
-    padding: 10px;
+    padding-left: 10px;
     padding-right: 30px;
     height: 41px;
+  }
+
+  h4 {
+    margin-bottom: 15px !important;
   }
 
   .label_input {
@@ -456,6 +485,42 @@ code {
       }
     }
   }
+
+  &__overlay-area {
+    position: relative;
+
+    &__overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba($ui-base-color, 0.65);
+      backdrop-filter: blur(2px);
+      border-radius: 4px;
+
+      &__content {
+        text-align: center;
+
+        &.rich-formatting {
+          &,
+          p {
+            color: $primary-text-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+.block-icon {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 10px;
+  font-size: 24px;
 }
 
 .flash-message {
@@ -478,6 +543,17 @@ code {
     color: $error-value-color;
   }
 
+  a {
+    display: inline-block;
+    color: $darker-text-color;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary-text-color;
+      text-decoration: underline;
+    }
+  }
+
   p {
     margin-bottom: 15px;
   }
@@ -487,7 +563,7 @@ code {
     box-sizing: border-box;
     display: block;
     width: 100%;
-    border: none;
+    border: 0;
     padding: 10px;
     font-family: $font-monospace, monospace;
     background: $ui-base-color;
@@ -780,5 +856,67 @@ code {
       background: $valid-value-color;
       transition: none;
     }
+  }
+}
+
+.connection-prompt {
+  margin-bottom: 25px;
+
+  .fa-link {
+    background-color: darken($ui-base-color, 4%);
+    border-radius: 100%;
+    font-size: 24px;
+    padding: 10px;
+  }
+
+  &__column {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-shrink: 1;
+    max-width: 50%;
+
+    &-sep {
+      align-self: center;
+      flex-grow: 0;
+      overflow: visible;
+      position: relative;
+      z-index: 1;
+    }
+
+    p {
+      word-break: break-word;
+    }
+  }
+
+  .account__avatar {
+    margin-bottom: 20px;
+  }
+
+  &__connection {
+    background-color: lighten($ui-base-color, 8%);
+    box-shadow: 0 0 15px rgba($base-shadow-color, 0.2);
+    border-radius: 4px;
+    padding: 25px 10px;
+    position: relative;
+    text-align: center;
+
+    &::after {
+      background-color: darken($ui-base-color, 4%);
+      content: '';
+      display: block;
+      height: 100%;
+      left: 50%;
+      position: absolute;
+      top: 0;
+      width: 1px;
+    }
+  }
+
+  &__row {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
   }
 }

@@ -1,3 +1,4 @@
+import { importFetchedStatus, importFetchedStatuses } from './importer';
 import api, { getLinks } from 'flavours/glitch/util/api';
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 
@@ -11,13 +12,16 @@ export const TIMELINE_EXPAND_FAIL    = 'TIMELINE_EXPAND_FAIL';
 
 export const TIMELINE_SCROLL_TOP = 'TIMELINE_SCROLL_TOP';
 
+export const TIMELINE_CONNECT    = 'TIMELINE_CONNECT';
 export const TIMELINE_DISCONNECT = 'TIMELINE_DISCONNECT';
 
 export function updateTimeline(timeline, status, accept) {
-  return (dispatch, getState) => {
+  return dispatch => {
     if (typeof accept === 'function' && !accept(status)) {
       return;
     }
+
+    dispatch(importFetchedStatus(status));
 
     dispatch({
       type: TIMELINE_UPDATE,
@@ -77,6 +81,7 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
 
     api(getState).get(path, { params }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
+      dispatch(importFetchedStatuses(response.data));
       dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.code === 206, isLoadingRecent, isLoadingMore));
       done();
     }).catch(error => {
@@ -92,7 +97,7 @@ export const expandCommunityTimeline       = ({ maxId, onlyMedia } = {}, done = 
 export const expandDirectTimeline          = ({ maxId } = {}, done = noOp) => expandTimeline('direct', '/api/v1/timelines/direct', { max_id: maxId }, done);
 export const expandAccountTimeline         = (accountId, { maxId, withReplies } = {}) => expandTimeline(`account:${accountId}${withReplies ? ':with_replies' : ''}`, `/api/v1/accounts/${accountId}/statuses`, { exclude_replies: !withReplies, max_id: maxId });
 export const expandAccountFeaturedTimeline = accountId => expandTimeline(`account:${accountId}:pinned`, `/api/v1/accounts/${accountId}/statuses`, { pinned: true });
-export const expandAccountMediaTimeline    = (accountId, { maxId } = {}) => expandTimeline(`account:${accountId}:media`, `/api/v1/accounts/${accountId}/statuses`, { max_id: maxId, only_media: true });
+export const expandAccountMediaTimeline    = (accountId, { maxId } = {}) => expandTimeline(`account:${accountId}:media`, `/api/v1/accounts/${accountId}/statuses`, { max_id: maxId, only_media: true, limit: 40 });
 export const expandListTimeline            = (id, { maxId } = {}, done = noOp) => expandTimeline(`list:${id}`, `/api/v1/timelines/list/${id}`, { max_id: maxId }, done);
 
 export const expandHashtagTimeline       = (hashtag, { maxId, tags } = {}, done = noOp) => {
@@ -138,6 +143,13 @@ export function scrollTopTimeline(timeline, top) {
     type: TIMELINE_SCROLL_TOP,
     timeline,
     top,
+  };
+};
+
+export function connectTimeline(timeline) {
+  return {
+    type: TIMELINE_CONNECT,
+    timeline,
   };
 };
 

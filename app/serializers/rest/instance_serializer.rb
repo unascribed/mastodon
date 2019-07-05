@@ -3,9 +3,9 @@
 class REST::InstanceSerializer < ActiveModel::Serializer
   include RoutingHelper
 
-  attributes :uri, :title, :description, :email,
-             :version, :urls, :stats, :thumbnail, :max_toot_chars,
-             :languages
+  attributes :uri, :title, :short_description, :description, :email,
+             :version, :urls, :stats, :thumbnail, :max_toot_chars, :poll_limits,
+             :languages, :registrations, :approval_required
 
   has_one :contact_account, serializer: REST::AccountSerializer
 
@@ -17,6 +17,10 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   def title
     Setting.site_title
+  end
+
+  def short_description
+    Setting.site_short_description
   end
 
   def description
@@ -32,11 +36,20 @@ class REST::InstanceSerializer < ActiveModel::Serializer
   end
 
   def thumbnail
-    instance_presenter.thumbnail ? full_asset_url(instance_presenter.thumbnail.file.url) : full_pack_url('preview.jpg')
+    instance_presenter.thumbnail ? full_asset_url(instance_presenter.thumbnail.file.url) : full_pack_url('media/images/preview.jpg')
   end
 
   def max_toot_chars
     StatusLengthValidator::MAX_CHARS
+  end
+
+  def poll_limits
+    {
+      max_options: PollValidator::MAX_OPTIONS,
+      max_option_chars: PollValidator::MAX_OPTION_CHARS,
+      min_expiration: PollValidator::MIN_EXPIRATION,
+      max_expiration: PollValidator::MAX_EXPIRATION,
+    }
   end
 
   def stats
@@ -53,6 +66,14 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   def languages
     [I18n.default_locale]
+  end
+
+  def registrations
+    Setting.registrations_mode != 'none' && !Rails.configuration.x.single_user_mode
+  end
+
+  def approval_required
+    Setting.registrations_mode == 'approved'
   end
 
   private

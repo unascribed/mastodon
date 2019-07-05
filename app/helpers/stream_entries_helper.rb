@@ -16,22 +16,30 @@ module StreamEntriesHelper
     if user_signed_in?
       if account.id == current_user.account_id
         link_to settings_profile_url, class: 'button logo-button' do
-          safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('settings.edit_profile')])
+          safe_join([svg_logo, t('settings.edit_profile')])
         end
       elsif current_account.following?(account) || current_account.requested?(account)
         link_to account_unfollow_path(account), class: 'button logo-button button--destructive', data: { method: :post } do
-          safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('accounts.unfollow')])
+          safe_join([svg_logo, t('accounts.unfollow')])
         end
       elsif !(account.memorial? || account.moved?)
-        link_to account_follow_path(account), class: 'button logo-button', data: { method: :post } do
-          safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('accounts.follow')])
+        link_to account_follow_path(account), class: "button logo-button#{account.blocking?(current_account) ? ' disabled' : ''}", data: { method: :post } do
+          safe_join([svg_logo, t('accounts.follow')])
         end
       end
     elsif !(account.memorial? || account.moved?)
       link_to account_remote_follow_path(account), class: 'button logo-button modal-button', target: '_new' do
-        safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('accounts.follow')])
+        safe_join([svg_logo, t('accounts.follow')])
       end
     end
+  end
+
+  def svg_logo
+    content_tag(:svg, tag(:use, 'xlink:href' => '#mastodon-svg-logo'), 'viewBox' => '0 0 216.4144 232.00976')
+  end
+
+  def svg_logo_full
+    content_tag(:svg, tag(:use, 'xlink:href' => '#mastodon-svg-logo-full'), 'viewBox' => '0 0 713.35878 175.8678')
   end
 
   def account_badge(account, all: false)
@@ -110,9 +118,19 @@ module StreamEntriesHelper
     I18n.t('statuses.content_warning', warning: status.spoiler_text)
   end
 
+  def poll_summary(status)
+    return unless status.preloadable_poll
+    status.preloadable_poll.options.map { |o| "[ ] #{o}" }.join("\n")
+  end
+
   def status_description(status)
     components = [[media_summary(status), status_text_summary(status)].reject(&:blank?).join(' · ')]
-    components << status.text if status.spoiler_text.blank?
+
+    if status.spoiler_text.blank?
+      components << status.text
+      components << poll_summary(status)
+    end
+
     components.reject(&:blank?).join("\n\n")
   end
 
@@ -176,7 +194,7 @@ module StreamEntriesHelper
     when 'public'
       fa_icon 'globe fw'
     when 'unlisted'
-      fa_icon 'unlock-alt fw'
+      fa_icon 'unlock fw'
     when 'private'
       fa_icon 'lock fw'
     when 'direct'

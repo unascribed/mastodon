@@ -7,10 +7,11 @@ import {
   importFetchedStatus,
   importFetchedStatuses,
 } from './importer';
+import { saveSettings } from './settings';
 import { defineMessages } from 'react-intl';
 import { List as ImmutableList } from 'immutable';
 import { unescapeHTML } from '../utils/html';
-import { getFilters, regexFromFilters } from '../selectors';
+import { getFiltersRegex } from '../selectors';
 
 export const NOTIFICATIONS_UPDATE      = 'NOTIFICATIONS_UPDATE';
 export const NOTIFICATIONS_UPDATE_NOOP = 'NOTIFICATIONS_UPDATE_NOOP';
@@ -42,13 +43,18 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
     const showInColumn = getState().getIn(['settings', 'notifications', 'shows', notification.type], true);
     const showAlert    = getState().getIn(['settings', 'notifications', 'alerts', notification.type], true);
     const playSound    = getState().getIn(['settings', 'notifications', 'sounds', notification.type], true);
-    const filters      = getFilters(getState(), { contextType: 'notifications' });
+    const filters      = getFiltersRegex(getState(), { contextType: 'notifications' });
 
     let filtered = false;
 
     if (notification.type === 'mention') {
-      const regex       = regexFromFilters(filters);
+      const dropRegex   = filters[0];
+      const regex       = filters[1];
       const searchIndex = notification.status.spoiler_text + '\n' + unescapeHTML(notification.status.content);
+
+      if (dropRegex && dropRegex.test(searchIndex)) {
+        return;
+      }
 
       filtered = regex && regex.test(searchIndex);
     }
@@ -92,7 +98,7 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
 const excludeTypesFromSettings = state => state.getIn(['settings', 'notifications', 'shows']).filter(enabled => !enabled).keySeq().toJS();
 
 const excludeTypesFromFilter = filter => {
-  const allTypes = ImmutableList(['follow', 'favourite', 'reblog', 'mention']);
+  const allTypes = ImmutableList(['follow', 'favourite', 'reblog', 'mention', 'poll']);
   return allTypes.filterNot(item => item === filter).toJS();
 };
 
@@ -187,5 +193,6 @@ export function setFilter (filterType) {
       value: filterType,
     });
     dispatch(expandNotifications());
+    dispatch(saveSettings());
   };
 };

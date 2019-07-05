@@ -11,12 +11,14 @@ import {
 import { ScrollContainer } from 'react-router-scroll-4';
 import AccountContainer from 'flavours/glitch/containers/account_container';
 import Column from 'flavours/glitch/features/ui/components/column';
+import ProfileColumnHeader from 'flavours/glitch/features/account/components/profile_column_header';
 import HeaderContainer from 'flavours/glitch/features/account_timeline/containers/header_container';
 import LoadMore from 'flavours/glitch/components/load_more';
-import ColumnBackButton from 'flavours/glitch/components/column_back_button';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import MissingIndicator from 'flavours/glitch/components/missing_indicator';
 
 const mapStateToProps = (state, props) => ({
+  isAccount: !!state.getIn(['accounts', props.params.accountId]),
   accountIds: state.getIn(['user_lists', 'followers', props.params.accountId, 'items']),
   hasMore: !!state.getIn(['user_lists', 'followers', props.params.accountId, 'next']),
 });
@@ -29,6 +31,7 @@ export default class Followers extends ImmutablePureComponent {
     dispatch: PropTypes.func.isRequired,
     accountIds: ImmutablePropTypes.list,
     hasMore: PropTypes.bool,
+    isAccount: PropTypes.bool,
   };
 
   componentWillMount () {
@@ -41,6 +44,10 @@ export default class Followers extends ImmutablePureComponent {
       this.props.dispatch(fetchAccount(nextProps.params.accountId));
       this.props.dispatch(fetchFollowers(nextProps.params.accountId));
     }
+  }
+
+  handleHeaderClick = () => {
+    this.column.scrollTop();
   }
 
   handleScroll = (e) => {
@@ -61,8 +68,20 @@ export default class Followers extends ImmutablePureComponent {
     return !(location.state && location.state.mastodonModalOpen);
   }
 
+  setRef = c => {
+    this.column = c;
+  }
+
   render () {
-    const { accountIds, hasMore } = this.props;
+    const { accountIds, hasMore, isAccount } = this.props;
+
+    if (!isAccount) {
+      return (
+        <Column>
+          <MissingIndicator />
+        </Column>
+      );
+    }
 
     let loadMore = null;
 
@@ -79,8 +98,8 @@ export default class Followers extends ImmutablePureComponent {
     }
 
     return (
-      <Column>
-        <ColumnBackButton />
+      <Column ref={this.setRef}>
+        <ProfileColumnHeader onClick={this.handleHeaderClick} />
 
         <ScrollContainer scrollKey='followers' shouldUpdateScroll={this.shouldUpdateScroll}>
           <div className='scrollable' onScroll={this.handleScroll}>

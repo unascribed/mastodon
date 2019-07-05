@@ -1,6 +1,8 @@
 import api from 'flavours/glitch/util/api';
 
 import { deleteFromTimelines } from './timelines';
+import { importFetchedStatus, importFetchedStatuses } from './importer';
+import { ensureComposeIsVisible } from './compose';
 
 export const STATUS_FETCH_REQUEST = 'STATUS_FETCH_REQUEST';
 export const STATUS_FETCH_SUCCESS = 'STATUS_FETCH_SUCCESS';
@@ -45,17 +47,17 @@ export function fetchStatus(id) {
     dispatch(fetchStatusRequest(id, skipLoading));
 
     api(getState).get(`/api/v1/statuses/${id}`).then(response => {
-      dispatch(fetchStatusSuccess(response.data, skipLoading));
+      dispatch(importFetchedStatus(response.data));
+      dispatch(fetchStatusSuccess(skipLoading));
     }).catch(error => {
       dispatch(fetchStatusFail(id, error, skipLoading));
     });
   };
 };
 
-export function fetchStatusSuccess(status, skipLoading) {
+export function fetchStatusSuccess(skipLoading) {
   return {
     type: STATUS_FETCH_SUCCESS,
-    status,
     skipLoading,
   };
 };
@@ -70,29 +72,33 @@ export function fetchStatusFail(id, error, skipLoading) {
   };
 };
 
-export function redraft(status) {
+export function redraft(status, raw_text, content_type) {
   return {
     type: REDRAFT,
     status,
+    raw_text,
+    content_type,
   };
 };
 
-export function deleteStatus(id, router, withRedraft = false) {
+export function deleteStatus(id, routerHistory, withRedraft = false) {
   return (dispatch, getState) => {
-    const status = getState().getIn(['statuses', id]);
+    let status = getState().getIn(['statuses', id]);
+
+    if (status.get('poll')) {
+      status = status.set('poll', getState().getIn(['polls', status.get('poll')]));
+    }
 
     dispatch(deleteStatusRequest(id));
 
-    api(getState).delete(`/api/v1/statuses/${id}`).then(() => {
+    api(getState).delete(`/api/v1/statuses/${id}`).then(response => {
       dispatch(deleteStatusSuccess(id));
       dispatch(deleteFromTimelines(id));
 
       if (withRedraft) {
-        dispatch(redraft(status));
+        dispatch(redraft(status, response.data.text, response.data.content_type));
 
-        if (!getState().getIn(['compose', 'mounted'])) {
-          router.push('/statuses/new');
-        }
+        ensureComposeIsVisible(getState, routerHistory);
       }
     }).catch(error => {
       dispatch(deleteStatusFail(id, error));
@@ -127,6 +133,7 @@ export function fetchContext(id) {
     dispatch(fetchContextRequest(id));
 
     api(getState).get(`/api/v1/statuses/${id}/context`).then(response => {
+      dispatch(importFetchedStatuses(response.data.ancestors.concat(response.data.descendants)));
       dispatch(fetchContextSuccess(id, response.data.ancestors, response.data.descendants));
 
     }).catch(error => {

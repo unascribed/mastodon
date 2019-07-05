@@ -1,13 +1,16 @@
 import api from 'flavours/glitch/util/api';
-import { CancelToken } from 'axios';
+import { CancelToken, isCancel } from 'axios';
 import { throttle } from 'lodash';
 import { search as emojiSearch } from 'flavours/glitch/util/emoji/emoji_mart_search_light';
 import { useEmoji } from './emojis';
 import { tagHistory } from 'flavours/glitch/util/settings';
 import { recoverHashtags } from 'flavours/glitch/util/hashtag';
 import resizeImage from 'flavours/glitch/util/resize_image';
-
+import { importFetchedAccounts } from './importer';
 import { updateTimeline } from './timelines';
+import { showAlertForError } from './alerts';
+import { showAlert } from './alerts';
+import { defineMessages } from 'react-intl';
 
 let cancelFetchComposeSuggestionsAccounts;
 
@@ -43,6 +46,7 @@ export const COMPOSE_SPOILERNESS_CHANGE = 'COMPOSE_SPOILERNESS_CHANGE';
 export const COMPOSE_SPOILER_TEXT_CHANGE = 'COMPOSE_SPOILER_TEXT_CHANGE';
 export const COMPOSE_VISIBILITY_CHANGE  = 'COMPOSE_VISIBILITY_CHANGE';
 export const COMPOSE_LISTABILITY_CHANGE = 'COMPOSE_LISTABILITY_CHANGE';
+export const COMPOSE_CONTENT_TYPE_CHANGE = 'COMPOSE_CONTENT_TYPE_CHANGE';
 
 export const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT';
 
@@ -51,6 +55,26 @@ export const COMPOSE_UPLOAD_CHANGE_SUCCESS     = 'COMPOSE_UPLOAD_UPDATE_SUCCESS'
 export const COMPOSE_UPLOAD_CHANGE_FAIL        = 'COMPOSE_UPLOAD_UPDATE_FAIL';
 
 export const COMPOSE_DOODLE_SET        = 'COMPOSE_DOODLE_SET';
+
+export const COMPOSE_POLL_ADD             = 'COMPOSE_POLL_ADD';
+export const COMPOSE_POLL_REMOVE          = 'COMPOSE_POLL_REMOVE';
+export const COMPOSE_POLL_OPTION_ADD      = 'COMPOSE_POLL_OPTION_ADD';
+export const COMPOSE_POLL_OPTION_CHANGE   = 'COMPOSE_POLL_OPTION_CHANGE';
+export const COMPOSE_POLL_OPTION_REMOVE   = 'COMPOSE_POLL_OPTION_REMOVE';
+export const COMPOSE_POLL_SETTINGS_CHANGE = 'COMPOSE_POLL_SETTINGS_CHANGE';
+
+const messages = defineMessages({
+  uploadErrorLimit: { id: 'upload_error.limit', defaultMessage: 'File upload limit exceeded.' },
+  uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
+});
+
+const COMPOSE_PANEL_BREAKPOINT = 600 + (285 * 1) + (10 * 1);
+
+export const ensureComposeIsVisible = (getState, routerHistory) => {
+  if (!getState().getIn(['compose', 'mounted']) && window.innerWidth < COMPOSE_PANEL_BREAKPOINT) {
+    routerHistory.push('/statuses/new');
+  }
+};
 
 export function changeCompose(text) {
   return {
@@ -65,16 +89,14 @@ export function cycleElefriendCompose() {
   };
 };
 
-export function replyCompose(status, router) {
+export function replyCompose(status, routerHistory) {
   return (dispatch, getState) => {
     dispatch({
       type: COMPOSE_REPLY,
       status: status,
     });
 
-    if (router && !getState().getIn(['compose', 'mounted'])) {
-      router.push('/statuses/new');
-    }
+    ensureComposeIsVisible(getState, routerHistory);
   };
 };
 
@@ -90,29 +112,25 @@ export function resetCompose() {
   };
 };
 
-export function mentionCompose(account, router) {
+export function mentionCompose(account, routerHistory) {
   return (dispatch, getState) => {
     dispatch({
       type: COMPOSE_MENTION,
       account: account,
     });
 
-    if (!getState().getIn(['compose', 'mounted'])) {
-      router.push('/statuses/new');
-    }
+    ensureComposeIsVisible(getState, routerHistory);
   };
 };
 
-export function directCompose(account, router) {
+export function directCompose(account, routerHistory) {
   return (dispatch, getState) => {
     dispatch({
       type: COMPOSE_DIRECT,
       account: account,
     });
 
-    if (!getState().getIn(['compose', 'mounted'])) {
-      router.push('/statuses/new');
-    }
+    ensureComposeIsVisible(getState, routerHistory);
   };
 };
 
@@ -120,7 +138,8 @@ export function submitCompose(routerHistory) {
   return function (dispatch, getState) {
     let status = getState().getIn(['compose', 'text'], '');
     let media  = getState().getIn(['compose', 'media_attachments']);
-    let spoilerText = getState().getIn(['compose', 'spoiler_text'], '');
+    const spoilers = getState().getIn(['compose', 'spoiler']) || getState().getIn(['local_settings', 'always_show_spoilers_field']);
+    let spoilerText = spoilers ? getState().getIn(['compose', 'spoiler_text'], '') : '';
 
     if ((!status || !status.length) && media.size === 0) {
       return;
@@ -132,11 +151,13 @@ export function submitCompose(routerHistory) {
     }
     api(getState).post('/api/v1/statuses', {
       status,
+      content_type: getState().getIn(['compose', 'content_type']),
       in_reply_to_id: getState().getIn(['compose', 'in_reply_to'], null),
       media_ids: media.map(item => item.get('id')),
-      sensitive: getState().getIn(['compose', 'sensitive']) || spoilerText.length > 0,
+      sensitive: getState().getIn(['compose', 'sensitive']) || (spoilerText.length > 0 && media.size !== 0),
       spoiler_text: spoilerText,
       visibility: getState().getIn(['compose', 'privacy']),
+      poll: getState().getIn(['compose', 'poll'], null),
     }, {
       headers: {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
@@ -159,7 +180,9 @@ export function submitCompose(routerHistory) {
       // To make the app more responsive, immediately get the status into the columns
 
       const insertIfOnline = (timelineId) => {
-        if (getState().getIn(['timelines', timelineId, 'items', 0]) !== null) {
+        const timeline = getState().getIn(['timelines', timelineId]);
+
+        if (timeline && timeline.get('items').size > 0 && timeline.getIn(['items', 0]) !== null && timeline.get('online')) {
           dispatch(updateTimeline(timelineId, { ...response.data }));
         }
       };
@@ -207,20 +230,40 @@ export function doodleSet(options) {
 
 export function uploadCompose(files) {
   return function (dispatch, getState) {
-    if (getState().getIn(['compose', 'media_attachments']).size > 3) {
+    const uploadLimit = 4;
+    const media  = getState().getIn(['compose', 'media_attachments']);
+    const progress = new Array(files.length).fill(0);
+    let total = Array.from(files).reduce((a, v) => a + v.size, 0);
+
+    if (files.length + media.size > uploadLimit) {
+      dispatch(showAlert(undefined, messages.uploadErrorLimit));
+      return;
+    }
+
+    if (getState().getIn(['compose', 'poll'])) {
+      dispatch(showAlert(undefined, messages.uploadErrorPoll));
       return;
     }
 
     dispatch(uploadComposeRequest());
 
-    resizeImage(files[0]).then(file => {
-      const data = new FormData();
-      data.append('file', file);
+    for (const [i, f] of Array.from(files).entries()) {
+      if (media.size + i > 3) break;
 
-      return api(getState).post('/api/v1/media', data, {
-        onUploadProgress: ({ loaded, total }) => dispatch(uploadComposeProgress(loaded, total)),
-      }).then(({ data }) => dispatch(uploadComposeSuccess(data)));
-    }).catch(error => dispatch(uploadComposeFail(error)));
+      resizeImage(f).then(file => {
+        const data = new FormData();
+        data.append('file', file);
+        // Account for disparity in size of original image and resized data
+        total += file.size - f.size;
+
+        return api(getState).post('/api/v1/media', data, {
+          onUploadProgress: function({ loaded }){
+            progress[i] = loaded;
+            dispatch(uploadComposeProgress(progress.reduce((a, v) => a + v, 0), total));
+          },
+        }).then(({ data }) => dispatch(uploadComposeSuccess(data)));
+      }).catch(error => dispatch(uploadComposeFail(error)));
+    };
   };
 };
 
@@ -319,7 +362,12 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, token) => 
       limit: 4,
     },
   }).then(response => {
+    dispatch(importFetchedAccounts(response.data));
     dispatch(readyComposeSuggestionsAccounts(token, response.data));
+  }).catch(error => {
+    if (!isCancel(error)) {
+      dispatch(showAlertForError(error));
+    }
   });
 }, 200, { leading: true, trailing: true });
 
@@ -364,7 +412,7 @@ export function readyComposeSuggestionsAccounts(token, accounts) {
   };
 };
 
-export function selectComposeSuggestion(position, token, suggestion) {
+export function selectComposeSuggestion(position, token, suggestion, path) {
   return (dispatch, getState) => {
     let completion;
     if (typeof suggestion === 'object' && suggestion.id) {
@@ -381,6 +429,7 @@ export function selectComposeSuggestion(position, token, suggestion) {
       position,
       token,
       completion,
+      path,
     });
   };
 };
@@ -473,10 +522,59 @@ export function changeComposeVisibility(value) {
   };
 };
 
+export function changeComposeContentType(value) {
+  return {
+    type: COMPOSE_CONTENT_TYPE_CHANGE,
+    value,
+  };
+};
+
 export function insertEmojiCompose(position, emoji) {
   return {
     type: COMPOSE_EMOJI_INSERT,
     position,
     emoji,
+  };
+};
+
+export function addPoll() {
+  return {
+    type: COMPOSE_POLL_ADD,
+  };
+};
+
+export function removePoll() {
+  return {
+    type: COMPOSE_POLL_REMOVE,
+  };
+};
+
+export function addPollOption(title) {
+  return {
+    type: COMPOSE_POLL_OPTION_ADD,
+    title,
+  };
+};
+
+export function changePollOption(index, title) {
+  return {
+    type: COMPOSE_POLL_OPTION_CHANGE,
+    index,
+    title,
+  };
+};
+
+export function removePollOption(index) {
+  return {
+    type: COMPOSE_POLL_OPTION_REMOVE,
+    index,
+  };
+};
+
+export function changePollSettings(expiresIn, isMultiple) {
+  return {
+    type: COMPOSE_POLL_SETTINGS_CHANGE,
+    expiresIn,
+    isMultiple,
   };
 };

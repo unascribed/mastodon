@@ -2,14 +2,14 @@
 # important settings can be changed from the admin interface.
 
 defaults: &defaults
-  site_title: 'Sleeping Town'
+  site_title: 'dev.glitch.social'
   site_short_description: ''
   site_description: ''
   site_extended_description: ''
   site_terms: ''
   site_contact_username: ''
   site_contact_email: ''
-  open_registrations: true
+  registrations_mode: 'open'
   profile_directory: true
   closed_registrations_message: ''
   open_deletion: true
@@ -27,12 +27,16 @@ defaults: &defaults
   expand_spoilers: false
   preview_sensitive_media: false
   reduce_motion: false
+  show_application: false
   system_font_ui: false
   noindex: false
   hide_followers_count: false
+  enable_keybase: true
   flavour: 'sleeping'
   skin: 'sleeping'
   aggregate_reblogs: true
+  advanced_layout: false
+  use_blurhash: true
   notification_emails:
     follow: false
     reblog: false
@@ -41,6 +45,7 @@ defaults: &defaults
     follow_request: true
     digest: true
     report: true
+    pending_account: true
   interactions:
     must_be_follower: false
     must_be_following: false
@@ -59,7 +64,9 @@ defaults: &defaults
   activity_api_enabled: true
   peers_api_enabled: true
   show_known_fediverse_at_about_page: true
-  st_email_fwd: false
+  show_reblogs_in_public_timelines: false
+  show_replies_in_public_timelines: false
+  default_content_type: 'text/plain'
   st_avatar_as_favicon: false
 
 development:

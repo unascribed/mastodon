@@ -22,9 +22,13 @@ export const deleteModal = getMeta('delete_modal');
 export const me = getMeta('me');
 export const searchEnabled = getMeta('search_enabled');
 export const maxChars = (initialState && initialState.max_toot_chars) || 500;
+export const pollLimits = (initialState && initialState.poll_limits);
 export const invitesEnabled = getMeta('invites_enabled');
 export const version = getMeta('version');
 export const mascot = getMeta('mascot');
 export const isStaff = getMeta('is_staff');
+export const defaultContentType = getMeta('default_content_type');
+export const forceSingleColumn = getMeta('advanced_layout') === false;
+export const useBlurhash = getMeta('use_blurhash');
 
 export default initialState;

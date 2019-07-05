@@ -2,7 +2,6 @@ import React from 'react';
 import NotificationsContainer from './containers/notifications_container';
 import PropTypes from 'prop-types';
 import LoadingBarContainer from './containers/loading_bar_container';
-import TabsBar from './components/tabs_bar';
 import ModalContainer from './containers/modal_container';
 import { connect } from 'react-redux';
 import { Redirect, withRouter } from 'react-router-dom';
@@ -19,7 +18,7 @@ import ColumnsAreaContainer from './containers/columns_area_container';
 import classNames from 'classnames';
 import Favico from 'favico.js';
 import {
-  Drawer,
+  Compose,
   Status,
   GettingStarted,
   KeyboardShortcuts,
@@ -45,6 +44,7 @@ import {
   Mutes,
   PinnedStatuses,
   Lists,
+  Search,
   GettingStartedMisc,
 } from 'flavours/glitch/util/async-components';
 import { HotKeys } from 'react-hotkeys';
@@ -68,6 +68,7 @@ const mapStateToProps = state => ({
   dropdownMenuIsOpen: state.getIn(['dropdown_menu', 'openId']) !== null,
   unreadNotifications: state.getIn(['notifications', 'unread']),
   showFaviconBadge: state.getIn(['local_settings', 'notifications', 'favicon_badge']),
+  hicolorPrivacyIcons: state.getIn(['local_settings', 'hicolor_privacy_icons']),
 });
 
 const keyMap = {
@@ -98,6 +99,9 @@ const keyMap = {
   goToMuted: 'g m',
   goToRequests: 'g r',
   toggleSpoiler: 'x',
+  bookmark: 'd',
+  toggleCollapse: 'shift+x',
+  toggleSensitive: 'h',
 };
 
 @connect(mapStateToProps)
@@ -166,6 +170,7 @@ export default class UI extends React.Component {
   }
 
   handleDragOver = (e) => {
+    if (this.dataTransferIsText(e.dataTransfer)) return false;
     e.preventDefault();
     e.stopPropagation();
 
@@ -179,12 +184,13 @@ export default class UI extends React.Component {
   }
 
   handleDrop = (e) => {
+    if (this.dataTransferIsText(e.dataTransfer)) return;
     e.preventDefault();
 
     this.setState({ draggingOver: false });
     this.dragTargets = [];
 
-    if (e.dataTransfer && e.dataTransfer.files.length === 1) {
+    if (e.dataTransfer && e.dataTransfer.files.length >= 1) {
       this.props.dispatch(uploadCompose(e.dataTransfer.files));
     }
   }
@@ -200,6 +206,10 @@ export default class UI extends React.Component {
     }
 
     this.setState({ draggingOver: false });
+  }
+
+  dataTransferIsText = (dataTransfer) => {
+    return (dataTransfer && Array.from(dataTransfer.types).includes('text/plain') && dataTransfer.items.length === 1);
   }
 
   closeUploadModal = () => {
@@ -260,19 +270,6 @@ export default class UI extends React.Component {
     };
   }
 
-  shouldComponentUpdate (nextProps) {
-    if (nextProps.navbarUnder !== this.props.navbarUnder) {
-      // Avoid expensive update just to toggle a class
-      this.node.classList.toggle('navbar-under', nextProps.navbarUnder);
-
-      return false;
-    }
-
-    // Why isn't this working?!?
-    // return super.shouldComponentUpdate(nextProps, nextState);
-    return true;
-  }
-
   componentDidUpdate (prevProps) {
     if (![this.props.location.pathname, '/'].includes(prevProps.location.pathname)) {
       this.columnsAreaNode.handleChildrenContentChange();
@@ -310,7 +307,7 @@ export default class UI extends React.Component {
   handleHotkeyNew = e => {
     e.preventDefault();
 
-    const element = this.node.querySelector('.composer--textarea textarea');
+    const element = this.node.querySelector('.compose-form__autosuggest-wrapper textarea');
 
     if (element) {
       element.focus();
@@ -320,7 +317,7 @@ export default class UI extends React.Component {
   handleHotkeySearch = e => {
     e.preventDefault();
 
-    const element = this.node.querySelector('.drawer--search input');
+    const element = this.node.querySelector('.search__input');
 
     if (element) {
       element.focus();
@@ -335,11 +332,16 @@ export default class UI extends React.Component {
   handleHotkeyFocusColumn = e => {
     const index  = (e.key * 1) + 1; // First child is drawer, skip that
     const column = this.node.querySelector(`.column:nth-child(${index})`);
+    if (!column) return;
+    const container = column.querySelector('.scrollable');
 
-    if (column) {
-      const status = column.querySelector('.focusable');
+    if (container) {
+      const status = container.querySelector('.focusable');
 
       if (status) {
+        if (container.scrollTop > status.offsetTop) {
+          status.scrollIntoView(true);
+        }
         status.focus();
       }
     }
@@ -417,6 +419,8 @@ export default class UI extends React.Component {
   render () {
     const { width, draggingOver } = this.state;
     const { children, layout, isWide, navbarUnder, dropdownMenuIsOpen } = this.props;
+    const singleColumn = isMobile(width, layout);
+    const redirect = singleColumn ? <Redirect from='/' to='/timelines/home' exact /> : <Redirect from='/' to='/getting-started' exact />;
 
     const columnsClass = layout => {
       switch (layout) {
@@ -433,6 +437,7 @@ export default class UI extends React.Component {
       'wide': isWide,
       'system-font': this.props.systemFontUi,
       'navbar-under': navbarUnder,
+      'hicolor-privacy-icons': this.props.hicolorPrivacyIcons,
     });
 
     const handlers = {
@@ -459,11 +464,9 @@ export default class UI extends React.Component {
     return (
       <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef} attach={window} focused>
         <div className={className} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
-          {navbarUnder ? null : (<TabsBar />)}
-
-          <ColumnsAreaContainer ref={this.setColumnsAreaRef} singleColumn={isMobile(width, layout)}>
+          <ColumnsAreaContainer ref={this.setColumnsAreaRef} singleColumn={singleColumn} navbarUnder={navbarUnder}>
             <WrappedSwitch>
-              <Redirect from='/' to='/getting-started' exact />
+              {redirect}
               <WrappedRoute path='/getting-started' component={GettingStarted} content={children} />
               <WrappedRoute path='/keyboard-shortcuts' component={KeyboardShortcuts} content={children} />
               <WrappedRoute path='/timelines/home' component={HomeTimeline} content={children} />
@@ -477,9 +480,9 @@ export default class UI extends React.Component {
               <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
               <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
 
-              <WrappedRoute path='/search' component={Drawer} content={children} componentParams={{ isSearchPage: true }} />
+              <WrappedRoute path='/search' component={Search} content={children} />
 
-              <WrappedRoute path='/statuses/new' component={Drawer} content={children} />
+              <WrappedRoute path='/statuses/new' component={Compose} content={children} />
               <WrappedRoute path='/statuses/:statusId' exact component={Status} content={children} />
               <WrappedRoute path='/statuses/:statusId/reblogs' component={Reblogs} content={children} />
               <WrappedRoute path='/statuses/:statusId/favourites' component={Favourites} content={children} />
@@ -502,7 +505,6 @@ export default class UI extends React.Component {
           </ColumnsAreaContainer>
 
           <NotificationsContainer />
-          {navbarUnder ? (<TabsBar />) : null}
           <LoadingBarContainer className='loading-bar' />
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />

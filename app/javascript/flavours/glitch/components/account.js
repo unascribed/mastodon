@@ -31,6 +31,9 @@ export default class Account extends ImmutablePureComponent {
     intl: PropTypes.object.isRequired,
     hidden: PropTypes.bool,
     small: PropTypes.bool,
+    actionIcon: PropTypes.string,
+    actionTitle: PropTypes.string,
+    onActionClick: PropTypes.func,
   };
 
   handleFollow = () => {
@@ -53,12 +56,19 @@ export default class Account extends ImmutablePureComponent {
     this.props.onMuteNotifications(this.props.account, false);
   }
 
+  handleAction = () => {
+    this.props.onActionClick(this.props.account);
+  }
+
   render () {
     const {
       account,
       hidden,
       intl,
       small,
+      onActionClick,
+      actionIcon,
+      actionTitle,
     } = this.props;
 
     if (!account) {
@@ -76,7 +86,9 @@ export default class Account extends ImmutablePureComponent {
 
     let buttons;
 
-    if (account.get('id') !== me && !small && account.get('relationship', null) !== null) {
+    if (onActionClick && actionIcon) {
+      buttons = <IconButton icon={actionIcon} title={actionTitle} onClick={this.handleAction} />;
+    } else if (account.get('id') !== me && !small && account.get('relationship', null) !== null) {
       const following = account.getIn(['relationship', 'following']);
       const requested = account.getIn(['relationship', 'requested']);
       const blocking  = account.getIn(['relationship', 'blocking']);
@@ -85,7 +97,7 @@ export default class Account extends ImmutablePureComponent {
       if (requested) {
         buttons = <IconButton disabled icon='hourglass' title={intl.formatMessage(messages.requested)} />;
       } else if (blocking) {
-        buttons = <IconButton active icon='unlock-alt' title={intl.formatMessage(messages.unblock, { name: account.get('username') })} onClick={this.handleBlock} />;
+        buttons = <IconButton active icon='unlock' title={intl.formatMessage(messages.unblock, { name: account.get('username') })} onClick={this.handleBlock} />;
       } else if (muting) {
         let hidingNotificationsButton;
         if (account.getIn(['relationship', 'muting_notifications'])) {

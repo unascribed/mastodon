@@ -7,11 +7,11 @@ pack:
     filename: packs/common.js
     stylesheet: true
   embed: ../glitch/packs/public.js
-  error:
+  error: ../glitch/packs/error.js
   home:
     filename: ../glitch/packs/home.js
     preload:
-    - flavours/glitch/async/drawer
+    - flavours/glitch/async/compose
     - flavours/glitch/async/getting_started
     - flavours/glitch/async/home_timeline
     - flavours/glitch/async/notifications
@@ -21,8 +21,24 @@ pack:
   settings:
   share: ../glitch/packs/share.js
 
+#  (OPTIONAL) The directory which contains localization files for
+#  the flavour, relative to this directory. The contents of this
+#  directory must be `.js` or `.json` files whose names correspond to
+#  language tags and whose default exports are a messages object.
 locales: ../glitch/locales
-  
-screenshot: sleeping-preview.png
 
+#  (OPTIONAL) A file to use as the preview screenshot for the flavour,
+#  or an array thereof. These are the full path from `app/javascript/`.
+#screenshot: flavours/sleeping/images/sleeping-preview.png
+
+#  (OPTIONAL) The directory which contains the pack files.
+#  Defaults to the theme directory (`app/javascript/themes/[theme]`),
+#  which should be sufficient for like 99% of use-cases lol.
+
+#      pack_directory: app/javascript/packs
+
+#  (OPTIONAL) By default the theme will fallback to the default theme
+#  if a particular pack is not provided. You can specify different
+#  fallbacks here, or disable fallback behaviours altogether by
+#  specifying a `null` value.
 fallback:

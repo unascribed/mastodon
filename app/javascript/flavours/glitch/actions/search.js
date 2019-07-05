@@ -1,5 +1,6 @@
 import api from 'flavours/glitch/util/api';
 import { fetchRelationships } from './accounts';
+import { importFetchedAccounts, importFetchedStatuses } from './importer';
 
 export const SEARCH_CHANGE = 'SEARCH_CHANGE';
 export const SEARCH_CLEAR  = 'SEARCH_CLEAR';
@@ -36,9 +37,18 @@ export function submitSearch() {
       params: {
         q: value,
         resolve: true,
+        limit: 10,
       },
     }).then(response => {
-      dispatch(fetchSearchSuccess(response.data));
+      if (response.data.accounts) {
+        dispatch(importFetchedAccounts(response.data.accounts));
+      }
+
+      if (response.data.statuses) {
+        dispatch(importFetchedStatuses(response.data.statuses));
+      }
+
+      dispatch(fetchSearchSuccess(response.data, value));
       dispatch(fetchRelationships(response.data.accounts.map(item => item.id)));
     }).catch(error => {
       dispatch(fetchSearchFail(error));
@@ -52,12 +62,11 @@ export function fetchSearchRequest() {
   };
 };
 
-export function fetchSearchSuccess(results) {
+export function fetchSearchSuccess(results, searchTerm) {
   return {
     type: SEARCH_FETCH_SUCCESS,
     results,
-    accounts: results.accounts,
-    statuses: results.statuses,
+    searchTerm,
   };
 };
 

@@ -6,6 +6,7 @@ import {
   TIMELINE_EXPAND_REQUEST,
   TIMELINE_EXPAND_FAIL,
   TIMELINE_SCROLL_TOP,
+  TIMELINE_CONNECT,
   TIMELINE_DISCONNECT,
 } from 'flavours/glitch/actions/timelines';
 import {
@@ -20,6 +21,7 @@ const initialState = ImmutableMap();
 
 const initialTimeline = ImmutableMap({
   unread: 0,
+  online: false,
   top: true,
   isLoading: false,
   hasMore: true,
@@ -29,9 +31,13 @@ const initialTimeline = ImmutableMap({
 const expandNormalizedTimeline = (state, timeline, statuses, next, isPartial, isLoadingRecent) => {
   return state.update(timeline, initialTimeline, map => map.withMutations(mMap => {
     mMap.set('isLoading', false);
+    mMap.set('isPartial', isPartial);
+
     if (!next && !isLoadingRecent) mMap.set('hasMore', false);
 
-    if (!statuses.isEmpty()) {
+    if (timeline.endsWith(':pinned')) {
+      mMap.set('items', statuses.map(status => status.get('id')));
+    } else if (!statuses.isEmpty()) {
       mMap.update('items', ImmutableList(), oldIds => {
         const newIds = statuses.map(status => status.get('id'));
         const lastIndex = oldIds.findLastIndex(id => id !== null && compareId(id, newIds.last()) >= 0) + 1;
@@ -69,14 +75,15 @@ const updateTimeline = (state, timeline, status) => {
   }));
 };
 
-const deleteStatus = (state, id, accountId, references) => {
+const deleteStatus = (state, id, accountId, references, exclude_account = null) => {
   state.keySeq().forEach(timeline => {
-    state = state.updateIn([timeline, 'items'], list => list.filterNot(item => item === id));
+    if (exclude_account === null || (timeline !== `account:${exclude_account}` && !timeline.startsWith(`account:${exclude_account}:`)))
+      state = state.updateIn([timeline, 'items'], list => list.filterNot(item => item === id));
   });
 
   // Remove reblogs of deleted status
   references.forEach(ref => {
-    state = deleteStatus(state, ref[0], ref[1], []);
+    state = deleteStatus(state, ref[0], ref[1], [], exclude_account);
   });
 
   return state;
@@ -95,7 +102,7 @@ const filterTimelines = (state, relationship, statuses) => {
     }
 
     references = statuses.filter(item => item.get('reblog') === status.get('id')).map(item => [item.get('id'), item.get('account')]);
-    state      = deleteStatus(state, status.get('id'), status.get('account'), references);
+    state      = deleteStatus(state, status.get('id'), status.get('account'), references, relationship.id);
   });
 
   return state;
@@ -135,14 +142,13 @@ export default function timelines(state = initialState, action) {
     return filterTimeline('home', state, action.relationship, action.statuses);
   case TIMELINE_SCROLL_TOP:
     return updateTop(state, action.timeline, action.top);
+  case TIMELINE_CONNECT:
+    return state.update(action.timeline, initialTimeline, map => map.set('online', true));
   case TIMELINE_DISCONNECT:
     return state.update(
       action.timeline,
       initialTimeline,
-      map => map.update(
-        'items',
-        items => items.first() ? items.unshift(null) : items
-      )
+      map => map.set('online', false).update('items', items => items.first() ? items.unshift(null) : items)
     );
   default:
     return state;

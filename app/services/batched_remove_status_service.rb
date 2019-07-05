@@ -2,6 +2,7 @@
 
 class BatchedRemoveStatusService < BaseService
   include StreamEntryRenderer
+  include Redisable
 
   # Delete given statuses and reblogs of them
   # Dispatch PuSH updates of the deleted statuses, but only local ones
@@ -33,6 +34,8 @@ class BatchedRemoveStatusService < BaseService
     # Batch by source account
     statuses.group_by(&:account_id).each_value do |account_statuses|
       account = account_statuses.first.account
+
+      next unless account
 
       unpush_from_home_timelines(account, account_statuses)
       unpush_from_list_timelines(account, account_statuses)
@@ -104,9 +107,9 @@ class BatchedRemoveStatusService < BaseService
     payload = @json_payloads[status.id]
     redis.pipelined do
       @mentions[status.id].each do |mention|
-        redis.publish("timeline:direct:#{mention.account.id}", payload) if mention.account.local?
+        FeedManager.instance.unpush_from_direct(mention.account, status) if mention.account.local?
       end
-      redis.publish("timeline:direct:#{status.account.id}", payload) if status.account.local?
+      FeedManager.instance.unpush_from_direct(status.account, status) if status.account.local?
     end
   end
 
@@ -118,10 +121,6 @@ class BatchedRemoveStatusService < BaseService
     recipients.each do |recipient_id|
       @salmon_batches << [build_xml(status.stream_entry), status.account_id, recipient_id]
     end
-  end
-
-  def redis
-    Redis.current
   end
 
   def build_xml(stream_entry)

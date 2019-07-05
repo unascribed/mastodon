@@ -7,9 +7,11 @@ import StatusContent from 'flavours/glitch/components/status_content';
 import Avatar from 'flavours/glitch/components/avatar';
 import RelativeTimestamp from 'flavours/glitch/components/relative_timestamp';
 import DisplayName from 'flavours/glitch/components/display_name';
+import AttachmentList from 'flavours/glitch/components/attachment_list';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
 const messages = defineMessages({
+  cancel_reblog: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   reblog: { id: 'status.reblog', defaultMessage: 'Boost' },
 });
 
@@ -24,6 +26,7 @@ export default class BoostModal extends ImmutablePureComponent {
     status: ImmutablePropTypes.map.isRequired,
     onReblog: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
+    missingMediaDescription: PropTypes.bool,
     intl: PropTypes.object.isRequired,
   };
 
@@ -40,7 +43,9 @@ export default class BoostModal extends ImmutablePureComponent {
     if (e.button === 0) {
       e.preventDefault();
       this.props.onClose();
-      this.context.router.history.push(`/accounts/${this.props.status.getIn(['account', 'id'])}`);
+      let state = {...this.context.router.history.location.state};
+      state.mastodonBackSteps = (state.mastodonBackSteps || 0) + 1;
+      this.context.router.history.push(`/accounts/${this.props.status.getIn(['account', 'id'])}`, state);
     }
   }
 
@@ -49,7 +54,8 @@ export default class BoostModal extends ImmutablePureComponent {
   }
 
   render () {
-    const { status, intl } = this.props;
+    const { status, missingMediaDescription, intl } = this.props;
+    const buttonText = status.get('reblogged') ? messages.cancel_reblog : messages.reblog;
 
     return (
       <div className='modal-root__modal boost-modal'>
@@ -70,12 +76,25 @@ export default class BoostModal extends ImmutablePureComponent {
             </div>
 
             <StatusContent status={status} />
+
+            {status.get('media_attachments').size > 0 && (
+              <AttachmentList
+                compact
+                media={status.get('media_attachments')}
+              />
+            )}
           </div>
         </div>
 
         <div className='boost-modal__action-bar'>
-          <div><FormattedMessage id='boost_modal.combo' defaultMessage='You can press {combo} to skip this next time' values={{ combo: <span>Shift + <i className='fa fa-retweet' /></span> }} /></div>
-          <Button text={intl.formatMessage(messages.reblog)} onClick={this.handleReblog} ref={this.setRef} />
+          <div>
+            { missingMediaDescription ?
+                <FormattedMessage id='boost_modal.missing_description' defaultMessage='This toot contains some media without description' />
+              :
+                <FormattedMessage id='boost_modal.combo' defaultMessage='You can press {combo} to skip this next time' values={{ combo: <span>Shift + <i className='fa fa-retweet' /></span> }} />
+            }
+          </div>
+          <Button text={intl.formatMessage(buttonText)} onClick={this.handleReblog} ref={this.setRef} />
         </div>
       </div>
     );

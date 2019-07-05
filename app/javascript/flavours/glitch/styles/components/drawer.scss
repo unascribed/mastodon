@@ -73,130 +73,31 @@
   }
 }
 
-.drawer--search {
+.search {
   position: relative;
   margin-bottom: 10px;
   flex: none;
 
   @include limited-single-column('screen and (max-width: 360px)') { margin-bottom: 0 }
   @include single-column('screen and (max-width: 630px)') { font-size: 16px }
-
-  input {
-    display: block;
-    box-sizing: border-box;
-    margin: 0;
-    border: none;
-    padding: 10px 30px 10px 10px;
-    width: 100%;
-    height: 36px;
-    outline: 0;
-    color: $darker-text-color;
-    background: $ui-base-color;
-    font-size: 14px;
-    font-family: inherit;
-    line-height: 16px;
-
-    &:focus {
-      outline: 0;
-      background: lighten($ui-base-color, 4%);
-    }
-  }
-
-  & > .icon {
-    display: block;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 18px;
-    height: 18px;
-    color: $secondary-text-color;
-    font-size: 18px;
-    line-height: 18px;
-    z-index: 2;
-
-    .fa {
-      display: inline-block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      opacity: 0;
-      cursor: default;
-      pointer-events: none;
-      transition: all 100ms linear;
-    }
-
-    .fa-search {
-      opacity: 0.3;
-      transform: rotate(0deg);
-    }
-
-    .fa-times-circle {
-      transform: rotate(-90deg);
-      cursor: pointer;
-
-      &:hover { color: $primary-text-color }
-    }
-  }
-
-  &.active {
-    & > .icon {
-      .fa-search {
-        opacity: 0;
-        transform: rotate(90deg);
-      }
-
-      .fa-times-circle {
-        opacity: 0.3;
-        pointer-events: auto;
-        transform: rotate(0deg);
-      }
-    }
-  }
 }
 
-.drawer--search--popout {
-  box-sizing: border-box;
-  margin-top: 10px;
-  border-radius: 4px;
-  padding: 10px 14px 14px 14px;
-  box-shadow: 2px 4px 15px rgba($base-shadow-color, 0.4);
-  color: $light-text-color;
-  background: $simple-background-color;
-
-  h4 {
-    margin-bottom: 10px;
-    color: $light-text-color;
-    font-size: 13px;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-
-  ul { margin-bottom: 10px }
-  li { padding: 4px 0 }
-
-  em {
-    color: $inverted-text-color;
-    font-weight: 500;
-  }
+.search-popout {
+  @include search-popout();
 }
 
 .drawer--account {
   padding: 10px;
   color: $darker-text-color;
+  display: flex;
+  align-items: center;
 
-  & > a {
+  a {
     color: inherit;
     text-decoration: none;
   }
 
-  & > .avatar {
-    float: left;
-    margin-right: 10px;
-  }
-
-  & > .acct {
+  .acct {
     display: block;
     color: $secondary-text-color;
     font-weight: 500;
@@ -206,55 +107,47 @@
   }
 }
 
+.navigation-bar__profile {
+  flex: 1 1 auto;
+  margin-left: 8px;
+  overflow: hidden;
+}
+
 .drawer--results {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0;
   background: $ui-base-color;
   overflow-x: hidden;
   overflow-y: auto;
 
   & > header {
-    border-bottom: 1px solid darken($ui-base-color, 4%);
-    padding: 15px 10px;
     color: $dark-text-color;
     background: lighten($ui-base-color, 2%);
-    font-size: 14px;
+    padding: 15px;
     font-weight: 500;
+    font-size: 16px;
+    cursor: default;
+
+    .fa {
+      display: inline-block;
+      margin-right: 5px;
+    }
   }
 
   & > section {
-    background: $ui-base-color;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 
     h5 {
-      position: relative;
+      background: darken($ui-base-color, 4%);
+      border-bottom: 1px solid lighten($ui-base-color, 8%);
+      cursor: default;
+      display: flex;
+      padding: 15px;
+      font-weight: 500;
+      font-size: 16px;
+      color: $dark-text-color;
 
-      &::before {
-        content: "";
-        display: block;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        width: 100%;
-        height: 0;
-        border-top: 1px solid lighten($ui-base-color, 8%);
-      }
-
-      span {
+      .fa {
         display: inline-block;
-        background: $ui-base-color;
-        color: $darker-text-color;
-        font-size: 14px;
-        font-weight: 500;
-        padding: 10px;
-        position: relative;
-        z-index: 1;
-        cursor: default;
+        margin-right: 5px;
       }
     }
 
@@ -311,6 +204,7 @@
   background: lighten($ui-base-color, 13%) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="#{hex-color($ui-base-color)}"/></svg>') no-repeat bottom / 100% auto;
   flex: 1;
   min-height: 47px;
+  display: none;
 
   > img {
     display: block;
@@ -329,6 +223,10 @@
     height: 100%;
     border: none;
     cursor: inherit;
+  }
+
+  @media screen and (min-height: 640px) {
+    display: block;
   }
 }
 

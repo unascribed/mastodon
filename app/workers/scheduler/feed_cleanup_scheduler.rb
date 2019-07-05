@@ -2,12 +2,14 @@
 
 class Scheduler::FeedCleanupScheduler
   include Sidekiq::Worker
+  include Redisable
 
   sidekiq_options unique: :until_executed, retry: 0
 
   def perform
     clean_home_feeds!
     clean_list_feeds!
+    clean_direct_feeds!
   end
 
   private
@@ -18,6 +20,10 @@ class Scheduler::FeedCleanupScheduler
 
   def clean_list_feeds!
     clean_feeds!(inactive_list_ids, :list)
+  end
+
+  def clean_direct_feeds!
+    clean_feeds!(inactive_account_ids, :direct)
   end
 
   def clean_feeds!(ids, type)
@@ -56,9 +62,5 @@ class Scheduler::FeedCleanupScheduler
 
   def feed_manager
     FeedManager.instance
-  end
-
-  def redis
-    Redis.current
   end
 end

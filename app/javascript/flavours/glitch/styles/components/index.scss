@@ -25,6 +25,7 @@
   text-decoration: none;
   text-overflow: ellipsis;
   transition: all 100ms ease-in;
+  transition-property: background-color;
   white-space: nowrap;
   width: auto;
 
@@ -33,6 +34,18 @@
   &:hover {
     background-color: lighten($ui-highlight-color, 7%);
     transition: all 200ms ease-out;
+    transition-property: background-color;
+  }
+
+  &--destructive {
+    transition: none;
+
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: $error-red;
+      transition: none;
+    }
   }
 
   &:disabled {
@@ -88,6 +101,10 @@
     &:hover {
       border-color: lighten($ui-primary-color, 4%);
       color: lighten($darker-text-color, 4%);
+    }
+
+    &:disabled {
+      opacity: 0.5;
     }
   }
 
@@ -265,15 +282,17 @@
 
 .display-name {
   display: block;
-  padding: 6px 0;
   max-width: 100%;
-  height: 36px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
   strong {
-    display: block;
     height: 18px;
     font-size: 16px;
     font-weight: 500;
@@ -293,7 +312,7 @@
     white-space: nowrap;
   }
 
-  &:hover {
+  > a:hover {
     strong {
       text-decoration: underline;
     }
@@ -533,7 +552,44 @@
   }
 }
 
+.column,
+.drawer {
+  flex: 1 1 100%;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 631px) {
+  .columns-area {
+    padding: 0;
+  }
+
+  .column,
+  .drawer {
+    flex: 0 0 auto;
+    padding: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    &:first-child {
+      padding-left: 10px;
+    }
+
+    &:last-child {
+      padding-right: 10px;
+    }
+  }
+
+  .columns-area > div {
+    .column,
+    .drawer {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+}
+
 .tabs-bar {
+  box-sizing: border-box;
   display: flex;
   background: lighten($ui-base-color, 8%);
   flex: 0 0 auto;
@@ -544,22 +600,19 @@
   display: block;
   flex: 1 1 auto;
   padding: 15px 10px;
+  padding-bottom: 13px;
   color: $primary-text-color;
   text-decoration: none;
   text-align: center;
   font-size: 14px;
   font-weight: 500;
   border-bottom: 2px solid lighten($ui-base-color, 8%);
-  transition: all 200ms linear;
+  transition: all 50ms linear;
+  transition-property: border-bottom, background, color;
 
   .fa {
     font-weight: 400;
     font-size: 16px;
-  }
-
-  &.active {
-    border-bottom: 2px solid $ui-highlight-color;
-    color: $highlight-text-color;
   }
 
   &:hover,
@@ -567,20 +620,46 @@
   &:active {
     @include multi-columns('screen and (min-width: 631px)') {
       background: lighten($ui-base-color, 14%);
-      transition: all 100ms linear;
+      border-bottom-color: lighten($ui-base-color, 14%);
     }
   }
 
-  span:last-child {
+  &.active {
+    border-bottom: 2px solid $ui-highlight-color;
+    color: $highlight-text-color;
+  }
+
+  span {
     margin-left: 5px;
     display: none;
   }
+
+  span.icon {
+    margin-left: 0;
+    display: inline;
+  }
 }
 
-@include multi-columns('screen and (min-width: 631px)', $parent: null) {
-  .tabs-bar {
-    display: none;
+.icon-with-badge {
+  position: relative;
+
+  &__badge {
+    position: absolute;
+    left: 9px;
+    top: -13px;
+    background: $ui-highlight-color;
+    border: 2px solid lighten($ui-base-color, 8%);
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 14px;
+    color: $primary-text-color;
   }
+}
+
+.column-link--transparent .icon-with-badge__badge {
+  border-color: darken($ui-base-color, 8%);
 }
 
 .scrollable {
@@ -651,7 +730,7 @@
   padding: 0;
   border-radius: 30px;
   background-color: $ui-base-color;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .react-toggle:hover:not(.react-toggle--disabled) .react-toggle-track {
@@ -704,7 +783,6 @@
 }
 
 .react-toggle-thumb {
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
   position: absolute;
   top: 1px;
   left: 1px;
@@ -715,6 +793,7 @@
   background-color: darken($simple-background-color, 2%);
   box-sizing: border-box;
   transition: all 0.25s ease;
+  transition-property: border-color, left;
 }
 
 .react-toggle--checked .react-toggle-thumb {
@@ -1053,15 +1132,50 @@
 }
 
 .spoiler-button {
-  display: none;
-  left: 4px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   position: absolute;
-  text-shadow: 0 1px 1px $base-shadow-color, 1px 0 1px $base-shadow-color;
-  top: 4px;
   z-index: 100;
 
-  &.spoiler-button--visible {
+  &--minified {
+    display: flex;
+    left: 4px;
+    top: 4px;
+    width: auto;
+    height: auto;
+    align-items: center;
+  }
+
+  &--hidden {
+    display: none;
+  }
+
+  &__overlay {
     display: block;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    border: 0;
+
+    &__label {
+      display: inline-block;
+      background: rgba($base-overlay-background, 0.5);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: $primary-text-color;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      .spoiler-button__overlay__label {
+        background: rgba($base-overlay-background, 0.8);
+      }
+    }
   }
 }
 
@@ -1218,6 +1332,52 @@
   height: 1em;
 }
 
+.layout-toggle {
+  display: flex;
+  padding: 5px;
+
+  button {
+    box-sizing: border-box;
+    flex: 0 0 50%;
+    background: transparent;
+    padding: 5px;
+    border: 0;
+    position: relative;
+
+    &:hover,
+    &:focus,
+    &:active {
+      svg path:first-child {
+        fill: lighten($ui-base-color, 16%);
+      }
+    }
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+
+    path:first-child {
+      fill: lighten($ui-base-color, 12%);
+    }
+
+    path:last-child {
+      fill: darken($ui-base-color, 14%);
+    }
+  }
+
+  &__active {
+    color: $ui-highlight-color;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: lighten($ui-base-color, 12%);
+    border-radius: 50%;
+    padding: 0.35rem;
+  }
+}
+
 ::-webkit-scrollbar-thumb {
   border-radius: 0;
 }
@@ -1259,7 +1419,6 @@ noscript {
 @import 'domains';
 @import 'status';
 @import 'modal';
-@import 'metadata';
 @import 'composer';
 @import 'columns';
 @import 'regeneration_indicator';
@@ -1273,3 +1432,4 @@ noscript {
 @import 'emoji_picker';
 @import 'local_settings';
 @import 'error_boundary';
+@import 'single_column';

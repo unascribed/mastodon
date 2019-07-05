@@ -6,18 +6,21 @@ import { fetchAccount } from 'flavours/glitch/actions/accounts';
 import { expandAccountMediaTimeline } from 'flavours/glitch/actions/timelines';
 import LoadingIndicator from 'flavours/glitch/components/loading_indicator';
 import Column from 'flavours/glitch/features/ui/components/column';
-import ColumnBackButton from 'flavours/glitch/components/column_back_button';
+import ProfileColumnHeader from 'flavours/glitch/features/account/components/profile_column_header';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { getAccountGallery } from 'flavours/glitch/selectors';
 import MediaItem from './components/media_item';
 import HeaderContainer from 'flavours/glitch/features/account_timeline/containers/header_container';
 import { ScrollContainer } from 'react-router-scroll-4';
 import LoadMore from 'flavours/glitch/components/load_more';
+import MissingIndicator from 'flavours/glitch/components/missing_indicator';
+import { openModal } from 'flavours/glitch/actions/modal';
 
 const mapStateToProps = (state, props) => ({
-  medias: getAccountGallery(state, props.params.accountId),
+  isAccount: !!state.getIn(['accounts', props.params.accountId]),
+  attachments: getAccountGallery(state, props.params.accountId),
   isLoading: state.getIn(['timelines', `account:${props.params.accountId}:media`, 'isLoading']),
-  hasMore:   state.getIn(['timelines', `account:${props.params.accountId}:media`, 'hasMore']),
+  hasMore: state.getIn(['timelines', `account:${props.params.accountId}:media`, 'hasMore']),
 });
 
 class LoadMoreMedia extends ImmutablePureComponent {
@@ -48,9 +51,14 @@ export default class AccountGallery extends ImmutablePureComponent {
   static propTypes = {
     params: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    medias: ImmutablePropTypes.list.isRequired,
+    attachments: ImmutablePropTypes.list.isRequired,
     isLoading: PropTypes.bool,
     hasMore: PropTypes.bool,
+    isAccount: PropTypes.bool,
+  };
+
+  state = {
+    width: 323,
   };
 
   componentDidMount () {
@@ -65,13 +73,17 @@ export default class AccountGallery extends ImmutablePureComponent {
     }
   }
 
+  handleHeaderClick = () => {
+    this.column.scrollTop();
+  }
+
   handleScrollToBottom = () => {
     if (this.props.hasMore) {
-      this.handleLoadMore(this.props.medias.size > 0 ? this.props.medias.last().getIn(['status', 'id']) : undefined);
+      this.handleLoadMore(this.props.attachments.size > 0 ? this.props.attachments.last().getIn(['status', 'id']) : undefined);
     }
   }
 
-  handleScroll = (e) => {
+  handleScroll = e => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const offset = scrollHeight - scrollTop - clientHeight;
 
@@ -84,7 +96,7 @@ export default class AccountGallery extends ImmutablePureComponent {
     this.props.dispatch(expandAccountMediaTimeline(this.props.params.accountId, { maxId }));
   };
 
-  handleLoadOlder = (e) => {
+  handleLoadOlder = e => {
     e.preventDefault();
     this.handleScrollToBottom();
   }
@@ -94,12 +106,40 @@ export default class AccountGallery extends ImmutablePureComponent {
     return !(location.state && location.state.mastodonModalOpen);
   }
 
+  setColumnRef = c => {
+    this.column = c;
+  }
+
+  handleOpenMedia = attachment => {
+    if (attachment.get('type') === 'video') {
+      this.props.dispatch(openModal('VIDEO', { media: attachment, status: attachment.get('status') }));
+    } else {
+      const media = attachment.getIn(['status', 'media_attachments']);
+      const index = media.findIndex(x => x.get('id') === attachment.get('id'));
+
+      this.props.dispatch(openModal('MEDIA', { media, index, status: attachment.get('status') }));
+    }
+  }
+
+  handleRef = c => {
+    if (c) {
+      this.setState({ width: c.offsetWidth });
+    }
+  }
+
   render () {
-    const { medias, isLoading, hasMore } = this.props;
+    const { attachments, isLoading, hasMore, isAccount } = this.props;
+    const { width } = this.state;
 
-    let loadOlder = null;
+    if (!isAccount) {
+      return (
+        <Column>
+          <MissingIndicator />
+        </Column>
+      );
+    }
 
-    if (!medias && isLoading) {
+    if (!attachments && isLoading) {
       return (
         <Column>
           <LoadingIndicator />
@@ -107,35 +147,31 @@ export default class AccountGallery extends ImmutablePureComponent {
       );
     }
 
-    if (hasMore && !(isLoading && medias.size === 0)) {
+    let loadOlder = null;
+
+    if (hasMore && !(isLoading && attachments.size === 0)) {
       loadOlder = <LoadMore visible={!isLoading} onClick={this.handleLoadOlder} />;
     }
 
     return (
-      <Column>
-        <ColumnBackButton />
+      <Column ref={this.setColumnRef}>
+        <ProfileColumnHeader onClick={this.handleHeaderClick} />
 
         <ScrollContainer scrollKey='account_gallery' shouldUpdateScroll={this.shouldUpdateScroll}>
           <div className='scrollable scrollable--flex' onScroll={this.handleScroll}>
             <HeaderContainer accountId={this.props.params.accountId} />
 
-            <div role='feed' className='account-gallery__container'>
-              {medias.map((media, index) => media === null ? (
-                <LoadMoreMedia
-                  key={'more:' + medias.getIn(index + 1, 'id')}
-                  maxId={index > 0 ? medias.getIn(index - 1, 'id') : null}
-                  onLoadMore={this.handleLoadMore}
-                />
+            <div role='feed' className='account-gallery__container' ref={this.handleRef}>
+              {attachments.map((attachment, index) => attachment === null ? (
+                <LoadMoreMedia key={'more:' + attachments.getIn(index + 1, 'id')} maxId={index > 0 ? attachments.getIn(index - 1, 'id') : null} onLoadMore={this.handleLoadMore} />
               ) : (
-                <MediaItem
-                  key={media.get('id')}
-                  media={media}
-                />
+                <MediaItem key={attachment.get('id')} attachment={attachment} displayWidth={width} onOpenMedia={this.handleOpenMedia} />
               ))}
+
               {loadOlder}
             </div>
 
-            {isLoading && medias.size === 0 && (
+            {isLoading && attachments.size === 0 && (
               <div className='scrollable__append'>
                 <LoadingIndicator />
               </div>

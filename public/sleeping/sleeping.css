@@ -1,5 +1,5 @@
 body:after {
-  content: "z193";
+  content: "z200";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -57,40 +57,9 @@ body:after {
   opacity: 0;
 }
 
-.account__header .account__header__display-name,
-.account__header .account__header__username, {
-  width: auto;
-  max-width: calc(100% - 110px);
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-all;
-}
-
 .account--follows-info,
 .account--muted-info,
 .account--blocked-info{
-  color: #FFF;
-}
-
-.account__header .account__header__display-name {
-  display: table-cell;
-  height: 75px;
-  vertical-align: bottom;
-  font-size: 24px;
-  font-weight: 300;
-  color: #FFF;
-}
-
-.account__header .account__header__username {
-  color: #FFF;
-  opacity: 0.7;
-}
-
-.account__header .account__header__content {
-  clear: both;
-  text-align: center;
-  padding-top: 10px;
   color: #FFF;
 }
 
@@ -106,17 +75,6 @@ body .column-header__notif-cleaning-buttons button:hover {
 }
 body .column-header__notif-cleaning-buttons button.active {
   opacity: 0.5;
-}
-
-[dir=rtl] .account__header__avatar {
-  float: right;
-  margin-right: 0px;
-  margin-left: 12px;
-}
-
-.account__header__avatar {
-  float: left;
-  margin-right: 12px;
 }
 
 .wide .column {
@@ -296,7 +254,7 @@ body .column-header__notif-cleaning-buttons button.active {
   color: #000;
 }
 
-.button {
+.button, .button.logo-button {
   background: var(--sleeping-accent);
   color: var(--sleeping-accent-contrast);
 }
@@ -458,7 +416,9 @@ body .column-header__notif-cleaning-buttons button.active {
 .favourite-modal__action-bar > div,
 .confirmation-modal__action-bar > div,
 .mute-modal__action-bar > div,
-.status.light .display-name span {
+.status.light .display-name span,
+.poll__footer,
+.poll__link {
   color: inherit;
   opacity: 0.7;
 }
@@ -500,25 +460,11 @@ button[aria-label=Favourite].active:active > i {
   color: #03A9F4;
 }
 
-.contents > .account__header {
-  background-size: cover;
-}
-
-.account__header > div.drawer--account {
-  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
-  box-sizing: border-box;
-  color: #FFF;
-}
-.account__header > div.drawer--account > .acct {
-  color: #FFF;
-}
-
 .drawer {
   padding-bottom: 0;
 }
 .mastodon {
   filter: none !important;
-  margin-left: -10px;
   max-height: 205px;
   margin-top: auto;
 }
@@ -540,14 +486,14 @@ button[aria-label=Favourite].active:active > i {
 }
 .drawer__inner__mastodon {
   background: none !important;
-  overflow-x: visible;
-  overflow-y: auto;
   box-sizing: border-box;
 }
 .column > .scrollable {
   background: none;
 }
-.column {
+.column,
+.account__header__image,
+.account__header__bar {
   background: var(--sleeping-background);
   color: var(--sleeping-background-contrast);
 }
@@ -668,7 +614,7 @@ button[aria-label=Favourite].active:active > i {
   color: var(--sleeping-background-contrast);
   opacity: 0.5;
 }
-.drawer--search input {
+.search__input, .search {
   background: var(--sleeping-background-plus5);
   color: var(--sleeping-background-plus5-contrast);
 }
@@ -786,63 +732,10 @@ button.icon-button i.fa-retweet {
   border-top: none;
 }
 
-.account__header {
-  background-size: auto 238px;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-color: var(--sleeping-background);
-}
-
-.account__header > div {
-  /* i'm old fashioned, shoot me */
-  background-color: transparent;
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75));
-  background-size: 100% 100px;
-  background-position: center 138px;
-  background-repeat: no-repeat;
-  text-align: start;
-  padding-top: 138px;
-}
-
-.account__header .account__header__display-name,
-.account__header .account__header__username, {
-  width: auto;
-  max-width: calc(100% - 110px);
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-all;
-}
-
 .account--follows-info,
 .account--muted-info,
 .account--blocked-info{
   color: #FFF;
-}
-
-.account__header .account__header__display-name {
-  display: table-cell;
-  height: 75px;
-  vertical-align: bottom;
-  font-size: 24px;
-  font-weight: 300;
-  color: #FFF;
-}
-
-.account__header .account__header__username {
-  color: #FFF;
-  opacity: 0.7;
-}
-
-.account__header .account__header__content {
-  clear: both;
-  text-align: center;
-  padding-top: 10px;
-  color: var(--sleeping-background-contrast);
-}
-
-.drawer__inner .drawer--account {
-  padding: 10px;
 }
 
 .account__action-bar__tab.active {
@@ -861,12 +754,12 @@ button.icon-button i.fa-retweet {
   border-left-color: var(--sleeping-primary-contrast);
 }
 
-.drawer--search input:focus {
+.search__input:focus {
   background: var(--sleeping-background-plus15);
   color: var(--sleeping-background-plus15-contrast);
 }
 
-.drawer--search > .icon {
+.search .icon {
   color: var(--sleeping-background-plus10-contrast);
 }
 .status__content .status__content__spoiler-link {
@@ -950,7 +843,7 @@ button.icon-button i.fa-retweet {
   opacity: 0;
 }
 .emoji-button {
-  background: url('/sleeping/emoji.svg');
+  background-image: url('/sleeping/emoji.svg');
   background-repeat: no-repeat;
   opacity: 0.5;
 }
@@ -958,7 +851,7 @@ button.icon-button i.fa-retweet {
   opacity: 1;
 }
 .sleeping-background-plus10-contrast-is-dark .emoji-button {
-  background: url('/sleeping/emoji-dark.svg');
+  background-image: url('/sleeping/emoji-dark.svg');
 }
 .emoji-mart-bar:first-child {
   background: var(--sleeping-primary);
@@ -1261,20 +1154,29 @@ a[href="/admin/custom_emojis/new"] {
   opacity: 0.7;
 }
 
+.drawer, .drawer__pager, .drawer__inner, .drawer__inner__mastodon {
+  overflow: visible !important;
+}
 .drawer__inner {
   background: none;
 }
+.drawer__inner__mastodon {
+  display: flex;
+}
 .mastodon {
-  padding: 0;
-  margin: 0;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 293px !important;
+  align-self: flex-end;
+  margin-left: -10px;
 }
 .mobile .mastodon {
   display: none;
 }
-.setting-meta__label, .setting-radio__label, .setting-toggle__label {
+.setting-meta__label, .setting-radio__label, .setting-toggle__label,
+.account__header__tabs__name h1, .account__header__bio .account__header__content, .account__header__tabs__name h1 small,
+.drawer--account,
+.drawer--account .acct {
   color: inherit !important; /* YOU DO NOT KNOW BETTER THAN YOUR PARENT ABOUT WHAT COLOR YOU SHOULD BE */
+}
+.composer {
+  overflow-y: auto;
+  max-height: 100%;
 }

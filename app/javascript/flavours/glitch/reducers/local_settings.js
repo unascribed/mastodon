@@ -15,9 +15,12 @@ const initialState = ImmutableMap({
   show_reply_count : false,
   always_show_spoilers_field: false,
   confirm_missing_media_description: false,
+  confirm_boost_missing_media_description: false,
   confirm_before_clearing_draft: true,
   preselect_on_reply: true,
   inline_preview_cards: true,
+  hicolor_privacy_icons: false,
+  show_content_type_choice: false,
   content_warnings : ImmutableMap({
     auto_unfold : false,
     filter      : null,
@@ -39,8 +42,9 @@ const initialState = ImmutableMap({
     show_action_bar : true,
   }),
   media     : ImmutableMap({
-    letterbox   : true,
-    fullwidth   : true,
+    letterbox        : true,
+    fullwidth        : true,
+    reveal_behind_cw : false,
   }),
   notifications : ImmutableMap({
     favicon_badge : false,

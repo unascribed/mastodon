@@ -46,6 +46,18 @@
     vertical-align: middle;
     margin-right: 5px;
   }
+
+  &-composite {
+    @include avatar-radius;
+    overflow: hidden;
+
+    & div {
+      @include avatar-radius;
+      float: left;
+      position: relative;
+      box-sizing: border-box;
+    }
+  }
 }
 
 .account__avatar-overlay {
@@ -79,68 +91,8 @@
   background: lighten($ui-base-color, 4%);
 }
 
-.account__header {
-  flex: 0 0 auto;
-  background: lighten($ui-base-color, 4%);
-  text-align: center;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-
-  .account__avatar {
-    @include avatar-radius();
-    @include avatar-size(90px);
-    display: block;
-    margin: 0 auto 10px;
-    overflow: hidden;
-  }
-
-  &.inactive {
-    opacity: 0.5;
-
-    .account__header__avatar {
-      filter: grayscale(100%);
-    }
-
-    .account__header__username {
-      color: $secondary-text-color;
-    }
-  }
-
-  & > div {
-    background: rgba(lighten($ui-base-color, 4%), 0.9);
-    padding: 20px 10px;
-  }
-
-  .account__header__content {
-    color: $secondary-text-color;
-  }
-
-  .account__header__display-name {
-    color: $primary-text-color;
-    display: inline-block;
-    width: 100%;
-    font-size: 20px;
-    line-height: 27px;
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .account__header__username {
-    color: $highlight-text-color;
-    font-size: 14px;
-    font-weight: 400;
-    display: block;
-    margin-bottom: 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
 .account__disclaimer {
   padding: 10px;
-  border-top: 1px solid lighten($ui-base-color, 8%);
   color: $dark-text-color;
 
   strong {
@@ -166,39 +118,6 @@
   }
 }
 
-.account__header__content {
-  color: $darker-text-color;
-  font-size: 14px;
-  font-weight: 400;
-  overflow: hidden;
-  word-break: normal;
-  word-wrap: break-word;
-
-  p {
-    margin-bottom: 20px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  a {
-    color: inherit;
-    text-decoration: underline;
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
-}
-
-.account__header__display-name {
-  .emojione {
-    width: 25px;
-    height: 25px;
-  }
-}
-
 .account__action-bar {
   border-top: 1px solid lighten($ui-base-color, 8%);
   border-bottom: 1px solid lighten($ui-base-color, 8%);
@@ -206,24 +125,6 @@
   overflow: hidden;
   flex: 0 0 auto;
   display: flex;
-}
-
-.account__action-bar-dropdown {
-  padding: 10px;
-
-  .dropdown--active {
-    .dropdown__content.dropdown__right {
-      left: 6px;
-      right: initial;
-    }
-
-    &::after {
-      bottom: initial;
-      margin-left: 11px;
-      margin-top: -7px;
-      right: initial;
-    }
-  }
 }
 
 .account__action-bar-links {
@@ -240,6 +141,10 @@
   border-left: 1px solid lighten($ui-base-color, 8%);
   padding: 10px 0;
   border-bottom: 4px solid transparent;
+
+  &:first-child {
+    border-left: 0;
+  }
 
   &.active {
     border-bottom: 4px solid $ui-highlight-color;
@@ -268,15 +173,6 @@
   abbr {
     color: $highlight-text-color;
   }
-}
-
-.account__header__avatar {
-  background-size: 90px 90px;
-  display: block;
-  height: 90px;
-  margin: 0 auto 10px;
-  overflow: hidden;
-  width: 90px;
 }
 
 .account-authorize {
@@ -339,14 +235,41 @@
   display: block;
   font-weight: 500;
   margin-bottom: 10px;
+}
 
-  .column-settings__hashtag-select {
+.column-settings__hashtags {
+  .column-settings__row {
+    margin-bottom: 15px;
+  }
+
+  .column-select {
     &__control {
       @include search-input();
     }
 
+    &__placeholder {
+      color: $dark-text-color;
+      padding-left: 2px;
+      font-size: 12px;
+    }
+
+    &__value-container {
+      padding-left: 6px;
+    }
+
     &__multi-value {
       background: lighten($ui-base-color, 8%);
+
+      &__remove {
+        cursor: pointer;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: lighten($ui-base-color, 12%);
+          color: lighten($darker-text-color, 4%);
+        }
+      }
     }
 
     &__multi-value__label,
@@ -354,9 +277,42 @@
       color: $darker-text-color;
     }
 
-    &__indicator-separator,
+    &__clear-indicator,
     &__dropdown-indicator {
-      display: none;
+      cursor: pointer;
+      transition: none;
+      color: $dark-text-color;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: lighten($dark-text-color, 4%);
+      }
+    }
+
+    &__indicator-separator {
+      background-color: lighten($ui-base-color, 8%);
+    }
+
+    &__menu {
+      @include search-popout();
+      padding: 0;
+      background: $ui-secondary-color;
+    }
+
+    &__menu-list {
+      padding: 6px;
+    }
+
+    &__option {
+      color: $inverted-text-color;
+      border-radius: 4px;
+      font-size: 14px;
+
+      &--is-focused,
+      &--is-selected {
+        background: darken($ui-secondary-color, 10%);
+      }
     }
   }
 }
@@ -367,94 +323,38 @@
   }
 }
 
-.account--follows-info {
+.relationship-tag {
   color: $primary-text-color;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  opacity: 0.7;
-  display: inline-block;
+  margin-bottom: 4px;
+  display: block;
   vertical-align: top;
-  background-color: rgba($base-overlay-background, 0.4);
+  background-color: $base-overlay-background;
   text-transform: uppercase;
   font-size: 11px;
   font-weight: 500;
   padding: 4px;
   border-radius: 4px;
-}
-
-.account--muting-info {
-  color: $primary-text-color;
-  position: absolute;
-  top: 40px;
-  left: 10px;
   opacity: 0.7;
-  display: inline-block;
-  vertical-align: top;
-  background-color: rgba($base-overlay-background, 0.4);
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: 500;
-  padding: 4px;
-  border-radius: 4px;
-}
 
-.account--action-button {
-  position: absolute;
-  top: 10px;
-  right: 20px;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .account-gallery__container {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  padding: 2px;
+  padding: 4px 2px;
 }
 
 .account-gallery__item {
-  flex-grow: 1;
-  width: 50%;
-  overflow: hidden;
+  border: none;
+  box-sizing: border-box;
+  display: block;
   position: relative;
-
-  &::before {
-    content: "";
-    display: block;
-    padding-top: 100%;
-  }
-
-  a {
-    display: block;
-    width: calc(100% - 4px);
-    height: calc(100% - 4px);
-    margin: 2px;
-    top: 0;
-    left: 0;
-    background-color: $base-overlay-background;
-    background-size: cover;
-    background-position: center;
-    position: absolute;
-    color: $ui-primary-color;
-    text-decoration: none;
-    border-radius: 4px;
-
-    &:hover,
-    &:active,
-    &:focus {
-      outline: 0;
-      color: $ui-secondary-color;
-
-      &::before {
-        content: "";
-        display: block;
-        width: 100%;
-        height: 100%;
-        background: rgba($base-overlay-background, 0.3);
-        border-radius: 4px;
-      }
-    }
-  }
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 2px;
 
   &__icons {
     position: absolute;
@@ -554,8 +454,193 @@
   }
 }
 
-.account__header .roles {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  padding: 0 15px;
+.account__header__content {
+  color: $darker-text-color;
+  font-size: 14px;
+  font-weight: 400;
+  overflow: hidden;
+  word-break: normal;
+  word-wrap: break-word;
+
+  p {
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.account__header {
+  overflow: hidden;
+
+  &.inactive {
+    opacity: 0.5;
+
+    .account__header__image,
+    .account__avatar {
+      filter: grayscale(100%);
+    }
+  }
+
+  &__info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+
+  &__image {
+    overflow: hidden;
+    height: 145px;
+    position: relative;
+    background: darken($ui-base-color, 4%);
+
+    img {
+      object-fit: cover;
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  }
+
+  &__bar {
+    position: relative;
+    background: lighten($ui-base-color, 4%);
+    padding: 5px;
+    border-bottom: 1px solid lighten($ui-base-color, 12%);
+
+    .avatar {
+      display: block;
+      flex: 0 0 auto;
+      width: 94px;
+      margin-left: -2px;
+
+      .account__avatar {
+        background: darken($ui-base-color, 8%);
+        border: 2px solid lighten($ui-base-color, 4%);
+      }
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    align-items: flex-start;
+    padding: 7px 5px;
+    margin-top: -55px;
+
+    &__buttons {
+      display: flex;
+      align-items: center;
+      padding-top: 55px;
+      overflow: hidden;
+
+      .icon-button {
+        border: 1px solid lighten($ui-base-color, 12%);
+        border-radius: 4px;
+        box-sizing: content-box;
+        padding: 2px;
+      }
+
+      .button {
+        margin: 0 8px;
+      }
+    }
+
+    &__name {
+      padding: 5px;
+
+      .account-role {
+        vertical-align: top;
+      }
+
+      .emojione {
+        width: 22px;
+        height: 22px;
+      }
+
+      h1 {
+        font-size: 16px;
+        line-height: 24px;
+        color: $primary-text-color;
+        font-weight: 500;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        small {
+          display: block;
+          font-size: 14px;
+          color: $darker-text-color;
+          font-weight: 400;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+  }
+
+  &__bio {
+    overflow: hidden;
+    margin: 0 -5px;
+
+    .account__header__content {
+      padding: 20px 15px;
+      padding-bottom: 5px;
+      color: $primary-text-color;
+    }
+
+    .account__header__fields {
+      margin: 0;
+      border-top: 1px solid lighten($ui-base-color, 12%);
+
+      a {
+        color: lighten($ui-highlight-color, 8%);
+      }
+
+      dl:first-child .verified {
+        border-radius: 0 4px 0 0;
+      }
+
+      .verified a {
+        color: $valid-value-color;
+      }
+    }
+  }
+
+  &__extra {
+    margin-top: 4px;
+
+    &__links {
+      font-size: 14px;
+      color: $darker-text-color;
+
+      a {
+        display: inline-block;
+        color: $darker-text-color;
+        text-decoration: none;
+        padding: 10px;
+        padding-top: 20px;
+        font-weight: 500;
+
+        strong {
+          font-weight: 700;
+          color: $primary-text-color;
+        }
+      }
+    }
+  }
 }

@@ -21,11 +21,12 @@ class FanOutOnWriteService < BaseService
       deliver_to_lists(status)
     end
 
-    return if status.account.silenced? || !status.public_visibility? || status.reblog?
+    return if status.account.silenced? || !status.public_visibility?
+    return if status.reblog? && !Setting.show_reblogs_in_public_timelines
 
     deliver_to_hashtags(status)
 
-    return if status.reply? && status.in_reply_to_account_id != status.account_id
+    return if status.reply? && status.in_reply_to_account_id != status.account_id && !Setting.show_replies_in_public_timelines
 
     deliver_to_public(status)
     deliver_to_media(status) if status.media_attachments.any?
@@ -36,6 +37,7 @@ class FanOutOnWriteService < BaseService
   def deliver_to_self(status)
     Rails.logger.debug "Delivering status #{status.id} to author"
     FeedManager.instance.push_to_home(status.account, status)
+    FeedManager.instance.push_to_direct(status.account, status) if status.direct_visibility?
   end
 
   def deliver_to_followers(status)
@@ -97,11 +99,9 @@ class FanOutOnWriteService < BaseService
   def deliver_to_direct_timelines(status)
     Rails.logger.debug "Delivering status #{status.id} to direct timelines"
 
-    status.mentions.includes(:account).each do |mention|
-      Redis.current.publish("timeline:direct:#{mention.account.id}", @payload) if mention.account.local?
+    FeedInsertWorker.push_bulk(status.mentions.includes(:account).map(&:account).select { |mentioned_account| mentioned_account.local? }) do |account|
+      [status.id, account.id, :direct]
     end
-
-    Redis.current.publish("timeline:direct:#{status.account.id}", @payload) if status.account.local?
   end
 
   def deliver_to_own_conversation(status)
