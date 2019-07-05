@@ -1,11 +1,15 @@
 body:after {
-  content: "z200";
+  content: "z204";
   position: fixed;
   opacity: 0.5;
   left: 18px;
   bottom: 8px;
   color: #FFF;
   font-weight: bold;
+}
+
+.account__header__bio .account__header__fields a {
+    color: var(--sleeping-link);
 }
 
 .glitch.local-settings__navigation__item.sleeping {
@@ -1179,4 +1183,22 @@ a[href="/admin/custom_emojis/new"] {
 .composer {
   overflow-y: auto;
   max-height: 100%;
+}
+
+body {
+  height: 100vh !important;
+}
+
+.muted .status__content__text, .muted .status__content a, .muted .status__content p, .muted .status__display-name strong {
+    color: inherit;
+}
+
+.poll__chart {
+    background: var(--sleeping-primary);
+    opacity: 0.5;
+}
+
+.poll__chart.leading {
+    background: var(--sleeping-primary);
+    opacity: 0.7;
 }

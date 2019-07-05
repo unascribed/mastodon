@@ -116,6 +116,11 @@ ENV RAILS_SERVE_STATIC_FILES="true"
 # Set the run user
 USER mastodon
 
+# Precompile assets
+RUN cd ~ && \
+        OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder rails assets:precompile && \
+        yarn cache clean
+
 # Set the work dir and the container entry point
 WORKDIR /opt/mastodon
 ENTRYPOINT ["/tini", "--"]
