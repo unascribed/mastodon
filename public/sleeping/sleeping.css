@@ -1,5 +1,5 @@
 body:after {
-  content: "z204";
+  content: "z205";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -1201,4 +1201,9 @@ body {
 .poll__chart.leading {
     background: var(--sleeping-primary);
     opacity: 0.7;
+}
+
+.status.status-direct:not(.read) {
+    background: transparent;
+    border-bottom-color: var(--sleeping-background-minus5);
 }
