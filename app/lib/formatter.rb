@@ -30,8 +30,6 @@ class Formatter
 
   include ActionView::Helpers::TextHelper
 
-  MAGIC = "\u{106041}"
-
   def format(status, **options)
     if status.reblog?
       prepend_reblog = status.reblog.account.acct
@@ -59,9 +57,7 @@ class Formatter
 
     html = raw_content
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog
-    if status.content_type == 'text/markdown'
-      html = format_markdown(html.gsub(/([0-9]\.|\*|-)/, "#{MAGIC}\\1")).gsub(MAGIC, "");
-    end
+    html = format_markdown(html) if status.content_type == 'text/markdown'
     html = encode_and_link_urls(html, linkable_accounts, keep_html: %w(text/markdown text/html).include?(status.content_type))
     html = reformat(html) if %w(text/markdown text/html).include?(status.content_type)
     html = encode_custom_emojis(html, status.emojis, options[:autoplay]) if options[:custom_emojify]
