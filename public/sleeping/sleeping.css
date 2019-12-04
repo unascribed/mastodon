@@ -1286,3 +1286,9 @@ body .positive-hint, .admin-wrapper .content .positive-hint {
 	font-weight: normal;
 	color: var(--sleeping-background-plus10-contrast);
 }
+
+.status__content .e-content blockquote, .status__content .status__content__text blockquote {
+  border-left-color: var(--sleeping-primary);
+  color: var(--sleeping-background-contrast);
+  opacity: 0.9;
+}
