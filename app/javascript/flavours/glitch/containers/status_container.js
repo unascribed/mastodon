@@ -1,7 +1,7 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import Status from 'flavours/glitch/components/status';
-import { makeGetStatus } from 'flavours/glitch/selectors';
+import { List as ImmutableList } from 'immutable';
+import { makeGetStatus, regexFromFilters, toServerSideType } from 'flavours/glitch/selectors';
 import {
   replyCompose,
   mentionCompose,
@@ -17,25 +17,31 @@ import {
   pin,
   unpin,
 } from 'flavours/glitch/actions/interactions';
-import { blockAccount } from 'flavours/glitch/actions/accounts';
 import { muteStatus, unmuteStatus, deleteStatus } from 'flavours/glitch/actions/statuses';
 import { initMuteModal } from 'flavours/glitch/actions/mutes';
+import { initBlockModal } from 'flavours/glitch/actions/blocks';
 import { initReport } from 'flavours/glitch/actions/reports';
 import { openModal } from 'flavours/glitch/actions/modal';
 import { changeLocalSetting } from 'flavours/glitch/actions/local_settings';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { boostModal, favouriteModal, deleteModal } from 'flavours/glitch/util/initial_state';
+import { filterEditLink } from 'flavours/glitch/util/backend_links';
 import { showAlertForError } from '../actions/alerts';
+import AccountContainer from 'flavours/glitch/containers/account_container';
+import Spoilers from '../components/spoilers';
+import Icon from 'flavours/glitch/components/icon';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
   deleteMessage: { id: 'confirmations.delete.message', defaultMessage: 'Are you sure you want to delete this status?' },
   redraftConfirm: { id: 'confirmations.redraft.confirm', defaultMessage: 'Delete & redraft' },
   redraftMessage: { id: 'confirmations.redraft.message', defaultMessage: 'Are you sure you want to delete this status and re-draft it? You will lose all replies, boosts and favourites to it.' },
-  blockConfirm: { id: 'confirmations.block.confirm', defaultMessage: 'Block' },
   replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
-  blockAndReport: { id: 'confirmations.block.block_and_report', defaultMessage: 'Block & Report' },
+  unfilterConfirm: { id: 'confirmations.unfilter.confirm', defaultMessage: 'Show' },
+  author: { id: 'confirmations.unfilter.author', defaultMessage: 'Author' },
+  matchingFilters: { id: 'confirmations.unfilter.filters', defaultMessage: 'Matching {count, plural, one {filter} other {filters}}' },
+  editFilter: { id: 'confirmations.unfilter.edit_filter', defaultMessage: 'Edit filter' },
 });
 
 const makeMapStateToProps = () => {
@@ -69,11 +75,12 @@ const makeMapStateToProps = () => {
   return mapStateToProps;
 };
 
-const mapDispatchToProps = (dispatch, { intl }) => ({
+const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
 
   onReply (status, router) {
     dispatch((_, getState) => {
       let state = getState();
+
       if (state.getIn(['local_settings', 'confirm_before_clearing_draft']) && state.getIn(['compose', 'text']).trim().length !== 0) {
         dispatch(openModal('CONFIRM', {
           message: intl.formatMessage(messages.replyMessage),
@@ -99,7 +106,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     dispatch((_, getState) => {
       let state = getState();
       if (state.getIn(['local_settings', 'confirm_boost_missing_media_description']) && status.get('media_attachments').some(item => !item.get('description')) && !status.get('reblogged')) {
-        dispatch(openModal('BOOST', { status, onReblog: this.handleModalReblog, missingMediaDescription: true }));
+        dispatch(openModal('BOOST', { status, onReblog: this.onModalReblog, missingMediaDescription: true }));
       } else if (e.shiftKey || !boostModal) {
         this.onModalReblog(status);
       } else {
@@ -177,16 +184,49 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onBlock (status) {
     const account = status.get('account');
-    dispatch(openModal('CONFIRM', {
-      message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong>@{account.get('acct')}</strong> }} />,
-      confirm: intl.formatMessage(messages.blockConfirm),
-      onConfirm: () => dispatch(blockAccount(account.get('id'))),
-      secondary: intl.formatMessage(messages.blockAndReport),
-      onSecondary: () => {
-        dispatch(blockAccount(account.get('id')));
-        dispatch(initReport(account, status));
-      },
-    }));
+    dispatch(initBlockModal(account));
+  },
+
+  onUnfilter (status, onConfirm) {
+    dispatch((_, getState) => {
+      let state = getState();
+      const serverSideType = toServerSideType(contextType);
+      const enabledFilters = state.get('filters', ImmutableList()).filter(filter => filter.get('context').includes(serverSideType) && (filter.get('expires_at') === null || Date.parse(filter.get('expires_at')) > (new Date()))).toArray();
+      const searchIndex = status.get('search_index');
+      const matchingFilters = enabledFilters.filter(filter => regexFromFilters([filter]).test(searchIndex));
+      dispatch(openModal('CONFIRM', {
+        message: [
+          <FormattedMessage id='confirmations.unfilter' defaultMessage='Information about this filtered toot' />,
+          <div className='filtered-status-info'>
+            <Spoilers spoilerText={intl.formatMessage(messages.author)}>
+              <AccountContainer id={status.getIn(['account', 'id'])} />
+            </Spoilers>
+            <Spoilers spoilerText={intl.formatMessage(messages.matchingFilters, {count: matchingFilters.size})}>
+              <ul>
+                {matchingFilters.map(filter => (
+                  <li>
+                    {filter.get('phrase')}
+                    {!!filterEditLink && ' '}
+                    {!!filterEditLink && (
+                      <a
+                        target='_blank'
+                        className='filtered-status-edit-link'
+                        title={intl.formatMessage(messages.editFilter)}
+                        href={filterEditLink(filter.get('id'))}
+                      >
+                        <Icon icon='pencil' />
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </Spoilers>
+          </div>
+        ],
+        confirm: intl.formatMessage(messages.unfilterConfirm),
+        onConfirm: onConfirm,
+      }));
+    });
   },
 
   onReport (status) {

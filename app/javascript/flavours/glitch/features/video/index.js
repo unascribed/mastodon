@@ -6,6 +6,7 @@ import { throttle } from 'lodash';
 import classNames from 'classnames';
 import { isFullscreen, requestFullscreen, exitFullscreen } from 'flavours/glitch/util/fullscreen';
 import { displayMedia, useBlurhash } from 'flavours/glitch/util/initial_state';
+import Icon from 'flavours/glitch/components/icon';
 import { decode } from 'blurhash';
 
 const messages = defineMessages({
@@ -18,9 +19,10 @@ const messages = defineMessages({
   close: { id: 'video.close', defaultMessage: 'Close video' },
   fullscreen: { id: 'video.fullscreen', defaultMessage: 'Full screen' },
   exit_fullscreen: { id: 'video.exit_fullscreen', defaultMessage: 'Exit full screen' },
+  download: { id: 'video.download', defaultMessage: 'Download file' },
 });
 
-const formatTime = secondsNum => {
+export const formatTime = secondsNum => {
   let hours   = Math.floor(secondsNum / 3600);
   let minutes = Math.floor((secondsNum - (hours * 3600)) / 60);
   let seconds = secondsNum - (hours * 3600) - (minutes * 60);
@@ -84,8 +86,8 @@ export const getPointerPosition = (el, event) => {
   return position;
 };
 
-@injectIntl
-export default class Video extends React.PureComponent {
+export default @injectIntl
+class Video extends React.PureComponent {
 
   static propTypes = {
     preview: PropTypes.string,
@@ -101,6 +103,7 @@ export default class Video extends React.PureComponent {
     fullwidth: PropTypes.bool,
     detailed: PropTypes.bool,
     inline: PropTypes.bool,
+    editable: PropTypes.bool,
     cacheWidth: PropTypes.func,
     intl: PropTypes.object.isRequired,
     visible: PropTypes.bool,
@@ -393,7 +396,7 @@ export default class Video extends React.PureComponent {
   }
 
   render () {
-    const { preview, src, inline, startTime, onOpenVideo, onCloseVideo, intl, alt, letterbox, fullwidth, detailed, sensitive, link } = this.props;
+    const { preview, src, inline, startTime, onOpenVideo, onCloseVideo, intl, alt, letterbox, fullwidth, detailed, sensitive, link, editable } = this.props;
     const { containerWidth, currentTime, duration, volume, buffer, dragging, paused, fullscreen, hovered, muted, revealed } = this.state;
     const progress = (currentTime / duration) * 100;
     const playerStyle = {};
@@ -401,7 +404,7 @@ export default class Video extends React.PureComponent {
     const volumeWidth = (muted) ? 0 : volume * this.volWidth;
     const volumeHandleLoc = (muted) ? this.volHandleOffset(0) : this.volHandleOffset(volume);
 
-    const computedClass = classNames('video-player', { inactive: !revealed, detailed, inline: inline && !fullscreen, fullscreen, letterbox, 'full-width': fullwidth });
+    const computedClass = classNames('video-player', { inactive: !revealed, detailed, inline: inline && !fullscreen, fullscreen, editable, letterbox, 'full-width': fullwidth });
 
     let { width, height } = this.props;
 
@@ -443,7 +446,7 @@ export default class Video extends React.PureComponent {
       >
         <canvas width={32} height={32} ref={this.setCanvasRef} className={classNames('media-gallery__preview', { 'media-gallery__preview--hidden': revealed })} />
 
-        {revealed && <video
+        {(revealed || editable) && <video
           ref={this.setVideoRef}
           src={src}
           poster={preview}
@@ -465,7 +468,7 @@ export default class Video extends React.PureComponent {
           onVolumeChange={this.handleVolumeChange}
         />}
 
-        <div className={classNames('spoiler-button', { 'spoiler-button--hidden': revealed })}>
+        <div className={classNames('spoiler-button', { 'spoiler-button--hidden': revealed || editable })}>
           <button type='button' className='spoiler-button__overlay' onClick={this.toggleReveal}>
             <span className='spoiler-button__overlay__label'>{warning}</span>
           </button>
@@ -485,9 +488,10 @@ export default class Video extends React.PureComponent {
 
           <div className='video-player__buttons-bar'>
             <div className='video-player__buttons left'>
-              <button type='button' aria-label={intl.formatMessage(paused ? messages.play : messages.pause)} onClick={this.togglePlay}><i className={classNames('fa fa-fw', { 'fa-play': paused, 'fa-pause': !paused })} /></button>
-              <button type='button' aria-label={intl.formatMessage(muted ? messages.unmute : messages.mute)} onClick={this.toggleMute}><i className={classNames('fa fa-fw', { 'fa-volume-off': muted, 'fa-volume-up': !muted })} /></button>
+              <button type='button' aria-label={intl.formatMessage(paused ? messages.play : messages.pause)} onClick={this.togglePlay} autoFocus={detailed}><Icon id={paused ? 'play' : 'pause'} fixedWidth /></button>
+              <button type='button' aria-label={intl.formatMessage(muted ? messages.unmute : messages.mute)} onClick={this.toggleMute}><Icon id={muted ? 'volume-off' : 'volume-up'} fixedWidth /></button>
               <div className='video-player__volume' onMouseDown={this.handleVolumeMouseDown} ref={this.setVolumeRef}>
+                &nbsp;
                 <div className='video-player__volume__current' style={{ width: `${volumeWidth}px` }} />
                 <span
                   className={classNames('video-player__volume__handle')}
@@ -508,10 +512,16 @@ export default class Video extends React.PureComponent {
             </div>
 
             <div className='video-player__buttons right'>
-              {!onCloseVideo && <button type='button' aria-label={intl.formatMessage(messages.hide)} onClick={this.toggleReveal}><i className='fa fa-fw fa-eye-slash' /></button>}
-              {(!fullscreen && onOpenVideo) && <button type='button' aria-label={intl.formatMessage(messages.expand)} onClick={this.handleOpenVideo}><i className='fa fa-fw fa-expand' /></button>}
-              {onCloseVideo && <button type='button' aria-label={intl.formatMessage(messages.close)} onClick={this.handleCloseVideo}><i className='fa fa-fw fa-compress' /></button>}
-              <button type='button' aria-label={intl.formatMessage(fullscreen ? messages.exit_fullscreen : messages.fullscreen)} onClick={this.toggleFullscreen}><i className={classNames('fa fa-fw', { 'fa-arrows-alt': !fullscreen, 'fa-compress': fullscreen })} /></button>
+              {(!onCloseVideo && !editable) && <button type='button' aria-label={intl.formatMessage(messages.hide)} onClick={this.toggleReveal}><Icon id='eye-slash' fixedWidth /></button>}
+              {(!fullscreen && onOpenVideo) && <button type='button' aria-label={intl.formatMessage(messages.expand)} onClick={this.handleOpenVideo}><Icon id='expand' fixedWidth /></button>}
+              {onCloseVideo && <button type='button' aria-label={intl.formatMessage(messages.close)} onClick={this.handleCloseVideo}><Icon id='compress' fixedWidth /></button>}
+              <button type='button' aria-label={intl.formatMessage(messages.download)}>
+                <a className='video-player__download__icon' href={this.props.src} download>
+                  <Icon id={'download'} fixedWidth />
+                </a>
+              </button>
+              <button type='button' aria-label={intl.formatMessage(fullscreen ? messages.exit_fullscreen : messages.fullscreen)} onClick={this.toggleFullscreen}><Icon id={fullscreen ? 'compress' : 'arrows-alt'} fixedWidth /></button>
+
             </div>
           </div>
         </div>

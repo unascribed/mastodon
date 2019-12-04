@@ -73,11 +73,16 @@ class Search extends React.PureComponent {
     onShow: PropTypes.func.isRequired,
     openInRoute: PropTypes.bool,
     intl: PropTypes.object.isRequired,
+    singleColumn: PropTypes.bool,
   };
 
   state = {
     expanded: false,
   };
+
+  setRef = c => {
+    this.searchForm = c;
+  }
 
   handleChange = (e) => {
     const { onChange } = this.props;
@@ -103,10 +108,14 @@ class Search extends React.PureComponent {
   }
 
   handleFocus = () => {
-    const { onShow } = this.props;
     this.setState({ expanded: true });
-    if (onShow) {
-      onShow();
+    this.props.onShow();
+
+    if (this.searchForm && !this.props.singleColumn) {
+      const { left, right } = this.searchForm.getBoundingClientRect();
+      if (left < 0 || right > (window.innerWidth || document.documentElement.clientWidth)) {
+        this.searchForm.scrollIntoView();
+      }
     }
   }
 
@@ -135,6 +144,7 @@ class Search extends React.PureComponent {
         <label>
           <span style={{ display: 'none' }}>{intl.formatMessage(messages.placeholder)}</span>
           <input
+            ref={this.setRef}
             className='search__input'
             type='text'
             placeholder={intl.formatMessage(messages.placeholder)}
@@ -153,8 +163,8 @@ class Search extends React.PureComponent {
           role='button'
           tabIndex='0'
         >
-          <Icon icon='search' className={hasValue ? '' : 'active'} />
-          <Icon icon='times-circle' className={hasValue ? 'active' : ''} />
+          <Icon id='search' className={hasValue ? '' : 'active'} />
+          <Icon id='times-circle' className={hasValue ? 'active' : ''} />
         </div>
 
         <Overlay show={expanded && !hasValue} placement='bottom' target={this}>

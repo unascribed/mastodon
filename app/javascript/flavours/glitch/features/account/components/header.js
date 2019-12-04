@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { autoPlayGif, me, isStaff } from 'flavours/glitch/util/initial_state';
+import { preferencesLink, profileLink, accountAdminLink } from 'flavours/glitch/util/backend_links';
 import classNames from 'classnames';
 import Icon from 'flavours/glitch/components/icon';
 import Avatar from 'flavours/glitch/components/avatar';
@@ -15,6 +16,7 @@ import DropdownMenuContainer from 'flavours/glitch/containers/dropdown_menu_cont
 const messages = defineMessages({
   unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
+  cancel_follow_request: { id: 'account.cancel_follow_request', defaultMessage: 'Cancel follow request' },
   requested: { id: 'account.requested', defaultMessage: 'Awaiting approval. Click to cancel follow request' },
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
   edit_profile: { id: 'account.edit_profile', defaultMessage: 'Edit profile' },
@@ -68,7 +70,48 @@ class Header extends ImmutablePureComponent {
   };
 
   openEditProfile = () => {
-    window.open('/settings/profile', '_blank');
+    window.open(profileLink, '_blank');
+  }
+
+  _updateEmojis () {
+    const node = this.node;
+
+    if (!node || autoPlayGif) {
+      return;
+    }
+
+    const emojis = node.querySelectorAll('.custom-emoji');
+
+    for (var i = 0; i < emojis.length; i++) {
+      let emoji = emojis[i];
+      if (emoji.classList.contains('status-emoji')) {
+        continue;
+      }
+      emoji.classList.add('status-emoji');
+
+      emoji.addEventListener('mouseenter', this.handleEmojiMouseEnter, false);
+      emoji.addEventListener('mouseleave', this.handleEmojiMouseLeave, false);
+    }
+  }
+
+  componentDidMount () {
+    this._updateEmojis();
+  }
+
+  componentDidUpdate () {
+    this._updateEmojis();
+  }
+
+  handleEmojiMouseEnter = ({ target }) => {
+    target.src = target.getAttribute('data-original');
+  }
+
+  handleEmojiMouseLeave = ({ target }) => {
+    target.src = target.getAttribute('data-static');
+  }
+
+  setRef = (c) => {
+    this.node = c;
   }
 
   render () {
@@ -100,13 +143,13 @@ class Header extends ImmutablePureComponent {
       if (!account.get('relationship')) { // Wait until the relationship is loaded
         actionBtn = '';
       } else if (account.getIn(['relationship', 'requested'])) {
-        actionBtn = <Button className='logo-button' text={intl.formatMessage(messages.requested)} onClick={this.props.onFollow} />;
+        actionBtn = <Button className='logo-button' text={intl.formatMessage(messages.cancel_follow_request)} title={intl.formatMessage(messages.requested)} onClick={this.props.onFollow} />;
       } else if (!account.getIn(['relationship', 'blocking'])) {
         actionBtn = <Button className={classNames('logo-button', { 'button--destructive': account.getIn(['relationship', 'following']) })} text={intl.formatMessage(account.getIn(['relationship', 'following']) ? messages.unfollow : messages.follow)} onClick={this.props.onFollow} />;
       } else if (account.getIn(['relationship', 'blocking'])) {
         actionBtn = <Button className='logo-button' text={intl.formatMessage(messages.unblock, { name: account.get('username') })} onClick={this.props.onBlock} />;
       }
-    } else {
+    } else if (profileLink) {
       actionBtn = <Button className='logo-button' text={intl.formatMessage(messages.edit_profile)} onClick={this.openEditProfile} />;
     }
 
@@ -115,7 +158,7 @@ class Header extends ImmutablePureComponent {
     }
 
     if (account.get('locked')) {
-      lockedIcon = <Icon icon='lock' title={intl.formatMessage(messages.account_locked)} />;
+      lockedIcon = <Icon id='lock' title={intl.formatMessage(messages.account_locked)} />;
     }
 
     if (account.get('id') !== me) {
@@ -130,8 +173,8 @@ class Header extends ImmutablePureComponent {
     }
 
     if (account.get('id') === me) {
-      menu.push({ text: intl.formatMessage(messages.edit_profile), href: '/settings/profile' });
-      menu.push({ text: intl.formatMessage(messages.preferences), href: '/settings/preferences' });
+      if (profileLink) menu.push({ text: intl.formatMessage(messages.edit_profile), href: profileLink });
+      if (preferencesLink) menu.push({ text: intl.formatMessage(messages.preferences), href: preferencesLink });
       menu.push({ text: intl.formatMessage(messages.pins), to: '/pinned' });
       menu.push(null);
       menu.push({ text: intl.formatMessage(messages.follow_requests), to: '/follow_requests' });
@@ -181,9 +224,9 @@ class Header extends ImmutablePureComponent {
       }
     }
 
-    if (account.get('id') !== me && isStaff) {
+    if (account.get('id') !== me && isStaff && accountAdminLink) {
       menu.push(null);
-      menu.push({ text: intl.formatMessage(messages.admin_account, { name: account.get('username') }), href: `/admin/accounts/${account.get('id')}` });
+      menu.push({ text: intl.formatMessage(messages.admin_account, { name: account.get('username') }), href: accountAdminLink(account.get('id')) });
     }
 
     const content          = { __html: account.get('note_emojified') };
@@ -193,7 +236,7 @@ class Header extends ImmutablePureComponent {
     const acct            = account.get('acct').indexOf('@') === -1 && domain ? `${account.get('acct')}@${domain}` : account.get('acct');
 
     return (
-      <div className={classNames('account__header', { inactive: !!account.get('moved') })}>
+      <div className={classNames('account__header', { inactive: !!account.get('moved') })} ref={this.setRef}>
         <div className='account__header__image'>
           <div className='account__header__info'>
             {info}
@@ -204,7 +247,7 @@ class Header extends ImmutablePureComponent {
 
         <div className='account__header__bar'>
           <div className='account__header__tabs'>
-            <a className='avatar' href={account.get('url')} rel='noopener' target='_blank'>
+            <a className='avatar' href={account.get('url')} rel='noopener noreferrer' target='_blank'>
               <Avatar account={account} size={90} />
             </a>
 
@@ -233,10 +276,10 @@ class Header extends ImmutablePureComponent {
                       <dt dangerouslySetInnerHTML={{ __html: proof.get('provider') }} />
 
                       <dd className='verified'>
-                        <a href={proof.get('proof_url')} target='_blank' rel='noopener'><span title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(proof.get('updated_at'), dateFormatOptions) })}>
+                        <a href={proof.get('proof_url')} target='_blank' rel='noopener noreferrer'><span title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(proof.get('updated_at'), dateFormatOptions) })}>
                           <Icon id='check' className='verified__mark' />
                         </span></a>
-                        <a href={proof.get('profile_url')} target='_blank' rel='noopener'><span dangerouslySetInnerHTML={{ __html: ' '+proof.get('provider_username') }} /></a>
+                        <a href={proof.get('profile_url')} target='_blank' rel='noopener noreferrer'><span dangerouslySetInnerHTML={{ __html: ' '+proof.get('provider_username') }} /></a>
                       </dd>
                     </dl>
                   ))}

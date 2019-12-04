@@ -49,7 +49,13 @@ class PostStatusService < BaseService
   def preprocess_attributes!
     if @text.blank? && @options[:spoiler_text].present?
      @text = '.'
-     @text = @media.find(&:video?) ? '📹' : '🖼' if @media.size > 0
+     if @media.find(&:video?) || @media.find(&:gifv?)
+       @text = '📹'
+     elsif @media.find(&:audio?)
+       @text = '🎵'
+     elsif @media.find(&:image?)
+       @text = '🖼'
+     end
     end
     @visibility   = @options[:visibility] || @account.user&.setting_default_privacy
     @visibility   = :unlisted if @visibility == :public && @account.silenced?
@@ -91,12 +97,7 @@ class PostStatusService < BaseService
   def postprocess_status!
     LinkCrawlWorker.perform_async(@status.id) unless @status.spoiler_text?
     DistributionWorker.perform_async(@status.id)
-
-    unless @status.local_only?
-      Pubsubhubbub::DistributionWorker.perform_async(@status.stream_entry.id)
-      ActivityPub::DistributionWorker.perform_async(@status.id)
-    end
-
+    ActivityPub::DistributionWorker.perform_async(@status.id) unless @status.local_only?
     PollExpirationNotifyWorker.perform_at(@status.poll.expires_at, @status.poll.id) if @status.poll
   end
 
@@ -183,7 +184,7 @@ class PostStatusService < BaseService
   def poll_attributes
     return if @options[:poll].blank?
 
-    @options[:poll].merge(account: @account)
+    @options[:poll].merge(account: @account, voters_count: 0)
   end
 
   def scheduled_options

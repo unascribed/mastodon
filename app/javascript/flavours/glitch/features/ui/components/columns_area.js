@@ -12,7 +12,20 @@ import BundleContainer from '../containers/bundle_container';
 import ColumnLoading from './column_loading';
 import DrawerLoading from './drawer_loading';
 import BundleColumnError from './bundle_column_error';
-import { Compose, Notifications, HomeTimeline, CommunityTimeline, PublicTimeline, HashtagTimeline, DirectTimeline, FavouritedStatuses, BookmarkedStatuses, ListTimeline } from 'flavours/glitch/util/async-components';
+import {
+  Compose,
+  Notifications,
+  HomeTimeline,
+  CommunityTimeline,
+  PublicTimeline,
+  HashtagTimeline,
+  DirectTimeline,
+  FavouritedStatuses,
+  BookmarkedStatuses,
+  ListTimeline,
+  Directory,
+} from 'flavours/glitch/util/async-components';
+import Icon from 'flavours/glitch/components/icon';
 import ComposePanel from './compose_panel';
 import NavigationPanel from './navigation_panel';
 
@@ -30,6 +43,7 @@ const componentMap = {
   'FAVOURITES': FavouritedStatuses,
   'BOOKMARKS': BookmarkedStatuses,
   'LIST': ListTimeline,
+  'DIRECTORY': Directory,
 };
 
 const shouldHideFAB = path => path.match(/^\/statuses\/|^\/search|^\/getting-started/);
@@ -38,8 +52,8 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
 });
 
-@component => injectIntl(component, { withRef: true })
-export default class ColumnsArea extends ImmutablePureComponent {
+export default @(component => injectIntl(component, { withRef: true }))
+class ColumnsArea extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object.isRequired,
@@ -169,10 +183,10 @@ export default class ColumnsArea extends ImmutablePureComponent {
     const columnIndex = getIndex(this.context.router.history.location.pathname);
 
     if (singleColumn) {
-      const floatingActionButton = shouldHideFAB(this.context.router.history.location.pathname) ? null : <Link key='floating-action-button' to='/statuses/new' className='floating-action-button' aria-label={intl.formatMessage(messages.publish)}><i className='fa fa-pencil' /></Link>;
+      const floatingActionButton = shouldHideFAB(this.context.router.history.location.pathname) ? null : <Link key='floating-action-button' to='/statuses/new' className='floating-action-button' aria-label={intl.formatMessage(messages.publish)}><Icon id='pencil' /></Link>;
 
       const content = columnIndex !== -1 ? (
-        <ReactSwipeableViews key='content' index={columnIndex} onChangeIndex={this.handleSwipe} onTransitionEnd={this.handleAnimationEnd} animateTransitions={shouldAnimate} springConfig={{ duration: '400ms', delay: '0s', easeFunction: 'ease' }} style={{ height: '100%' }} disabled={!swipeToChangeColumns}>
+        <ReactSwipeableViews key='content' hysteresis={0.2} threshold={15} index={columnIndex} onChangeIndex={this.handleSwipe} onTransitionEnd={this.handleAnimationEnd} animateTransitions={shouldAnimate} springConfig={{ duration: '400ms', delay: '0s', easeFunction: 'ease' }} style={{ height: '100%' }} disabled={!swipeToChangeColumns}>
           {links.map(this.renderView)}
         </ReactSwipeableViews>
       ) : (

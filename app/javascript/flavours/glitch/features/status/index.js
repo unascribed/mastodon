@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { createSelector } from 'reselect';
 import { fetchStatus } from 'flavours/glitch/actions/statuses';
 import MissingIndicator from 'flavours/glitch/components/missing_indicator';
 import DetailedStatus from './components/detailed_status';
@@ -25,9 +26,9 @@ import {
   directCompose,
 } from 'flavours/glitch/actions/compose';
 import { changeLocalSetting } from 'flavours/glitch/actions/local_settings';
-import { blockAccount } from 'flavours/glitch/actions/accounts';
 import { muteStatus, unmuteStatus, deleteStatus } from 'flavours/glitch/actions/statuses';
 import { initMuteModal } from 'flavours/glitch/actions/mutes';
+import { initBlockModal } from 'flavours/glitch/actions/blocks';
 import { initReport } from 'flavours/glitch/actions/reports';
 import { makeGetStatus } from 'flavours/glitch/selectors';
 import { ScrollContainer } from 'react-router-scroll-4';
@@ -35,31 +36,84 @@ import ColumnBackButton from 'flavours/glitch/components/column_back_button';
 import ColumnHeader from '../../components/column_header';
 import StatusContainer from 'flavours/glitch/containers/status_container';
 import { openModal } from 'flavours/glitch/actions/modal';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { HotKeys } from 'react-hotkeys';
 import { boostModal, favouriteModal, deleteModal } from 'flavours/glitch/util/initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from 'flavours/glitch/util/fullscreen';
 import { autoUnfoldCW } from 'flavours/glitch/util/content_warning';
 import { textForScreenReader, defaultMediaVisibility } from 'flavours/glitch/components/status';
+import Icon from 'flavours/glitch/components/icon';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
   deleteMessage: { id: 'confirmations.delete.message', defaultMessage: 'Are you sure you want to delete this status?' },
   redraftConfirm: { id: 'confirmations.redraft.confirm', defaultMessage: 'Delete & redraft' },
   redraftMessage: { id: 'confirmations.redraft.message', defaultMessage: 'Are you sure you want to delete this status and re-draft it? You will lose all replies, boosts and favourites to it.' },
-  blockConfirm: { id: 'confirmations.block.confirm', defaultMessage: 'Block' },
   revealAll: { id: 'status.show_more_all', defaultMessage: 'Show more for all' },
   hideAll: { id: 'status.show_less_all', defaultMessage: 'Show less for all' },
   detailedStatus: { id: 'status.detailed_status', defaultMessage: 'Detailed conversation view' },
   replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
-  blockAndReport: { id: 'confirmations.block.block_and_report', defaultMessage: 'Block & Report' },
   tootHeading: { id: 'column.toot', defaultMessage: 'Toots and replies' },
 });
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
+
+  const getAncestorsIds = createSelector([
+    (_, { id }) => id,
+    state => state.getIn(['contexts', 'inReplyTos']),
+  ], (statusId, inReplyTos) => {
+    let ancestorsIds = Immutable.List();
+    ancestorsIds = ancestorsIds.withMutations(mutable => {
+      let id = statusId;
+
+      while (id) {
+        mutable.unshift(id);
+        id = inReplyTos.get(id);
+      }
+    });
+
+    return ancestorsIds;
+  });
+
+  const getDescendantsIds = createSelector([
+    (_, { id }) => id,
+    state => state.getIn(['contexts', 'replies']),
+    state => state.get('statuses'),
+  ], (statusId, contextReplies, statuses) => {
+    let descendantsIds = [];
+    const ids = [statusId];
+
+    while (ids.length > 0) {
+      let id        = ids.shift();
+      const replies = contextReplies.get(id);
+
+      if (statusId !== id) {
+        descendantsIds.push(id);
+      }
+
+      if (replies) {
+        replies.reverse().forEach(reply => {
+          ids.unshift(reply);
+        });
+      }
+    }
+
+    let insertAt = descendantsIds.findIndex((id) => statuses.get(id).get('in_reply_to_account_id') !== statuses.get(id).get('account'));
+    if (insertAt !== -1) {
+      descendantsIds.forEach((id, idx) => {
+        if (idx > insertAt && statuses.get(id).get('in_reply_to_account_id') === statuses.get(id).get('account')) {
+          descendantsIds.splice(idx, 1);
+          descendantsIds.splice(insertAt, 0, id);
+          insertAt += 1;
+        }
+      });
+    }
+
+    return Immutable.List(descendantsIds);
+  });
 
   const mapStateToProps = (state, props) => {
     const status = getStatus(state, { id: props.params.statusId });
@@ -67,33 +121,8 @@ const makeMapStateToProps = () => {
     let descendantsIds = Immutable.List();
 
     if (status) {
-      ancestorsIds = ancestorsIds.withMutations(mutable => {
-        let id = status.get('in_reply_to_id');
-
-        while (id) {
-          mutable.unshift(id);
-          id = state.getIn(['contexts', 'inReplyTos', id]);
-        }
-      });
-
-      descendantsIds = descendantsIds.withMutations(mutable => {
-        const ids = [status.get('id')];
-
-        while (ids.length > 0) {
-          let id        = ids.shift();
-          const replies = state.getIn(['contexts', 'replies', id]);
-
-          if (status.get('id') !== id) {
-            mutable.push(id);
-          }
-
-          if (replies) {
-            replies.reverse().forEach(reply => {
-              ids.unshift(reply);
-            });
-          }
-        }
-      });
+      ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
+      descendantsIds = getDescendantsIds(state, { id: status.get('id') });
     }
 
     return {
@@ -109,9 +138,9 @@ const makeMapStateToProps = () => {
   return mapStateToProps;
 };
 
-@injectIntl
+export default @injectIntl
 @connect(makeMapStateToProps)
-export default class Status extends ImmutablePureComponent {
+class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
@@ -126,6 +155,7 @@ export default class Status extends ImmutablePureComponent {
     descendantsIds: ImmutablePropTypes.list,
     intl: PropTypes.object.isRequired,
     askReplyConfirmation: PropTypes.bool,
+    multiColumn: PropTypes.bool,
     domain: PropTypes.string.isRequired,
   };
 
@@ -290,6 +320,22 @@ export default class Status extends ImmutablePureComponent {
     this.props.dispatch(openModal('VIDEO', { media, time }));
   }
 
+  handleHotkeyOpenMedia = e => {
+    const { status } = this.props;
+
+    e.preventDefault();
+
+    if (status.get('media_attachments').size > 0) {
+      if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+        // TODO: toggle play/paused?
+      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+        this.handleOpenVideo(status.getIn(['media_attachments', 0]), 0);
+      } else {
+        this.handleOpenMedia(status.get('media_attachments'), 0);
+      }
+    }
+  }
+
   handleMuteClick = (account) => {
     this.props.dispatch(initMuteModal(account));
   }
@@ -308,19 +354,9 @@ export default class Status extends ImmutablePureComponent {
   }
 
   handleBlockClick = (status) => {
-    const { dispatch, intl } = this.props;
+    const { dispatch } = this.props;
     const account = status.get('account');
-
-    dispatch(openModal('CONFIRM', {
-      message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong>@{account.get('acct')}</strong> }} />,
-      confirm: intl.formatMessage(messages.blockConfirm),
-      onConfirm: () => dispatch(blockAccount(account.get('id'))),
-      secondary: intl.formatMessage(messages.blockAndReport),
-      onSecondary: () => {
-        dispatch(blockAccount(account.get('id')));
-        dispatch(initReport(account, status));
-      },
-    }));
+    dispatch(initBlockModal(account));
   }
 
   handleReport = (status) => {
@@ -478,13 +514,13 @@ export default class Status extends ImmutablePureComponent {
   render () {
     let ancestors, descendants;
     const { setExpansion } = this;
-    const { status, settings, ancestorsIds, descendantsIds, intl, domain } = this.props;
+    const { status, settings, ancestorsIds, descendantsIds, intl, domain, multiColumn } = this.props;
     const { fullscreen, isExpanded } = this.state;
 
     if (status === null) {
       return (
         <Column>
-          <ColumnBackButton />
+          <ColumnBackButton multiColumn={multiColumn} />
           <MissingIndicator />
         </Column>
       );
@@ -509,17 +545,19 @@ export default class Status extends ImmutablePureComponent {
       openProfile: this.handleHotkeyOpenProfile,
       toggleSpoiler: this.handleExpandedToggle,
       toggleSensitive: this.handleHotkeyToggleSensitive,
+      openMedia: this.handleHotkeyOpenMedia,
     };
 
     return (
-      <Column ref={this.setColumnRef} label={intl.formatMessage(messages.detailedStatus)}>
+      <Column bindToDocument={!multiColumn} ref={this.setColumnRef} label={intl.formatMessage(messages.detailedStatus)}>
         <ColumnHeader
           icon='comment'
           title={intl.formatMessage(messages.tootHeading)}
           onClick={this.handleHeaderClick}
           showBackButton
+          multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' title={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll} aria-pressed={!isExpanded ? 'false' : 'true'}><i className={`fa fa-${!isExpanded ? 'eye-slash' : 'eye'}`} /></button>
+            <button className='column-header__button' title={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll} aria-pressed={!isExpanded ? 'false' : 'true'}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
           )}
         />
 

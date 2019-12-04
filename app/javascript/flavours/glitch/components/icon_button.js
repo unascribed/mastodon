@@ -3,6 +3,7 @@ import Motion from 'flavours/glitch/util/optional_motion';
 import spring from 'react-motion/lib/spring';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import Icon from 'flavours/glitch/components/icon';
 
 export default class IconButton extends React.PureComponent {
 
@@ -11,6 +12,9 @@ export default class IconButton extends React.PureComponent {
     title: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
     onClick: PropTypes.func,
+    onMouseDown: PropTypes.func,
+    onKeyDown: PropTypes.func,
+    onKeyPress: PropTypes.func,
     size: PropTypes.number,
     active: PropTypes.bool,
     pressed: PropTypes.bool,
@@ -20,7 +24,6 @@ export default class IconButton extends React.PureComponent {
     disabled: PropTypes.bool,
     inverted: PropTypes.bool,
     animate: PropTypes.bool,
-    flip: PropTypes.bool,
     overlay: PropTypes.bool,
     tabIndex: PropTypes.string,
     label: PropTypes.string,
@@ -35,11 +38,44 @@ export default class IconButton extends React.PureComponent {
     tabIndex: '0',
   };
 
+  state = {
+    activate: false,
+    deactivate: false,
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (!nextProps.animate) return;
+
+    if (this.props.active && !nextProps.active) {
+      this.setState({ activate: false, deactivate: true });
+    } else if (!this.props.active && nextProps.active) {
+      this.setState({ activate: true, deactivate: false });
+    }
+  }
+
   handleClick = (e) =>  {
     e.preventDefault();
 
     if (!this.props.disabled) {
       this.props.onClick(e);
+    }
+  }
+
+  handleKeyPress = (e) => {
+    if (this.props.onKeyPress && !this.props.disabled) {
+      this.props.onKeyPress(e);
+    }
+  }
+
+  handleMouseDown = (e) => {
+    if (!this.props.disabled && this.props.onMouseDown) {
+      this.props.onMouseDown(e);
+    }
+  }
+
+  handleKeyDown = (e) => {
+    if (!this.props.disabled && this.props.onKeyDown) {
+      this.props.onKeyDown(e);
     }
   }
 
@@ -59,80 +95,49 @@ export default class IconButton extends React.PureComponent {
 
     const {
       active,
-      animate,
       className,
       disabled,
       expanded,
       icon,
       inverted,
-      flip,
       overlay,
       pressed,
       tabIndex,
       title,
     } = this.props;
 
+    const {
+      activate,
+      deactivate,
+    } = this.state;
+
     const classes = classNames(className, 'icon-button', {
       active,
       disabled,
       inverted,
+      activate,
+      deactivate,
       overlayed: overlay,
     });
 
-    const flipDeg = flip ? -180 : -360;
-    const rotateDeg = active ? flipDeg : 0;
-
-    const motionDefaultStyle = {
-      rotate: rotateDeg,
-    };
-
-    const springOpts = {
-      stiffness: this.props.flip ? 60 : 120,
-      damping: 7,
-    };
-    const motionStyle = {
-      rotate: animate ? spring(rotateDeg, springOpts) : 0,
-    };
-
-    if (!animate) {
-      // Perf optimization: avoid unnecessary <Motion> components unless
-      // we actually need to animate.
-      return (
-        <button
-          aria-label={title}
-          aria-pressed={pressed}
-          aria-expanded={expanded}
-          title={title}
-          className={classes}
-          onClick={this.handleClick}
-          style={style}
-          tabIndex={tabIndex}
-          disabled={disabled}
-        >
-          <i className={`fa fa-fw fa-${icon}`} aria-hidden='true' />
-        </button>
-      );
-    }
-
     return (
-      <Motion defaultStyle={motionDefaultStyle} style={motionStyle}>
-        {({ rotate }) =>
-          (<button
-            aria-label={title}
-            aria-pressed={pressed}
-            aria-expanded={expanded}
-            title={title}
-            className={classes}
-            onClick={this.handleClick}
-            style={style}
-            tabIndex={tabIndex}
-            disabled={disabled}
-          >
-            <i style={{ transform: `rotate(${rotate}deg)` }} className={`fa fa-fw fa-${icon}`} aria-hidden='true' />
-            {this.props.label}
-          </button>)
-        }
-      </Motion>
+      <button
+        aria-label={title}
+        aria-pressed={pressed}
+        aria-expanded={expanded}
+        title={title}
+        className={classes}
+        onClick={this.handleClick}
+        onMouseDown={this.handleMouseDown}
+        onKeyDown={this.handleKeyDown}
+        onKeyPress={this.handleKeyPress}
+        style={style}
+        tabIndex={tabIndex}
+        disabled={disabled}
+      >
+        <Icon id={icon} fixedWidth aria-hidden='true' />
+        {this.props.label}
+      </button>
     );
   }
 

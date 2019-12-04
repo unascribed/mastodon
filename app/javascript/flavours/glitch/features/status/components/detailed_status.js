@@ -11,10 +11,12 @@ import { FormattedDate, FormattedNumber } from 'react-intl';
 import Card from './card';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import Video from 'flavours/glitch/features/video';
+import Audio from 'flavours/glitch/features/audio';
 import VisibilityIcon from 'flavours/glitch/components/status_visibility_icon';
 import scheduleIdleTask from 'flavours/glitch/util/schedule_idle_task';
 import classNames from 'classnames';
 import PollContainer from 'flavours/glitch/containers/poll_container';
+import Icon from 'flavours/glitch/components/icon';
 
 export default class DetailedStatus extends ImmutablePureComponent {
 
@@ -131,7 +133,20 @@ export default class DetailedStatus extends ImmutablePureComponent {
     } else if (status.get('media_attachments').size > 0) {
       if (status.get('media_attachments').some(item => item.get('type') === 'unknown')) {
         media = <AttachmentList media={status.get('media_attachments')} />;
-      } else if (['video', 'audio'].includes(status.getIn(['media_attachments', 0, 'type']))) {
+      } else if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+        const attachment = status.getIn(['media_attachments', 0]);
+
+        media = (
+          <Audio
+            src={attachment.get('url')}
+            alt={attachment.get('description')}
+            duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
+            height={110}
+            preload
+          />
+        );
+        mediaIcon = 'music';
+      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
         const attachment = status.getIn(['media_attachments', 0]);
         media = (
           <Video
@@ -150,7 +165,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
             onToggleVisibility={this.props.onToggleMediaVisibility}
           />
         );
-        mediaIcon = attachment.get('type') === 'video' ? 'video-camera' : 'music';
+        mediaIcon = 'video-camera';
       } else {
         media = (
           <MediaGallery
@@ -173,7 +188,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     }
 
     if (status.get('application')) {
-      applicationLink = <span> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener'>{status.getIn(['application', 'name'])}</a></span>;
+      applicationLink = <span> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></span>;
     }
 
     if (status.get('visibility') === 'direct') {
@@ -183,11 +198,11 @@ export default class DetailedStatus extends ImmutablePureComponent {
     }
 
     if (status.get('visibility') === 'private') {
-      reblogLink = <i className={`fa fa-${reblogIcon}`} />;
+      reblogLink = <Icon id={reblogIcon} />;
     } else if (this.context.router) {
       reblogLink = (
         <Link to={`/statuses/${status.get('id')}/reblogs`} className='detailed-status__link'>
-          <i className={`fa fa-${reblogIcon}`} />
+          <Icon id={reblogIcon} />
           <span className='detailed-status__reblogs'>
             <FormattedNumber value={status.get('reblogs_count')} />
           </span>
@@ -196,7 +211,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     } else {
       reblogLink = (
         <a href={`/interact/${status.get('id')}?type=reblog`} className='detailed-status__link' onClick={this.handleModalLink}>
-          <i className={`fa fa-${reblogIcon}`} />
+          <Icon id={reblogIcon} />
           <span className='detailed-status__reblogs'>
             <FormattedNumber value={status.get('reblogs_count')} />
           </span>
@@ -207,7 +222,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     if (this.context.router) {
       favouriteLink = (
         <Link to={`/statuses/${status.get('id')}/favourites`} className='detailed-status__link'>
-          <i className='fa fa-star' />
+          <Icon id='star' />
           <span className='detailed-status__favorites'>
             <FormattedNumber value={status.get('favourites_count')} />
           </span>
@@ -216,7 +231,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     } else {
       favouriteLink = (
         <a href={`/interact/${status.get('id')}?type=favourite`} className='detailed-status__link' onClick={this.handleModalLink}>
-          <i className='fa fa-star' />
+          <Icon id='star' />
           <span className='detailed-status__favorites'>
             <FormattedNumber value={status.get('favourites_count')} />
           </span>
@@ -241,11 +256,13 @@ export default class DetailedStatus extends ImmutablePureComponent {
             onExpandedToggle={onToggleHidden}
             parseClick={this.parseClick}
             onUpdate={this.handleChildUpdate}
+            tagLinks={settings.get('tag_misleading_links')}
+            rewriteMentions={settings.get('rewrite_mentions')}
             disabled
           />
 
           <div className='detailed-status__meta'>
-            <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener'>
+            <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener noreferrer'>
               <FormattedDate value={new Date(status.get('created_at'))} hour12={false} year='numeric' month='short' day='2-digit' hour='2-digit' minute='2-digit' />
             </a>{applicationLink} · {reblogLink} · {favouriteLink} · <VisibilityIcon visibility={status.get('visibility')} />
           </div>

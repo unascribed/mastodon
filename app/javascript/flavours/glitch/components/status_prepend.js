@@ -3,6 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { FormattedMessage } from 'react-intl';
+import Icon from 'flavours/glitch/components/icon';
+import { me } from 'flavours/glitch/util/initial_state';
 
 export default class StatusPrepend extends React.PureComponent {
 
@@ -63,12 +65,21 @@ export default class StatusPrepend extends React.PureComponent {
         />
       );
     case 'poll':
-      return (
-        <FormattedMessage
-          id='notification.poll'
-          defaultMessage='A poll you have voted in has ended'
-        />
-      );
+      if (me === account.get('id')) {
+        return (
+          <FormattedMessage
+            id='notification.own_poll'
+            defaultMessage='Your poll has ended'
+          />
+        );
+      } else {
+        return (
+          <FormattedMessage
+            id='notification.poll'
+            defaultMessage='A poll you have voted in has ended'
+          />
+        );
+      }
     }
     return null;
   }
@@ -80,10 +91,9 @@ export default class StatusPrepend extends React.PureComponent {
     return !type ? null : (
       <aside className={type === 'reblogged_by' || type === 'featured' ? 'status__prepend' : 'notification__message'}>
         <div className={type === 'reblogged_by' || type === 'featured' ? 'status__prepend-icon-wrapper' : 'notification__favourite-icon-wrapper'}>
-          <i
-            className={`fa fa-fw fa-${
-              type === 'favourite' ? 'star star-icon' : (type === 'featured' ? 'thumb-tack' : (type === 'poll' ? 'tasks' : 'retweet'))
-            } status__prepend-icon`}
+          <Icon
+            className={`status__prepend-icon ${type === 'favourite' ? 'star-icon' : ''}`}
+            id={type === 'favourite' ? 'star' : (type === 'featured' ? 'thumb-tack' : (type === 'poll' ? 'tasks' : 'retweet'))}
           />
         </div>
         <Message />

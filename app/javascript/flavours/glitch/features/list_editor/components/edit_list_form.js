@@ -11,7 +11,7 @@ const messages = defineMessages({
 
 const mapStateToProps = state => ({
   value: state.getIn(['listEditor', 'title']),
-  disabled: !state.getIn(['listEditor', 'isChanged']),
+  disabled: !state.getIn(['listEditor', 'isChanged']) || !state.getIn(['listEditor', 'title']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -19,9 +19,9 @@ const mapDispatchToProps = dispatch => ({
   onSubmit: () => dispatch(submitListEditor(false)),
 });
 
-@connect(mapStateToProps, mapDispatchToProps)
+export default @connect(mapStateToProps, mapDispatchToProps)
 @injectIntl
-export default class ListForm extends React.PureComponent {
+class ListForm extends React.PureComponent {
 
   static propTypes = {
     value: PropTypes.string.isRequired,

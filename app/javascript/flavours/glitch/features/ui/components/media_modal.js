@@ -3,12 +3,13 @@ import ReactSwipeableViews from 'react-swipeable-views';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import Video from 'flavours/glitch/features/video';
-import ExtendedVideoPlayer from 'flavours/glitch/components/extended_video_player';
 import classNames from 'classnames';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import IconButton from 'flavours/glitch/components/icon_button';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import ImageLoader from './image_loader';
+import Icon from 'flavours/glitch/components/icon';
+import GIFV from 'flavours/glitch/components/gifv';
 
 const messages = defineMessages({
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
@@ -16,8 +17,8 @@ const messages = defineMessages({
   next: { id: 'lightbox.next', defaultMessage: 'Next' },
 });
 
-@injectIntl
-export default class MediaModal extends ImmutablePureComponent {
+export default @injectIntl
+class MediaModal extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
@@ -100,8 +101,8 @@ export default class MediaModal extends ImmutablePureComponent {
     const index = this.getIndex();
     let pagination = [];
 
-    const leftNav  = media.size > 1 && <button tabIndex='0' className='media-modal__nav media-modal__nav--left' onClick={this.handlePrevClick} aria-label={intl.formatMessage(messages.previous)}><i className='fa fa-fw fa-chevron-left' /></button>;
-    const rightNav = media.size > 1 && <button tabIndex='0' className='media-modal__nav  media-modal__nav--right' onClick={this.handleNextClick} aria-label={intl.formatMessage(messages.next)}><i className='fa fa-fw fa-chevron-right' /></button>;
+    const leftNav  = media.size > 1 && <button tabIndex='0' className='media-modal__nav media-modal__nav--left' onClick={this.handlePrevClick} aria-label={intl.formatMessage(messages.previous)}><Icon id='chevron-left' fixedWidth /></button>;
+    const rightNav = media.size > 1 && <button tabIndex='0' className='media-modal__nav  media-modal__nav--right' onClick={this.handleNextClick} aria-label={intl.formatMessage(messages.next)}><Icon id='chevron-right' fixedWidth /></button>;
 
     if (media.size > 1) {
       pagination = media.map((item, i) => {
@@ -148,10 +149,8 @@ export default class MediaModal extends ImmutablePureComponent {
         );
       } else if (image.get('type') === 'gifv') {
         return (
-          <ExtendedVideoPlayer
+          <GIFV
             src={image.get('url')}
-            muted
-            controls={false}
             width={width}
             height={height}
             key={image.get('preview_url')}
@@ -207,7 +206,7 @@ export default class MediaModal extends ImmutablePureComponent {
 
           {status && (
             <div className={classNames('media-modal__meta', { 'media-modal__meta--shifted': media.size > 1 })}>
-              <a href={status.get('url')} onClick={this.handleStatusClick}><FormattedMessage id='lightbox.view_context' defaultMessage='View context' /></a>
+              <a href={status.get('url')} onClick={this.handleStatusClick}><Icon id='comments' /> <FormattedMessage id='lightbox.view_context' defaultMessage='View context' /></a>
             </div>
           )}
 

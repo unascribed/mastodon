@@ -22,9 +22,9 @@ const mapStateToProps = state => ({
   conversationsMode: state.getIn(['settings', 'direct', 'conversations']),
 });
 
-@connect(mapStateToProps)
+export default @connect(mapStateToProps)
 @injectIntl
-export default class DirectTimeline extends React.PureComponent {
+class DirectTimeline extends React.PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -135,7 +135,7 @@ export default class DirectTimeline extends React.PureComponent {
     }
 
     return (
-      <Column ref={this.setRef} label={intl.formatMessage(messages.title)}>
+      <Column bindToDocument={!multiColumn} ref={this.setRef} label={intl.formatMessage(messages.title)}>
         <ColumnHeader
           icon='envelope'
           active={hasUnread}

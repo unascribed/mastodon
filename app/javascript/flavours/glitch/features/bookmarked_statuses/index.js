@@ -2,14 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { debounce } from 'lodash';
 import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'flavours/glitch/actions/bookmarks';
 import Column from 'flavours/glitch/features/ui/components/column';
 import ColumnHeader from 'flavours/glitch/components/column_header';
 import { addColumn, removeColumn, moveColumn } from 'flavours/glitch/actions/columns';
 import StatusList from 'flavours/glitch/components/status_list';
-import { defineMessages, injectIntl } from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { debounce } from 'lodash';
 
 const messages = defineMessages({
   heading: { id: 'column.bookmarks', defaultMessage: 'Bookmarks' },
@@ -21,9 +21,9 @@ const mapStateToProps = state => ({
   hasMore: !!state.getIn(['status_lists', 'bookmarks', 'next']),
 });
 
-@connect(mapStateToProps)
+export default @connect(mapStateToProps)
 @injectIntl
-export default class Bookmarks extends ImmutablePureComponent {
+class Bookmarks extends ImmutablePureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -70,8 +70,10 @@ export default class Bookmarks extends ImmutablePureComponent {
     const { intl, statusIds, columnId, multiColumn, hasMore, isLoading } = this.props;
     const pinned = !!columnId;
 
+    const emptyMessage = <FormattedMessage id='empty_column.bookmarked_statuses' defaultMessage="You don't have any bookmarked toots yet. When you bookmark one, it will show up here." />;
+
     return (
-      <Column ref={this.setRef} name='bookmarks'>
+      <Column bindToDocument={!multiColumn} ref={this.setRef} name='bookmarks'>
         <ColumnHeader
           icon='bookmark'
           title={intl.formatMessage(messages.heading)}
@@ -90,6 +92,8 @@ export default class Bookmarks extends ImmutablePureComponent {
           hasMore={hasMore}
           isLoading={isLoading}
           onLoadMore={this.handleLoadMore}
+          emptyMessage={emptyMessage}
+          bindToDocument={!multiColumn}
         />
       </Column>
     );

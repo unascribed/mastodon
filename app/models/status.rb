@@ -24,21 +24,24 @@
 #  local_only             :boolean
 #  poll_id                :bigint(8)
 #  content_type           :string
+#  deleted_at             :datetime
 #
 
 class Status < ApplicationRecord
   before_destroy :unlink_from_conversations
 
+  include Discard::Model
   include Paginable
-  include Streamable
   include Cacheable
   include StatusThreadingConcern
+
+  self.discard_column = :deleted_at
 
   # If `override_timestamps` is set at creation time, Snowflake ID creation
   # will be based on current time instead of `created_at`
   attr_accessor :override_timestamps
 
-  update_index('statuses#status', :proper) if Chewy.enabled?
+  update_index('statuses#status', :proper)
 
   enum visibility: [:public, :unlisted, :private, :direct, :limited], _suffix: :visibility
 
@@ -64,7 +67,6 @@ class Status < ApplicationRecord
   has_and_belongs_to_many :preview_cards
 
   has_one :notification, as: :activity, dependent: :destroy
-  has_one :stream_entry, as: :activity, inverse_of: :status
   has_one :status_stat, inverse_of: :status
   has_one :poll, inverse_of: :status, dependent: :destroy
 
@@ -78,10 +80,10 @@ class Status < ApplicationRecord
 
   accepts_nested_attributes_for :poll
 
-  default_scope { recent }
+  default_scope { recent.kept }
 
   scope :recent, -> { reorder(id: :desc) }
-  scope :remote, -> { where(local: false).or(where.not(uri: nil)) }
+  scope :remote, -> { where(local: false).where.not(uri: nil) }
   scope :local,  -> { where(local: true).or(where(uri: nil)) }
 
   scope :without_replies, -> { where('statuses.reply = FALSE OR statuses.in_reply_to_account_id = statuses.account_id') }
@@ -112,13 +114,11 @@ class Status < ApplicationRecord
                    :status_stat,
                    :tags,
                    :preview_cards,
-                   :stream_entry,
                    :preloadable_poll,
                    account: :account_stat,
                    active_mentions: { account: :account_stat },
                    reblog: [
                      :application,
-                     :stream_entry,
                      :tags,
                      :preview_cards,
                      :media_attachments,
@@ -135,12 +135,14 @@ class Status < ApplicationRecord
   REAL_TIME_WINDOW = 6.hours
 
   def searchable_by(preloaded = nil)
-    ids = [account_id]
+    ids = []
+
+    ids << account_id if local?
 
     if preloaded.nil?
-      ids += mentions.pluck(:account_id)
-      ids += favourites.pluck(:account_id)
-      ids += reblogs.pluck(:account_id)
+      ids += mentions.where(account: Account.local).pluck(:account_id)
+      ids += favourites.where(account: Account.local).pluck(:account_id)
+      ids += reblogs.where(account: Account.local).pluck(:account_id)
     else
       ids += preloaded.mentions[id] || []
       ids += preloaded.favourites[id] || []
@@ -203,7 +205,7 @@ class Status < ApplicationRecord
   end
 
   def hidden?
-    private_visibility? || direct_visibility? || limited_visibility?
+    !distributable?
   end
 
   def distributable?
@@ -218,6 +220,10 @@ class Status < ApplicationRecord
 
   def non_sensitive_with_media?
     !sensitive? && with_media?
+  end
+
+  def reported?
+    @reported ||= Report.where(target_account: account).unresolved.where('? = ANY(status_ids)', id).exists?
   end
 
   def emojis
@@ -282,10 +288,6 @@ class Status < ApplicationRecord
 
     def in_chosen_languages(account)
       where(language: nil).or where(language: account.chosen_languages)
-    end
-
-    def as_home_timeline(account)
-      where(account: [account] + account.following).where(visibility: [:public, :unlisted, :private])
     end
 
     def as_direct_timeline(account, limit = 20, max_id = nil, since_id = nil, cache_ids = false)
@@ -355,7 +357,7 @@ class Status < ApplicationRecord
     end
 
     def reblogs_map(status_ids, account_id)
-      select('reblog_of_id').where(reblog_of_id: status_ids).where(account_id: account_id).reorder(nil).each_with_object({}) { |s, h| h[s.reblog_of_id] = true }
+      unscoped.select('reblog_of_id').where(reblog_of_id: status_ids).where(account_id: account_id).each_with_object({}) { |s, h| h[s.reblog_of_id] = true }
     end
 
     def mutes_map(conversation_ids, account_id)
@@ -458,13 +460,16 @@ class Status < ApplicationRecord
     '👁'
   end
 
+  def status_stat
+    super || build_status_stat
+  end
+
   private
 
   def update_status_stat!(attrs)
     return if marked_for_destruction? || destroyed?
 
-    record = status_stat || build_status_stat
-    record.update(attrs)
+    status_stat.update(attrs)
   end
 
   def store_uri
@@ -522,7 +527,8 @@ class Status < ApplicationRecord
   end
 
   def update_statistics
-    return unless public_visibility? || unlisted_visibility?
+    return unless distributable?
+
     ActivityTracker.increment('activity:statuses:local')
   end
 
@@ -531,7 +537,7 @@ class Status < ApplicationRecord
 
     account&.increment_count!(:statuses_count)
     reblog&.increment_count!(:reblogs_count) if reblog?
-    thread&.increment_count!(:replies_count) if in_reply_to_id.present? && (public_visibility? || unlisted_visibility?)
+    thread&.increment_count!(:replies_count) if in_reply_to_id.present? && distributable?
   end
 
   def decrement_counter_caches
@@ -539,7 +545,7 @@ class Status < ApplicationRecord
 
     account&.decrement_count!(:statuses_count)
     reblog&.decrement_count!(:reblogs_count) if reblog?
-    thread&.decrement_count!(:replies_count) if in_reply_to_id.present? && (public_visibility? || unlisted_visibility?)
+    thread&.decrement_count!(:replies_count) if in_reply_to_id.present? && distributable?
   end
 
   def unlink_from_conversations

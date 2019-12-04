@@ -1,4 +1,4 @@
-import { autoPlayGif } from 'flavours/glitch/util/initial_state';
+import { autoPlayGif, useSystemEmojiFont } from 'flavours/glitch/util/initial_state';
 import unicodeMapping from './emoji_unicode_mapping_light';
 import Trie from 'substring-trie';
 
@@ -12,7 +12,7 @@ const emojify = (str, customEmojis = {}) => {
   let rtn = '', tagChars = tagCharsWithEmojis, invisible = 0;
   for (;;) {
     let match, i = 0, tag;
-    while (i < str.length && (tag = tagChars.indexOf(str[i])) === -1 && (invisible || !(match = trie.search(str.slice(i))))) {
+    while (i < str.length && (tag = tagChars.indexOf(str[i])) === -1 && (invisible || useSystemEmojiFont || !(match = trie.search(str.slice(i))))) {
       i += str.codePointAt(i) < 65536 ? 1 : 2;
     }
     let rend, replacement = '';
@@ -29,7 +29,7 @@ const emojify = (str, customEmojis = {}) => {
         // if you want additional emoji handler, add statements below which set replacement and return true.
         if (shortname in customEmojis) {
           const filename = autoPlayGif ? customEmojis[shortname].url : customEmojis[shortname].static_url;
-          replacement = `<img draggable="false" class="emojione" alt="${shortname}" title="${shortname}" src="${filename}" />`;
+          replacement = `<img draggable="false" class="emojione custom-emoji" alt="${shortname}" title="${shortname}" src="${filename}" data-original="${customEmojis[shortname].url}" data-static="${customEmojis[shortname].static_url}" />`;
           return true;
         }
         return false;
@@ -57,7 +57,7 @@ const emojify = (str, customEmojis = {}) => {
         }
       }
       i = rend;
-    } else { // matched to unicode emoji
+    } else if (!useSystemEmojiFont) { // matched to unicode emoji
       const { filename, shortCode } = unicodeMapping[match];
       const title = shortCode ? `:${shortCode}:` : '';
       replacement = `<img draggable="false" class="emojione" alt="${match}" title="${title}" src="${assetHost}/emoji/${filename}.svg" />`;
@@ -100,4 +100,4 @@ export const buildCustomEmojis = (customEmojis) => {
   return emojis;
 };
 
-export const categoriesFromEmojis = customEmojis => customEmojis.reduce((set, emoji) => set.add(emoji.get('category') ? `custom-${emoji.get('category')}` : 'custom'), new Set());
+export const categoriesFromEmojis = customEmojis => customEmojis.reduce((set, emoji) => set.add(emoji.get('category') ? `custom-${emoji.get('category')}` : 'custom'), new Set(['custom']));

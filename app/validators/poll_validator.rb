@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class PollValidator < ActiveModel::Validator
-  MAX_OPTIONS      = 16
-  MAX_OPTION_CHARS = 55
+  MAX_OPTIONS      = 22
+  MAX_OPTION_CHARS = 111
   MAX_EXPIRATION   = 1.month.freeze
   MIN_EXPIRATION   = 5.minutes.freeze
 
   def validate(poll)
     current_time = Time.now.utc
 
-    poll.errors.add(:options, I18n.t('polls.errors.too_few_options')) unless poll.options.size > 1
+    poll.errors.add(:options, I18n.t('polls.errors.too_few_options')) unless poll.options.size > 0
     poll.errors.add(:options, I18n.t('polls.errors.too_many_options', max: MAX_OPTIONS)) if poll.options.size > MAX_OPTIONS
     poll.errors.add(:options, I18n.t('polls.errors.over_character_limit', max: MAX_OPTION_CHARS)) if poll.options.any? { |option| option.mb_chars.grapheme_length > MAX_OPTION_CHARS }
     poll.errors.add(:options, I18n.t('polls.errors.duplicate_options')) unless poll.options.uniq.size == poll.options.size

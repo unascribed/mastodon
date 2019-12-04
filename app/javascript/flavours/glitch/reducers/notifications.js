@@ -9,6 +9,7 @@ import {
   NOTIFICATIONS_FILTER_SET,
   NOTIFICATIONS_CLEAR,
   NOTIFICATIONS_SCROLL_TOP,
+  NOTIFICATIONS_LOAD_PENDING,
   NOTIFICATIONS_DELETE_MARKED_REQUEST,
   NOTIFICATIONS_DELETE_MARKED_SUCCESS,
   NOTIFICATION_MARK_FOR_DELETE,
@@ -20,11 +21,13 @@ import {
   ACCOUNT_BLOCK_SUCCESS,
   ACCOUNT_MUTE_SUCCESS,
 } from 'flavours/glitch/actions/accounts';
+import { DOMAIN_BLOCK_SUCCESS } from 'flavours/glitch/actions/domain_blocks';
 import { TIMELINE_DELETE, TIMELINE_DISCONNECT } from 'flavours/glitch/actions/timelines';
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 import compareId from 'flavours/glitch/util/compare_id';
 
 const initialState = ImmutableMap({
+  pendingItems: ImmutableList(),
   items: ImmutableList(),
   hasMore: true,
   top: false,
@@ -46,8 +49,12 @@ const notificationToMap = (state, notification) => ImmutableMap({
   status: notification.status ? notification.status.id : null,
 });
 
-const normalizeNotification = (state, notification) => {
+const normalizeNotification = (state, notification, usePendingItems) => {
   const top = !shouldCountUnreadNotifications(state);
+
+  if (usePendingItems || !state.get('pendingItems').isEmpty()) {
+    return state.update('pendingItems', list => list.unshift(notificationToMap(state, notification))).update('unread', unread => unread + 1);
+  }
 
   if (top) {
     state = state.set('lastReadId', notification.id);
@@ -64,7 +71,7 @@ const normalizeNotification = (state, notification) => {
   });
 };
 
-const expandNormalizedNotifications = (state, notifications, next) => {
+const expandNormalizedNotifications = (state, notifications, next, isLoadingRecent, usePendingItems) => {
   const top = !(shouldCountUnreadNotifications(state));
   const lastReadId = state.get('lastReadId');
   let items = ImmutableList();
@@ -75,7 +82,9 @@ const expandNormalizedNotifications = (state, notifications, next) => {
 
   return state.withMutations(mutable => {
     if (!items.isEmpty()) {
-      mutable.update('items', list => {
+      usePendingItems = isLoadingRecent && (usePendingItems || !mutable.get('pendingItems').isEmpty());
+
+      mutable.update(usePendingItems ? 'pendingItems' : 'items', list => {
         const lastIndex = 1 + list.findLastIndex(
           item => item !== null && (compareId(item.get('id'), items.last().get('id')) > 0 || item.get('id') === items.last().get('id'))
         );
@@ -104,12 +113,13 @@ const expandNormalizedNotifications = (state, notifications, next) => {
   });
 };
 
-const filterNotifications = (state, relationship) => {
-  return state.update('items', list => list.filterNot(item => item !== null && item.get('account') === relationship.id));
+const filterNotifications = (state, accountIds) => {
+  const helper = list => list.filterNot(item => item !== null && accountIds.includes(item.get('account')));
+  return state.update('items', helper).update('pendingItems', helper);
 };
 
 const clearUnread = (state) => {
-  state = state.set('unread', 0);
+  state = state.set('unread', state.get('pendingItems').size);
   const lastNotification = state.get('items').find(item => item !== null);
   return state.set('lastReadId', lastNotification ? lastNotification.get('id') : '0');
 }
@@ -131,7 +141,10 @@ const deleteByStatus = (state, statusId) => {
     const deletedUnread = state.get('items').filter(item => item !== null && item.get('status') === statusId && compareId(item.get('id'), lastReadId) > 0);
     state = state.update('unread', unread => unread - deletedUnread.size);
   }
-  return state.update('items', list => list.filterNot(item => item !== null && item.get('status') === statusId));
+  const helper = list => list.filterNot(item => item !== null && item.get('status') === statusId);
+  const deletedUnread = state.get('pendingItems').filter(item => item !== null && item.get('status') === statusId && compareId(item.get('id'), lastReadId) > 0);
+  state = state.update('unread', unread => unread - deletedUnread.size);
+  return state.update('items', helper).update('pendingItems', helper);
 };
 
 const markForDelete = (state, notificationId, yes) => {
@@ -192,6 +205,8 @@ export default function notifications(state = initialState, action) {
     return state.update('mounted', count => count - 1);
   case NOTIFICATIONS_SET_VISIBILITY:
     return updateVisibility(state, action.visibility);
+  case NOTIFICATIONS_LOAD_PENDING:
+    return state.update('items', list => state.get('pendingItems').concat(list.take(40))).set('pendingItems', ImmutableList()).set('unread', 0);
   case NOTIFICATIONS_EXPAND_REQUEST:
   case NOTIFICATIONS_DELETE_MARKED_REQUEST:
     return state.set('isLoading', true);
@@ -203,20 +218,22 @@ export default function notifications(state = initialState, action) {
   case NOTIFICATIONS_SCROLL_TOP:
     return updateTop(state, action.top);
   case NOTIFICATIONS_UPDATE:
-    return normalizeNotification(state, action.notification);
+    return normalizeNotification(state, action.notification, action.usePendingItems);
   case NOTIFICATIONS_EXPAND_SUCCESS:
-    return expandNormalizedNotifications(state, action.notifications, action.next);
+    return expandNormalizedNotifications(state, action.notifications, action.next, action.isLoadingRecent, action.usePendingItems);
   case ACCOUNT_BLOCK_SUCCESS:
-    return filterNotifications(state, action.relationship);
+    return filterNotifications(state, [action.relationship.id]);
   case ACCOUNT_MUTE_SUCCESS:
-    return action.relationship.muting_notifications ? filterNotifications(state, action.relationship) : state;
+    return action.relationship.muting_notifications ? filterNotifications(state, [action.relationship.id]) : state;
+  case DOMAIN_BLOCK_SUCCESS:
+    return filterNotifications(state, action.accounts);
   case NOTIFICATIONS_CLEAR:
-    return state.set('items', ImmutableList()).set('hasMore', false);
+    return state.set('items', ImmutableList()).set('pendingItems', ImmutableList()).set('hasMore', false);
   case TIMELINE_DELETE:
     return deleteByStatus(state, action.id);
   case TIMELINE_DISCONNECT:
     return action.timeline === 'home' ?
-      state.update('items', items => items.first() ? items.unshift(null) : items) :
+      state.update(action.usePendingItems ? 'pendingItems' : 'items', items => items.first() ? items.unshift(null) : items) :
       state;
 
   case NOTIFICATION_MARK_FOR_DELETE:

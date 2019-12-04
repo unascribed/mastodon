@@ -8,6 +8,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import Hashtag from 'flavours/glitch/components/hashtag';
 import Icon from 'flavours/glitch/components/icon';
 import { searchEnabled } from 'flavours/glitch/util/initial_state';
+import LoadMore from 'flavours/glitch/components/load_more';
 
 const messages = defineMessages({
   dismissSuggestion: { id: 'suggestions.dismiss', defaultMessage: 'Dismiss suggestion' },
@@ -20,14 +21,23 @@ class SearchResults extends ImmutablePureComponent {
     results: ImmutablePropTypes.map.isRequired,
     suggestions: ImmutablePropTypes.list.isRequired,
     fetchSuggestions: PropTypes.func.isRequired,
+    expandSearch: PropTypes.func.isRequired,
     dismissSuggestion: PropTypes.func.isRequired,
     searchTerm: PropTypes.string,
     intl: PropTypes.object.isRequired,
   };
 
   componentDidMount () {
-    this.props.fetchSuggestions();
+    if (this.props.searchTerm === '') {
+      this.props.fetchSuggestions();
+    }
   }
+
+  handleLoadMoreAccounts = () => this.props.expandSearch('accounts');
+
+  handleLoadMoreStatuses = () => this.props.expandSearch('statuses');
+
+  handleLoadMoreHashtags = () => this.props.expandSearch('hashtags');
 
   render () {
     const { intl, results, suggestions, dismissSuggestion, searchTerm } = this.props;
@@ -37,7 +47,7 @@ class SearchResults extends ImmutablePureComponent {
         <div className='drawer--results'>
           <div className='trends'>
             <div className='trends__header'>
-              <i className='fa fa-user-plus fa-fw' />
+              <Icon fixedWidth id='user-plus' />
               <FormattedMessage id='suggestions.header' defaultMessage='You might be interested in…' />
             </div>
 
@@ -72,9 +82,11 @@ class SearchResults extends ImmutablePureComponent {
       count   += results.get('accounts').size;
       accounts = (
         <section>
-          <h5><Icon icon='users' fixedWidth /><FormattedMessage id='search_results.accounts' defaultMessage='People' /></h5>
+          <h5><Icon id='users' fixedWidth /><FormattedMessage id='search_results.accounts' defaultMessage='People' /></h5>
 
           {results.get('accounts').map(accountId => <AccountContainer id={accountId} key={accountId} />)}
+
+          {results.get('accounts').size >= 5 && <LoadMore visible onClick={this.handleLoadMoreAccounts} />}
         </section>
       );
     }
@@ -83,9 +95,11 @@ class SearchResults extends ImmutablePureComponent {
       count   += results.get('statuses').size;
       statuses = (
         <section>
-          <h5><Icon icon='quote-right' fixedWidth /><FormattedMessage id='search_results.statuses' defaultMessage='Toots' /></h5>
+          <h5><Icon id='quote-right' fixedWidth /><FormattedMessage id='search_results.statuses' defaultMessage='Toots' /></h5>
 
           {results.get('statuses').map(statusId => <StatusContainer id={statusId} key={statusId}/>)}
+
+          {results.get('statuses').size >= 5 && <LoadMore visible onClick={this.handleLoadMoreStatuses} />}
         </section>
       );
     }
@@ -94,9 +108,11 @@ class SearchResults extends ImmutablePureComponent {
       count += results.get('hashtags').size;
       hashtags = (
         <section>
-          <h5><Icon icon='hashtag' fixedWidth /><FormattedMessage id='search_results.hashtags' defaultMessage='Hashtags' /></h5>
+          <h5><Icon id='hashtag' fixedWidth /><FormattedMessage id='search_results.hashtags' defaultMessage='Hashtags' /></h5>
 
           {results.get('hashtags').map(hashtag => <Hashtag key={hashtag.get('name')} hashtag={hashtag} />)}
+
+          {results.get('hashtags').size >= 5 && <LoadMore visible onClick={this.handleLoadMoreHashtags} />}
         </section>
       );
     }
@@ -105,7 +121,7 @@ class SearchResults extends ImmutablePureComponent {
     return (
       <div className='drawer--results'>
         <header className='search-results__header'>
-          <Icon icon='search' fixedWidth />
+          <Icon id='search' fixedWidth />
           <FormattedMessage id='search_results.total' defaultMessage='{count, number} {count, plural, one {result} other {results}}' values={{ count }} />
         </header>
 

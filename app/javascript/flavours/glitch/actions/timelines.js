@@ -1,6 +1,10 @@
 import { importFetchedStatus, importFetchedStatuses } from './importer';
 import api, { getLinks } from 'flavours/glitch/util/api';
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
+import compareId from 'flavours/glitch/util/compare_id';
+import { me, usePendingItems as preferPendingItems } from 'flavours/glitch/util/initial_state';
+import { getFiltersRegex } from 'flavours/glitch/selectors';
+import { searchTextFromRawStatus } from 'flavours/glitch/actions/importer/normalizer';
 
 export const TIMELINE_UPDATE  = 'TIMELINE_UPDATE';
 export const TIMELINE_DELETE  = 'TIMELINE_DELETE';
@@ -10,15 +14,30 @@ export const TIMELINE_EXPAND_REQUEST = 'TIMELINE_EXPAND_REQUEST';
 export const TIMELINE_EXPAND_SUCCESS = 'TIMELINE_EXPAND_SUCCESS';
 export const TIMELINE_EXPAND_FAIL    = 'TIMELINE_EXPAND_FAIL';
 
-export const TIMELINE_SCROLL_TOP = 'TIMELINE_SCROLL_TOP';
+export const TIMELINE_SCROLL_TOP   = 'TIMELINE_SCROLL_TOP';
+export const TIMELINE_LOAD_PENDING = 'TIMELINE_LOAD_PENDING';
+export const TIMELINE_DISCONNECT   = 'TIMELINE_DISCONNECT';
+export const TIMELINE_CONNECT      = 'TIMELINE_CONNECT';
 
-export const TIMELINE_CONNECT    = 'TIMELINE_CONNECT';
-export const TIMELINE_DISCONNECT = 'TIMELINE_DISCONNECT';
+export const loadPending = timeline => ({
+  type: TIMELINE_LOAD_PENDING,
+  timeline,
+});
 
 export function updateTimeline(timeline, status, accept) {
-  return dispatch => {
+  return (dispatch, getState) => {
     if (typeof accept === 'function' && !accept(status)) {
       return;
+    }
+
+    const filters   = getFiltersRegex(getState(), { contextType: timeline });
+    const dropRegex = filters[0];
+    const regex     = filters[1];
+    const text      = searchTextFromRawStatus(status);
+    let filtered    = false;
+
+    if (status.account.id !== me) {
+      filtered = (dropRegex && dropRegex.test(text)) || (regex && regex.test(text));
     }
 
     dispatch(importFetchedStatus(status));
@@ -27,6 +46,8 @@ export function updateTimeline(timeline, status, accept) {
       type: TIMELINE_UPDATE,
       timeline,
       status,
+      usePendingItems: preferPendingItems,
+      filtered
     });
   };
 };
@@ -71,8 +92,15 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
       return;
     }
 
-    if (!params.max_id && !params.pinned && timeline.get('items', ImmutableList()).size > 0) {
-      params.since_id = timeline.getIn(['items', 0]);
+    if (!params.max_id && !params.pinned && (timeline.get('items', ImmutableList()).size + timeline.get('pendingItems', ImmutableList()).size) > 0) {
+      const a = timeline.getIn(['pendingItems', 0]);
+      const b = timeline.getIn(['items', 0]);
+
+      if (a && b && compareId(a, b) > 0) {
+        params.since_id = a;
+      } else {
+        params.since_id = b || a;
+      }
     }
 
     const isLoadingRecent = !!params.since_id;
@@ -81,8 +109,9 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
 
     api(getState).get(path, { params }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
+
       dispatch(importFetchedStatuses(response.data));
-      dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.code === 206, isLoadingRecent, isLoadingMore));
+      dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems));
       done();
     }).catch(error => {
       dispatch(expandTimelineFail(timelineId, error, isLoadingMore));
@@ -117,7 +146,7 @@ export function expandTimelineRequest(timeline, isLoadingMore) {
   };
 };
 
-export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadingRecent, isLoadingMore) {
+export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadingRecent, isLoadingMore, usePendingItems) {
   return {
     type: TIMELINE_EXPAND_SUCCESS,
     timeline,
@@ -125,6 +154,7 @@ export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadi
     next,
     partial,
     isLoadingRecent,
+    usePendingItems,
     skipLoading: !isLoadingMore,
   };
 };
@@ -153,9 +183,8 @@ export function connectTimeline(timeline) {
   };
 };
 
-export function disconnectTimeline(timeline) {
-  return {
-    type: TIMELINE_DISCONNECT,
-    timeline,
-  };
-};
+export const disconnectTimeline = timeline => ({
+  type: TIMELINE_DISCONNECT,
+  timeline,
+  usePendingItems: preferPendingItems,
+});

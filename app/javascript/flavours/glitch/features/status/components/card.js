@@ -4,15 +4,8 @@ import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import punycode from 'punycode';
 import classnames from 'classnames';
-
-const IDNA_PREFIX = 'xn--';
-
-const decodeIDNA = domain => {
-  return domain
-    .split('.')
-    .map(part => part.indexOf(IDNA_PREFIX) === 0 ? punycode.decode(part.slice(IDNA_PREFIX.length)) : part)
-    .join('.');
-};
+import { decode as decodeIDNA } from 'flavours/glitch/util/idna';
+import Icon from 'flavours/glitch/components/icon';
 
 const getHostname = url => {
   const parser = document.createElement('a');
@@ -147,7 +140,7 @@ export default class Card extends React.PureComponent {
     const horizontal  = (!compact && card.get('width') > card.get('height') && (card.get('width') + 100 >= width)) || card.get('type') !== 'link' || embedded;
     const interactive = card.get('type') !== 'link';
     const className   = classnames('status-card', { horizontal, compact, interactive });
-    const title       = interactive ? <a className='status-card__title' href={card.get('url')} title={card.get('title')} rel='noopener' target='_blank'><strong>{card.get('title')}</strong></a> : <strong className='status-card__title' title={card.get('title')}>{card.get('title')}</strong>;
+    const title       = interactive ? <a className='status-card__title' href={card.get('url')} title={card.get('title')} rel='noopener noreferrer' target='_blank'><strong>{card.get('title')}</strong></a> : <strong className='status-card__title' title={card.get('title')}>{card.get('title')}</strong>;
     const ratio       = card.get('width') / card.get('height');
     const height      = (compact && !embedded) ? (width / (16 / 9)) : (width / ratio);
 
@@ -178,8 +171,8 @@ export default class Card extends React.PureComponent {
 
             <div className='status-card__actions'>
               <div>
-                <button onClick={this.handleEmbedClick}><i className={`fa fa-${iconVariant}`} /></button>
-                {horizontal && <a href={card.get('url')} target='_blank' rel='noopener'><i className='fa fa-external-link' /></a>}
+                <button onClick={this.handleEmbedClick}><Icon id={iconVariant} /></button>
+                {horizontal && <a href={card.get('url')} target='_blank' rel='noopener noreferrer'><Icon id='external-link' /></a>}
               </div>
             </div>
           </div>
@@ -201,13 +194,13 @@ export default class Card extends React.PureComponent {
     } else {
       embed = (
         <div className='status-card__image'>
-          <i className='fa fa-file-text' />
+          <Icon id='file-text' />
         </div>
       );
     }
 
     return (
-      <a href={card.get('url')} className={className} target='_blank' rel='noopener' ref={this.setRef}>
+      <a href={card.get('url')} className={className} target='_blank' rel='noopener noreferrer' ref={this.setRef}>
         {embed}
         {description}
       </a>

@@ -3,6 +3,27 @@
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
+.link-button {
+  display: block;
+  font-size: 15px;
+  line-height: 20px;
+  color: $ui-highlight-color;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    color: $ui-primary-color;
+    cursor: default;
+  }
+}
+
 .button {
   background-color: darken($ui-highlight-color, 3%);
   border: 10px none;
@@ -118,20 +139,29 @@
   display: inline-block;
   padding: 0;
   color: $action-button-color;
-  border: none;
+  border: 0;
+  border-radius: 4px;
   background: transparent;
   cursor: pointer;
-  transition: color 100ms ease-in;
+  transition: all 100ms ease-in;
+  transition-property: background-color, color;
 
   &:hover,
   &:active,
   &:focus {
     color: lighten($action-button-color, 7%);
-    transition: color 200ms ease-out;
+    background-color: rgba($action-button-color, 0.15);
+    transition: all 200ms ease-out;
+    transition-property: background-color, color;
+  }
+
+  &:focus {
+    background-color: rgba($action-button-color, 0.3);
   }
 
   &.disabled {
     color: darken($action-button-color, 13%);
+    background-color: transparent;
     cursor: default;
   }
 
@@ -156,10 +186,16 @@
     &:active,
     &:focus {
       color: darken($lighter-text-color, 7%);
+      background-color: rgba($lighter-text-color, 0.15);
+    }
+
+    &:focus {
+      background-color: rgba($lighter-text-color, 0.3);
     }
 
     &.disabled {
       color: lighten($lighter-text-color, 7%);
+      background-color: transparent;
     }
 
     &.active {
@@ -186,7 +222,8 @@
 
 .text-icon-button {
   color: $lighter-text-color;
-  border: none;
+  border: 0;
+  border-radius: 4px;
   background: transparent;
   cursor: pointer;
   font-weight: 600;
@@ -194,17 +231,25 @@
   padding: 0 3px;
   line-height: 27px;
   outline: 0;
-  transition: color 100ms ease-in;
+  transition: all 100ms ease-in;
+  transition-property: background-color, color;
 
   &:hover,
   &:active,
   &:focus {
     color: darken($lighter-text-color, 7%);
-    transition: color 200ms ease-out;
+    background-color: rgba($lighter-text-color, 0.15);
+    transition: all 200ms ease-out;
+    transition-property: background-color, color;
+  }
+
+  &:focus {
+    background-color: rgba($lighter-text-color, 0.3);
   }
 
   &.disabled {
     color: lighten($lighter-text-color, 20%);
+    background-color: transparent;
     cursor: default;
   }
 
@@ -267,6 +312,20 @@
 
 .bookmark-icon.active {
   color: $red-bookmark;
+}
+
+.no-reduce-motion .icon-button.star-icon {
+  &.activate {
+    & > .fa-star {
+      animation: spring-rotate-in 1s linear;
+    }
+  }
+
+  &.deactivate {
+    & > .fa-star {
+      animation: spring-rotate-out 1s linear;
+    }
+  }
 }
 
 .notification__display-name {
@@ -802,13 +861,18 @@
 }
 
 .getting-started__wrapper,
-.getting_started {
+.getting_started,
+.flex-spacer {
   background: $ui-base-color;
 }
 
 .getting-started__wrapper {
   position: relative;
   overflow-y: auto;
+}
+
+.flex-spacer {
+  flex: 1 1 auto;
 }
 
 .getting-started {
@@ -855,6 +919,47 @@
       &:focus,
       &:active {
         text-decoration: underline;
+      }
+    }
+  }
+
+  &__trends {
+    flex: 0 1 auto;
+    opacity: 1;
+    animation: fade 150ms linear;
+    margin-top: 10px;
+
+    h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: $darker-text-color;
+      padding: 10px;
+      font-weight: 500;
+      border-bottom: 1px solid lighten($ui-base-color, 8%);
+    }
+
+    @media screen and (max-height: 810px) {
+      .trends__item:nth-child(3) {
+        display: none;
+      }
+    }
+
+    @media screen and (max-height: 720px) {
+      .trends__item:nth-child(2) {
+        display: none;
+      }
+    }
+
+    @media screen and (max-height: 670px) {
+      display: none;
+    }
+
+    .trends__item {
+      border-bottom: 0;
+      padding: 10px;
+
+      &__current {
+        color: $darker-text-color;
       }
     }
   }
@@ -1097,6 +1202,50 @@
   animation: loader-figure 1.15s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
 }
 
+@keyframes spring-rotate-in {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  30% {
+    transform: rotate(-484.8deg);
+  }
+
+  60% {
+    transform: rotate(-316.7deg);
+  }
+
+  90% {
+    transform: rotate(-375deg);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes spring-rotate-out {
+  0% {
+    transform: rotate(-360deg);
+  }
+
+  30% {
+    transform: rotate(124.8deg);
+  }
+
+  60% {
+    transform: rotate(-43.27deg);
+  }
+
+  90% {
+    transform: rotate(15deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 @keyframes loader-figure {
   0% {
     width: 0;
@@ -1148,6 +1297,10 @@
     align-items: center;
   }
 
+  &--click-thru {
+    pointer-events: none;
+  }
+
   &--hidden {
     display: none;
   }
@@ -1174,6 +1327,12 @@
     &:active {
       .spoiler-button__overlay__label {
         background: rgba($base-overlay-background, 0.8);
+      }
+    }
+
+    &:disabled {
+      .spoiler-button__overlay__label {
+        background: rgba($base-overlay-background, 0.5);
       }
     }
   }
@@ -1314,6 +1473,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 9999;
 }
 
 .icon-badge-wrapper {
@@ -1332,50 +1492,102 @@
   height: 1em;
 }
 
-.layout-toggle {
+.conversation {
   display: flex;
+  border-bottom: 1px solid lighten($ui-base-color, 8%);
   padding: 5px;
+  padding-bottom: 0;
 
-  button {
-    box-sizing: border-box;
-    flex: 0 0 50%;
-    background: transparent;
-    padding: 5px;
-    border: 0;
+  &:focus {
+    background: lighten($ui-base-color, 2%);
+    outline: 0;
+  }
+
+  &__avatar {
+    flex: 0 0 auto;
+    padding: 10px;
+    padding-top: 12px;
     position: relative;
+  }
 
-    &:hover,
-    &:focus,
-    &:active {
-      svg path:first-child {
-        fill: lighten($ui-base-color, 16%);
+  &__unread {
+    display: inline-block;
+    background: $highlight-text-color;
+    border-radius: 50%;
+    width: 0.625rem;
+    height: 0.625rem;
+    margin: -.1ex .15em .1ex;
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    padding: 10px 5px;
+    padding-right: 15px;
+    overflow: hidden;
+
+    &__info {
+      overflow: hidden;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+    }
+
+    &__relative-time {
+      font-size: 15px;
+      color: $darker-text-color;
+      padding-left: 15px;
+    }
+
+    &__names {
+      color: $darker-text-color;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+      flex-basis: 90px;
+      flex-grow: 1;
+
+      a {
+        color: $primary-text-color;
+        text-decoration: none;
+
+        &:hover,
+        &:focus,
+        &:active {
+          text-decoration: underline;
+        }
       }
     }
-  }
 
-  svg {
-    width: 100%;
-    height: auto;
-
-    path:first-child {
-      fill: lighten($ui-base-color, 12%);
-    }
-
-    path:last-child {
-      fill: darken($ui-base-color, 14%);
+    .status__content {
+      margin: 0;
     }
   }
 
-  &__active {
-    color: $ui-highlight-color;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: lighten($ui-base-color, 12%);
-    border-radius: 50%;
-    padding: 0.35rem;
+  &--unread {
+    background: lighten($ui-base-color, 2%);
+
+    &:focus {
+      background: lighten($ui-base-color, 4%);
+    }
+
+    .conversation__content__info {
+      font-weight: 700;
+    }
+
+    .conversation__content__relative-time {
+      color: $primary-text-color;
+    }
   }
+}
+
+.ui .flash-message {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0;
+  min-width: 75%;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -1405,6 +1617,10 @@ noscript {
         text-decoration: none;
       }
     }
+
+    a {
+      word-break: break-word;
+    }
   }
 }
 
@@ -1422,6 +1638,7 @@ noscript {
 @import 'composer';
 @import 'columns';
 @import 'regeneration_indicator';
+@import 'directory';
 @import 'search';
 @import 'emoji';
 @import 'doodle';

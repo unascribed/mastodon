@@ -17,13 +17,12 @@ cy:
     contact_unavailable: Ddim yn berthnasol
     discover_users: Darganfod defnyddwyr
     documentation: Dogfennaeth
-    extended_description_html: |
-      <h3>Lle da ar gyfer rheolau</h3>
-      <p>Nid yw'r disgrifiad estynedig wedi ei osod eto.</p>
     federation_hint_html: Gyda cyfrif ar %{instance}, gallwch dilyn pobl ar unrhyw gweinydd Mastodon, a thu hwnt.
-    generic_description: Mae %{domain} yn un gweinydd yn y rhwydwaith
     get_apps: Rhowch gynnig ar ap dyfeis symudol
     hosted_on: Mastodon wedi ei weinyddu ar %{domain}
+    instance_actor_flash: |
+      Mae'r cyfrif hwn yn actor rhithwir a ddefnyddir i gynrychioli'r gweinydd ei hun ac nid unrhyw ddefnyddiwr unigol.
+      Fe'i defnyddir at ddibenion ffederasiwn ac ni ddylid ei rwystro oni bai eich bod am rwystro'r achos cyfan, ac os felly dylech ddefnyddio bloc parth.
     learn_more: Dysu mwy
     privacy_policy: Polisi preifatrwydd
     see_whats_happening: Gweld beth sy'n digwydd
@@ -39,6 +38,14 @@ cy:
     status_count_before: Ysgriffennwyd gan
     tagline: Dilyn ffrindiau a darganfod rhai newydd
     terms: Telerau gwasanaeth
+    unavailable_content: Cynnwys nad yw ar gael
+    unavailable_content_description:
+      domain: Gweinydd
+      reason: 'Rheswm:'
+      rejecting_media: Ni fydd ffeiliau cyfryngau o'r gweinydd hwn yn cael eu prosesu ac ni fydd unrhyw fawd yn cael eu harddangos, sy'n gofyn am glicio â llaw i'r gweinydd arall.
+      silenced: Ni fydd swyddi o'r gweinydd hwn yn ymddangos yn unman heblaw eich porthiant cartref os dilynwch yr awdur.
+      suspended: Ni fyddwch yn gallu dilyn unrhyw un o'r gweinydd hwn, ac ni fydd unrhyw ddata ohono'n cael ei brosesu na'i storio, ac ni chyfnewidir unrhyw ddata.
+    unavailable_content_html: Yn gyffredinol, mae Mastodon yn caniatáu ichi weld cynnwys gan unrhyw weinyddwr arall yn y ffederasiwn a rhyngweithio â hi. Dyma'r eithriadau a wnaed ar y gweinydd penodol hwn.
     user_count_after:
       few: defnyddwyr
       many: defnyddwyr
@@ -50,6 +57,8 @@ cy:
     what_is_mastodon: Beth yw Mastodon?
   accounts:
     choices_html: 'Dewisiadau %{name}:'
+    endorsements_hint: Gallwch gymeradwyo pobl rydych chi'n eu dilyn o'r rhyngwyneb gwe, a byddan nhw'n ymddangos yma.
+    featured_tags_hint: Gallwch ychwanegu hashnodau penodol a fydd yn cael eu harddangos yma.
     follow: Dilynwch
     followers:
       few: Dilynwyr
@@ -65,6 +74,7 @@ cy:
     media: Cyfryngau
     moved_html: 'Mae %{name} wedi symud i %{new_profile_link}:'
     network_hidden: Nid yw'r wybodaeth hyn ar gael
+    never_active: Peidiwch byth
     nothing_here: Does dim byd yma!
     people_followed_by: Pobl y mae %{name} yn ei ddilyn
     people_who_follow: Pobl sy'n dilyn %{name}
@@ -181,6 +191,7 @@ cy:
         user: Defnyddiwr
       salmon_url: URL Eog
       search: Chwilio
+      search_same_ip: Defnyddwyr eraill gyda'r un IP
       shared_inbox_url: URL Mewnflwch wedi ei rannu
       show:
         created_reports: Adroddiadau a wnaed
@@ -199,6 +210,7 @@ cy:
       username: Enw defnyddiwr
       warn: Rhybuddio
       web: Gwe
+      whitelisted: Rhestredig wen
     action_logs:
       actions:
         assigned_to_self_report: Aseiniodd %{name} adroddiad %{target} i'w hunan
@@ -234,19 +246,24 @@ cy:
       deleted_status: "(statws wedi ei ddileu)"
       title: Log archwilio
     custom_emojis:
+      assign_category: Neilltuo categori
       by_domain: Parth
       copied_msg: Llwyddwyd i greu copi lleol o'r emoji
       copy: Copïo
       copy_failed_msg: Methwyd i greu copi lleol o'r emoji hwnnw
+      create_new_category: Create new category
       created_msg: Llwyddwyd i greu emoji!
       delete: Dileu
       destroyed_msg: Llwyddwyd i ddinistrio emojo!
       disable: Diffodd
+      disabled: Wedi'i ddiffodd
       disabled_msg: Llwyddwyd i ddiffodd yr emoji hwnnw
       emoji: Emoji
       enable: Galluogi
+      enabled: Wedi ei alluogi
       enabled_msg: Llwyddwyd i alluogi yr emoji hwnnw
       image_hint: PNG hyd at 50KB
+      list: Rhestr
       listed: Rhestredig
       new:
         title: Ychwanegu emoji personol newydd
@@ -254,11 +271,14 @@ cy:
       shortcode: Byrgod
       shortcode_hint: O leiaf 2 nodyn, dim ond nodau alffaniwmerig a tanlinellau
       title: Emoji unigryw
+      uncategorized: Heb gategori
+      unlist: Dad-restru
       unlisted: Heb eu rhestru
       update_failed_msg: Methwyd a diweddaru'r emoji hwnnw
       updated_msg: Llwyddwyd i ddiweddaru'r emoji!
       upload: Uwchlwytho
     dashboard:
+      authorized_fetch_mode: Modd nôl awdurdodedig
       backlog: tasgau heb eu cwblhau
       config: Cyfluniad
       feature_deletions: Dileadau cyfrif
@@ -266,10 +286,13 @@ cy:
       feature_profile_directory: Cyfeiriadur proffil
       feature_registrations: Cofrestriadau
       feature_relay: Relái ffederasiwn
+      feature_spam_check: Gwrth-sbam
       feature_timeline_preview: Rhagolwg o'r ffrwd
       features: Nodweddion
       hidden_service: Ffederasiwn a gwasanaethau cudd
       open_reports: adroddiadau agored
+      pending_tags: hashnodau yn aros am adolygiad
+      pending_users: defnyddwyr yn aros am adolygiad
       recent_users: Defnyddwyr diweddar
       search: Chwilio testun llawn
       single_user_mode: Modd un defnyddiwr
@@ -281,11 +304,18 @@ cy:
       week_interactions: ymadweithiau yr wythnos hon
       week_users_active: gweithredol yr wythnos hon
       week_users_new: defnyddwyr yr wythnos hon
+      whitelist_mode: Modd rhestr wen
+    domain_allows:
+      add_new: Rhestrwch parth
+      created_msg: Rhestrwyd wen parth yn llwyddiannus
+      destroyed_msg: Mae parth wedi'i dynnu o'r rhestr wen
+      undo: Tynnwch o'r rhestr wen
     domain_blocks:
       add_new: Ychwanegu bloc parth newydd
       created_msg: Mae'r bloc parth nawr yn cael ei brosesu
       destroyed_msg: Mae'r bloc parth wedi ei ddadwneud
       domain: Parth
+      edit: Golygu bloc parth
       existing_domain_block_html: Rydych yn barod wedi gosod cyfyngau fwy llym ar %{name}, mae rhaid i chi ei <a href="%{unblock_url}">ddadblocio</a> yn gyntaf.
       new:
         create: Creu bloc
@@ -296,6 +326,10 @@ cy:
           silence: Tawelwch
           suspend: Atal
         title: Blocio parth newydd
+      private_comment: Sylw preifat
+      private_comment_hint: Sylw am gyfyngiadau y barth ar gyfer defnydd mewnol gan y cymedrolwyr.
+      public_comment: Sylw cyhoeddus
+      public_comment_hint: Sylw am gyfyngiadau y parth hon ar gyfer y cyhoedd, os mae hysbysu'r rhestr o gyfyngiadau parth wedi'i alluogi.
       reject_media: Gwrthod dogfennau cyfryngau
       reject_media_hint: Dileu dogfennau cyfryngau wedi eu cadw yn lleol ac yn gwrthod i lawrlwytho unrhyw rai yn y dyfodol. Amherthnasol i ataliadau
       reject_reports: Gwrthod adroddiadau
@@ -319,6 +353,7 @@ cy:
         title: Dadwneud blocio parth ar gyfer %{domain}
         undo: Dadwneud
       undo: Dadwneud bloc parth
+      view: Gweld bloc parth
     email_domain_blocks:
       add_new: Ychwanegu
       created_msg: Llwyddwyd i ychwanegu parth e-bost i'r gosbrestr
@@ -346,6 +381,8 @@ cy:
         all: Pob
         limited: Gyfyngedig
         title: Goruwchwyliad
+      private_comment: Sylw preifat
+      public_comment: Sylw cyhoeddus
       title: Ffederasiwn
       total_blocked_by_us: Wedi'i bloc gan ni
       total_followed_by_them: Yn dilyn ganynt
@@ -375,6 +412,7 @@ cy:
       pending: Aros am gymeradywaeth i'r relái
       save_and_enable: Cadw a galluogi
       setup: Sefydlu cysylltiad relái
+      signatures_not_enabled: Ni fydd cyfnewidau yn gweithio'n iawn pan mae modd diogel neu restr gwyn wedi'i alluogi
       status: Statws
       title: Cyfnewidwyr
     report_notes:
@@ -423,6 +461,16 @@ cy:
       custom_css:
         desc_html: Addasu gwedd gyda CSS wedi lwytho ar bob tudalen
         title: CSS wedi'i addasu
+      default_noindex:
+        desc_html: Yn effeithio pob defnyddwr sydd heb newid y gosodiad ei hun
+        title: Eithrio defnyddwyr o fynegai peiriannau chwilio yn rhagosodiedig
+      domain_blocks:
+        all: I bawb
+        disabled: I neb
+        title: Dangos rhwystriadau parth
+        users: I ddefnyddwyr lleol mewngofnodadwy
+      domain_blocks_rationale:
+        title: Dangos rhesymwaith
       hero:
         desc_html: Yn cael ei arddangos ar y dudadlen flaen. Awgrymir 600x100px oleia. Pan nad yw wedi ei osod, mae'n ymddangos fel mân-lun yr achos
         title: Delwedd arwr
@@ -473,6 +521,9 @@ cy:
         desc_html: Mae modd i chi ysgrifennu polisi preifatrwydd, termau gwasanaeth a cyfreitheg arall eich hun. Mae modd defnyddio tagiau HTML
         title: Termau gwasanaeth wedi eu haddasu
       site_title: Enw'r achos
+      spam_check_enabled:
+        desc_html: Gall Mastodon adrodd cyrfifau sy'n anfon negeseuon niferus na chrefwyd yn awtomatig. Efallai fydd yna positifau anwir.
+        title: Awtomeiddiad gwrth-sbam
       thumbnail:
         desc_html: Ceith ei ddefnyddio ar gyfer rhagolygon drwy OpenGraph a'r API. Argymhellir 1200x630px
         title: Mân-lun yr achos
@@ -480,12 +531,19 @@ cy:
         desc_html: Dangos ffrwd gyhoeddus ar y dudalen lanio
         title: Rhagolwg o'r ffrwd
       title: Gosodiadau'r wefan
+      trendable_by_default:
+        desc_html: Yn ddylanwadu ar hashnodau sydd heb ei rhwystro yn y gorffenol
+        title: Gadael hashnodau i dueddu heb adolygiad cynt
+      trends:
+        desc_html: Arddangos hashnodau a adolygwyd yn gynt yn gyhoeddus sydd yn tueddu yn bresennol
+        title: Hashnodau tueddig
     statuses:
       back_to_account: Yn ôl i dudalen y cyfrif
       batch:
         delete: Dileu
         nsfw_off: Marcio fel nad yw'n sensitif
         nsfw_on: Marcio'n sensitif
+      deleted: Dilëwyd
       failed_to_execute: Methwyd a gweithredu
       media:
         title: Cyfryngau
@@ -493,21 +551,24 @@ cy:
       no_status_selected: Ni newidwyd dim statws achos ni ddewiswyd dim un
       title: Statysau cyfrif
       with_media: A chyfryngau
-    subscriptions:
-      callback_url: URL galw-nôl
-      confirmed: Wedi'i gadarnhau
-      expires_in: Dod i ben ymhen
-      last_delivery: Danfoniad diwethaf
-      title: WebSub
-      topic: Pwnc
     tags:
-      accounts: Cyfrifon
-      hidden: Cudd
-      hide: Cuddio o gyfeiriadur
+      accounts_today: Defyddau unigol heddiw
+      accounts_week: Defnyddau unigol yr wythnos hon
+      breakdown: Ymddatodiad o ddefnyddiaeth heddiw wrth ffynhonnell
+      context: Cyd-destun
+      directory: O fewn y gyfeiriadur
+      in_directory: "%{count} yn y gyfeiriadur"
+      last_active: Yn weithredol ddiwethaf
+      most_popular: Mwyaf poblogaidd
+      most_recent: Mwyaf diweddar
       name: Hashnod
+      review: Adolygu statws
+      reviewed: Wedi'i adolygu
       title: Hashnodau
-      unhide: Dangoswch yn y cyfeiriadur
-      visible: Gweladwy
+      trending_right_now: Yn tueddu nawr
+      unique_uses_today: "%{count} yn postio heddiw"
+      unreviewed: Heb ei adolygu
+      updated_msg: Gosodiadau hashnodau wedi'i diweddaru'n llwyddiannus
     title: Gweinyddiaeth
     warning_presets:
       add_new: Ychwanegu newydd
@@ -523,12 +584,23 @@ cy:
       body: Mae %{reporter} wedi cwyno am %{target}
       body_remote: Mae rhywun o %{domain} wedi cwyno am %{target}
       subject: Cwyn newydd am %{instance} (#%{id})
+    new_trending_tag:
+      body: 'Mae''r hashnod #%{name} yn tueddu heddiw, ond nid yw''r hashnod wedi''i adolygu''n gynt. Ni fydd o''n cael ei arddangos yn gyhoeddus oni bai bod chi''n ei ganiataú, neu arbedwch y ffurflen fel y mae i fyth clywed amdano eto.'
+      subject: Hashnod newydd i fynnu ar gyfer adolygiad ar %{instance} (%{name})
+  aliases:
+    add_new: Creu enw arall
+    created_msg: Wedi creu enw arall yn llwyddianus. Gallwch nawr dechrau'r symudiad o'r hen gyfrif.
+    deleted_msg: Wedi tynnu enw arall yn llwyddianus. Ni fydd symud o'r cyfrif hynny i'r cyfrif hon yn bosib.
+    hint_html: Os hoffech symyd o gyfrif arall i'r cyfrif hon, gallwch creu enw arall fama, sydd yn angenrheidiol cyn i chi dechrau symyd ddilynwyr o'r hen gyfrif i'r cyfrif hon. Mae'r gweithred hon yn <strong>ddiniwed ac yn gildroadwy</strong>. <strong>Caiff symudiad y cyfrif ei dechrau o'r hen gyfrif</strong>.
+    remove: Dadgysylltu'r enw arall
   appearance:
     advanced_web_interface: Rhyngwyneb gwe uwch
     advanced_web_interface_hint: 'Os hoffech gwneud defnydd o gyd o''ch lled sgrin, mae''r rhyngwyneb gwe uwch yn gadael i chi ffurfweddu sawl colofn wahanol i weld cymaint o wybodaeth â hoffech: Catref, hysbysiadau, ffrwd y ffedysawd, unrhyw nifer o rhestrau ac hashnodau.'
     animations_and_accessibility: Animeiddiau ac hygyrchedd
     confirmation_dialogs: Deialog cadarnhau
+    discovery: Darganfyddiad
     sensitive_content: Cynnwys sensitif
+    toot_layout: Gosodiad tŵt
   application_mailer:
     notification_preferences: Newid gosodiadau e-bost
     salutation: "%{name},"
@@ -548,9 +620,13 @@ cy:
     apply_for_account: Gofyn am wahoddiad
     change_password: Cyfrinair
     checkbox_agreement_html: Rydw i'n cytuno i'r <a href="%{rules_path}" target="_blank">rheolau'r gweinydd</a> a'r <a href="%{terms_path}" target="_blank">telerau gwasanaeth</a>
-    confirm_email: Cadarnhau e-bost
+    checkbox_agreement_without_rules_html: Rydw i'n cytuno i <a href="%{terms_path}" target="_blank">Delerau y Gwasanaeth</a>
     delete_account: Dileu cyfrif
     delete_account_html: Os hoffech chi ddileu eich cyfrif, mae modd <a href="%{path}">parhau yma</a>. Bydd gofyn i chi gadarnhau.
+    description:
+      prefix_invited_by_user: Mae @%{name} yn eich wahodd i ymuno â'r gweinidd Mastodon hon!
+      prefix_sign_up: Cofrestru ar Fastodon heddiw!
+      suffix: Gyda cyfrif, byddwch yn gallu dilyn pobl, postio dilysiadau a chyfnewid negeseuon gyda defnyddwyr o unrhyw gweinydd Mastodon ac mwy!
     didnt_get_confirmation: Heb dderbyn cyfarwyddiadau cadarnhau?
     forgot_password: Wedi anghofio'ch cyfrinair?
     invalid_reset_password_token: Tocyn ailosod cyfrinair yn annilys neu wedi dod i ben. Gwnewch gais am un newydd os gwelwch yn dda.
@@ -568,6 +644,16 @@ cy:
     reset_password: Ailosod cyfrinair
     security: Diogelwch
     set_new_password: Gosod cyfrinair newydd
+    setup:
+      email_below_hint_html: Os mae'r ebost isod yn anghywir, gallwch ei newid fama a derbyn ebost cadarnhad newydd.
+      email_settings_hint_html: Caiff yr ebost cadarnhad ei anfon i %{email}. Os nad yw'r ebost hon yn gywir, gallwch ei newid yn ngosodiadau'r cyfrif.
+      title: Gosodiad
+    status:
+      account_status: Statws cyfrif
+      confirming: Aros i gadarnhad e-bost gael ei gwblhau.
+      functional: Mae eich cyfrif yn gwbl weithredol.
+      pending: Mae'ch cais yn aros i gael ei adolygu gan ein staff. Gall hyn gymryd cryn amser. Byddwch yn derbyn e-bost os caiff eich cais ei gymeradwyo.
+      redirecting_to: Mae eich cyfrif yn anactif oherwydd ei fod ar hyn o bryd yn ailgyfeirio i %{acct}.
     trouble_logging_in: Trafferdd mewngofnodi?
   authorize_follow:
     already_following: Yr ydych yn dilyn y cyfrif hwn yn barod
@@ -580,6 +666,11 @@ cy:
       return: Dangos proffil y defnyddiwr
       web: I'r wê
     title: Dilyn %{acct}
+  challenge:
+    confirm: Parhau
+    hint_html: "<strong>Awgrym:</strong> Ni fyddwn yn gofyn i chi am eich cyfrinair eto am yr awr nesaf."
+    invalid_password: Cyfrinair annilys
+    prompt: Cadarnhewch gyfrinair i barhau
   datetime:
     distance_in_words:
       about_x_hours: "%{count}awr"
@@ -595,30 +686,33 @@ cy:
       x_months: "%{count}mis"
       x_seconds: "%{count}eiliad"
   deletes:
-    bad_password_msg: Go dda, hacwyr! Cyfrinair anghywir
+    challenge_not_passed: Nid oedd y wybodaeth a nodoch yn gywir
     confirm_password: Mewnbynnwch eich cyfrinair presennol i gadarnhau mai chi sydd yno
-    description_html: Bydd hyn yn cael gwared ar gynnwys o'ch cyfrif <strong>am byth heb fodd i'w adfer</strong> ac yn diffodd y cyfrif. Caiff eich eich enw defnyddiwr ei gadw i atal unrhyw ddynwarediadau yn y dyfodol.
+    confirm_username: Rhowch eich enw defnyddiwr i gadarnhau'r weithdrefn
     proceed: Dileu cyfrif
     success_msg: Llwyddwyd i ddileu eich cyfrif
-    warning_html: Dim ond dileu cynnwys o'r achos hwn ellid bod yn sicr ei fod wedi ei ddileu. Mae cynnwys sydd wedi ei rannu'n eang yn debygol o adael olion. Ni fydd gweinyddwyr all-lein a gweinyddwyr sydd wedi dad-danysgrifio o'ch diwedderiadau ddim yn diweddaru eu cronfeydd data.
-    warning_title: Argaeledd cynnwys wedi'i rannu
+    warning:
+      before: 'Cyn bwrw ymlaen, darllenwch y nodiadau hyn yn ofalus:'
+      caches: Efallai bydd cynnwys sydd wedi'i storio dros dro gan weinyddau eraill yn barhau
+      data_removal: Bydd eich pyst a'ch data arall yn cael ei ddileu am fyth
+      email_change_html: Gallwch <a href="%{path}">newid eich cyfeiriad ebost</a> heb ddileu eich cyfrif
+      email_contact_html: Os nad yw hi'n cyrraedd, gallwch ebostio <a href="mailto:%{email}">%{email}</a> am gymorth
+      email_reconfirmation_html: Os nad ydych yn derbyn yr ebost cadarnhad, gallwch <a href="%{path}">ceisio amdani eto</a>
+      irreversible: Ni fyddwch yn gallu adfer nac ail-greu eich cyfrif
+      more_details_html: Am fwy o fanylion, gwelwch y <a href="%{terms_path}">polisi preifatrwydd</a>.
+      username_available: Bydd eich enw defnyddiwr ar gael eto
+      username_unavailable: Ni fydd eich enw defnyddiwr ar gael
   directories:
     directory: Cyfeiriadur proffil
-    enabled: Rydych chi wedi'ch rhestru yn y cyfeiriadur ar hyn o bryd.
-    enabled_but_waiting: Rydych wedi dewis i chi gael eich rhestru yn y cyfeiriadur, ond nid oes gennych y nifer lleiaf o ddilynwyr (%{min_followers}) i'w rhestru eto.
     explanation: Darganfod defnyddwyr yn seiliedig ar eu diddordebau
     explore_mastodon: Archwilio %{title}
-    how_to_enable: Ar hyn o bryd nid ydych chi wedi dewis y cyfeiriadur. Gallwch ddewis i mewn isod. Defnyddiwch hashnodau yn eich bio-destun i'w restru dan hashnodau penodol!
-    people:
-      few: "%{count} o bobl"
-      many: "%{count} o bobl"
-      one: "%{count} berson"
-      other: "%{count} o bobl"
-      two: "%{count} o bobl"
-      zero: "%{count} person"
+  domain_validator:
+    invalid_domain: ddim yn enw parth dilys
   errors:
+    '400': Roedd y cais wnaethoch cyflwyno yn annilys neu'n gamffurfiedig.
     '403': Nid oes gennych ganiatad i weld y dudalen hon.
     '404': Nid yw'r dudalen yr oeddech yn chwilio amdani'n bodoli.
+    '406': Nid yw'r dudalen ar gael yn y fformat ceisiedig.
     '410': Nid yw'r dudalen yr oeddech yn chwilio amdani'n bodoli mwyach.
     '422':
       content: Methwyd i ddilysu diogelwch. A ydych chi'n blocio cwcîs?
@@ -627,6 +721,7 @@ cy:
     '500':
       content: Mae'n ddrwg gennym ni, ond fe aeth rhywbeth o'i le ar ein rhan ni.
       title: Nid yw'r dudalen hon yn gywir
+    '503': Ni chaiff y dudalen ei weini oherwydd gwall gweinydd dros dro.
     noscript_html: I ddefnyddio ap gwe Mastodon, galluogwch JavaScript os gwlwch yn dda. Fel arall, gallwch drio un o'r <a href="%{apps_path}">apiau cynhenid</a> ar gyfer Mastodon ar eich platfform.
   existing_username_validator:
     not_found: ni ddarganfwyd defnyddiwr lleol gyda'r enw cyfrif hynny
@@ -650,6 +745,7 @@ cy:
     add_new: Ychwanegu
     errors:
       limit: Yr ydych yn barod wedi cynnwys yr uchafswm o hashnodau
+    hint_html: "<strong>Beth yw hashnodau nodedig?</strong> Mae'r rhain yn cael ei arddangos yn amlwg ar eich proffil cyhoeddus ac yn gadael i bobl pori eich pyst cyhoeddus o dan y hashnodau rhain yn benodol. Rydynt yn declyn grêt ar gyfer tracio gweithiau creadigol neu brosiectau hir-dymor."
   filters:
     contexts:
       home: Ffrwd gartref
@@ -670,10 +766,12 @@ cy:
     developers: Datblygwyr
     more: Mwy…
     resources: Adnoddau
+    trending_now: Yn tueddu nawr
   generic:
     all: Popeth
     changes_saved_msg: Llwyddwyd i gadw y newidiadau!
     copy: Copïo
+    no_batch_actions_available: Dim gweithredau llwyth ar gael ar y dudalen hon
     order_by: Trefnu wrth
     save_changes: Cadw newidiadau
     validation_errors:
@@ -753,9 +851,34 @@ cy:
       too_many: Ni ellir ychwanegu mwy na 4 dogfen
   migrations:
     acct: enwdefnyddiwr@parth y cyfrif newydd
-    currently_redirecting: 'Mae eich proffil wedi ei osod i ailgyfeirio i:'
-    proceed: Cadw
-    updated_msg: Diweddarwyd gosodiad mudo eich cyfrif yn llwyddiannus!
+    cancel: Canslo ailgyfeirio
+    cancel_explanation: Bydd diddymu'r ailgyfeiriad yn ail-actifadu eich cyfrif bresennol, ond ni fydd hi'n dychwelyd dilynwyr sydd wedi'i symud i'r cyfrif hynny.
+    cancelled_msg: Wedi diddymu'r ailgyfeiriad yn llwyddiannus.
+    errors:
+      already_moved: yw'r un cyfrif rydych barod wedi symud i
+      missing_also_known_as: yn olgyfeirio at y gyfrif hon
+      move_to_self: dim ym gallu bod y cyfrif presennol
+      not_found: ni ellid dod o hyd iddo
+      on_cooldown: Rydych ar oeriad
+    followers_count: Dilynwyr at amser y symudiad
+    incoming_migrations: Symud o gyfrif wahanol
+    incoming_migrations_html: I symud o gyfrif arall i'r un hon, yn gyntaf mae'n rhaid i chi greu <a href="%{path}">enw arall ar gyfer y cyfrif</a>.
+    moved_msg: Mae eich cyfrif nawr yn ailgyfeirio at %{acct} ac mae eich dilynwyr yn cael ei symud ar draws.
+    not_redirecting: Nid yw eich cyfrif yn ailgyfeirio at gyfrif arall yn bresennol.
+    on_cooldown: Rydych wedi mudo eich cyfrif yn diweddar. Bydd y swyddogaeth hon ar gael eto mewn %{count} diwrnod.
+    past_migrations: Ymfudiadau yn y gorffennol
+    proceed_with_move: Symud dilynwyr
+    redirecting_to: Mae eich cyfrif yn ailgyfeirio at %{acct}.
+    set_redirect: Gosod ailgyfeiriad
+    warning:
+      backreference_required: Bydd rhaid i'r cyfrif newydd olgyfeirio at y cyfrif hon yn gyntaf
+      before: 'Cyn bwrw ymlaen, darllenwch y nodiadau hyn yn ofalus:'
+      cooldown: Ar ôl symud, bydd yna cyfnod oeriad trwy pa ystod ni fyddwch yn gallu symud eto
+      disabled_account: Ni fydd eich cyfrif presennol yn gwbl ddefyddiedig ar ôl hyn. Er hynny, byddwch dal gyda fynediad at allforiad data ac hefyd ail-actifadu.
+      followers: Bydd y gweithred hon yn symud pob un o'ch dilynwyr o'r cyfrif presennol i'r cyfrif newydd
+      only_redirect_html: Fel arall, gallwch <a href="%{path}">dim ond ychwanegu ailgyfeiriad ar eich proffil</a>.
+      other_data: Ni fydd unrhyw data arall yn cael ei symud yn awtomatig
+      redirect: Bydd proffil eich cyfrif presennol yn cael ei diweddaru gyda hysbysiad ailgyfeirio ac yn cael ei eithrio o chwiliadau
   moderation:
     title: Goruwchwyliad
   notification_mailer:
@@ -862,10 +985,6 @@ cy:
     reply:
       proceed: Ymlaen i ateb
       prompt: 'Hoffech ateb y tŵt hon:'
-  remote_unfollow:
-    error: Gwall
-    title: Teitl
-    unfollowed: Dad-ddilynwyd
   scheduled_statuses:
     over_daily_limit: Rydych wedi rhagori'r cyfwng o %{limit} o dŵtiau rhestredig ar y dydd hynny
     over_total_limit: Rydych wedi rhagori'r cyfwng o %{limit} o dŵtiau rhestredig
@@ -914,6 +1033,7 @@ cy:
   settings:
     account: Cyfrif
     account_settings: Gosodiadau'r cyfrif
+    aliases: Aliasau cyfrif
     appearance: Arddangosiad
     authorized_apps: Apiau awdurdodedig
     back: Yn ôl i Mastodon
@@ -931,6 +1051,8 @@ cy:
     profile: Proffil
     relationships: Dilynion a dilynwyr
     two_factor_authentication: Awdurdodi dau-gam
+  spam_check:
+    spam_detected: Mae hyn yn adrodd awtomatig. Caiff sbam ei ganfod.
   statuses:
     attached:
       description: 'Ynghlwm: %{attached}'
@@ -966,6 +1088,13 @@ cy:
       private: Ni ellir pinio tŵt nad yw'n gyhoeddus
       reblog: Ni ellir pinio bŵstiau
     poll:
+      total_people:
+        few: "%{count} o bobl"
+        many: "%{count} o bobl"
+        one: "%{count} berson"
+        other: "%{count} o bobl"
+        two: "%{count} o bobl"
+        zero: "%{count} berson"
       total_votes:
         few: "%{count} o bleidleisiau"
         many: "%{count} o bleidleisiau"
@@ -988,6 +1117,8 @@ cy:
     pinned: Tŵt wedi'i binio
     reblogged: hybwyd
     sensitive_content: Cynnwys sensitif
+  tags:
+    does_not_match_previous_name: ddim yn cyfateb i'r enw blaenorol
   terms:
     body_html: |
       <h2>Polisi Preifatrwydd</h2>
@@ -1105,7 +1236,9 @@ cy:
         disable: Er bod eich cyfrif wedi'i rewi, mae eich data cyfrif yn parhau i fod yn gyfan, ond ni allwch chi berfformio unrhyw gamau nes ei ddatgloi.
         silence: Pan mae eich cyfrif yn gyfyngiedig, dim ond pobl sydd yn barod yn eich dilyn yn gweld eich tŵtiau ar y gweinydd hon, a efallai byddwch yn cael eich tynnu o restrau cyhoeddus. Er hyn, gall eraill eich dilyn chi wrth law.
         suspend: Mae eich cyfrif wedi cael ei wahardd, a mae gyd o'ch tŵtiau a'ch ffeiliau cyfrwng uwchlwythadwy wedi cael eu tynnu or gweinydd yn barhaol, ac o weinyddau ble yr oedd eich dilynwyr.
+      get_in_touch: Gallwch ymateb i'r e-bost hwn i gysylltu â staff %{instance}.
       review_server_policies: Adolygu polisïau'r gweinydd
+      statuses: 'Yn benodol, ar gyfer:'
       subject:
         disable: Mae'ch cyfrif %{acct} wedi'i rewi
         none: Rhybudd am %{acct}

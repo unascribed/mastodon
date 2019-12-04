@@ -122,6 +122,10 @@ export function MuteModal () {
   return import(/* webpackChunkName: "flavours/glitch/async/mute_modal" */'flavours/glitch/features/ui/components/mute_modal');
 }
 
+export function BlockModal () {
+  return import(/* webpackChunkName: "flavours/glitch/async/block_modal" */'flavours/glitch/features/ui/components/block_modal');
+}
+
 export function ReportModal () {
   return import(/* webpackChunkName: "flavours/glitch/async/report_modal" */'flavours/glitch/features/ui/components/report_modal');
 }
@@ -138,6 +142,10 @@ export function Video () {
   return import(/* webpackChunkName: "flavours/glitch/async/video" */'flavours/glitch/features/video');
 }
 
+export function Audio () {
+  return import(/* webpackChunkName: "features/glitch/async/audio" */'flavours/glitch/features/audio');
+}
+
 export function EmbedModal () {
   return import(/* webpackChunkName: "flavours/glitch/async/embed_modal" */'flavours/glitch/features/ui/components/embed_modal');
 }
@@ -152,4 +160,12 @@ export function ListAdder () {
 
 export function Search () {
   return import(/*webpackChunkName: "features/glitch/async/search" */'flavours/glitch/features/search');
+}
+
+export function Tesseract () {
+  return import(/*webpackChunkName: "tesseract" */'tesseract.js');
+}
+
+export function Directory () {
+  return import(/* webpackChunkName: "features/glitch/async/directory" */'flavours/glitch/features/directory');
 }
