@@ -1,5 +1,5 @@
 body:after {
-  content: "z205";
+  content: "z300";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -125,17 +125,8 @@ body .column-header__notif-cleaning-buttons button.active {
   color: var(--sleeping-accent-contrast);
 }
 
-.composer--publisher > .count {
-  position: absolute;
-  right: -6px;
-  /* this will probably do weird stuff with different font sizes idk, it's already a hack */
-  top: -76px;
-  color: #000;
-  font-size: .75em;
-}
-
 .composer--spoiler,
-.composer--textarea > label .textarea,
+.composer textarea,
 .composer--warning {
   border-radius: 0;
 }
@@ -287,7 +278,7 @@ body .column-header__notif-cleaning-buttons button.active {
   border-radius: 2px;
 }
 
-.composer--textarea > label .textarea:disabled {
+.composer textarea:disabled {
   background: var(--sleeping-background-plus10);
 }
 
@@ -786,24 +777,19 @@ button.icon-button i.fa-retweet {
   width: 100%;
 }
 
-.composer--textarea > label .textarea,
+.composer textarea,
 .composer--spoiler input {
   background: var(--sleeping-background-plus10);
   color: var(--sleeping-background-plus10-contrast);
 }
-.composer--publisher > .count {
-  color: var(--sleeping-background-plus10-contrast);
-}
 
-.sleeping-invert-compose .composer--textarea > label .textarea,
+.sleeping-invert-compose .composer textarea,
 .sleeping-invert-compose .composer--spoiler input,
-.sleeping-white-compose .composer--textarea > label .textarea,
-.sleeping-white-compose .composer--spoiler input {
+.sleeping-invert-compose .character-counter,
+.sleeping-white-compose .composer textarea,
+.sleeping-white-compose .composer--spoiler input,
+.sleeping-white-compose .character-counter {
   background: #FFF;
-  color: #000;
-}
-.sleeping-invert-compose .composer--publisher > .count, 
-.sleeping-white-compose .composer--publisher > .count {
   color: #000;
 }
 .sleeping-invert-compose .emoji-button,
@@ -811,17 +797,21 @@ button.icon-button i.fa-retweet {
   background-image: url('/sleeping/emoji-dark.svg') !important;
 }
 
-.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--textarea > label .textarea,
+.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer textarea,
 .sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--spoiler input,
-.sleeping-black-compose .composer--textarea > label .textarea,
-.sleeping-black-compose .composer--spoiler input {
+.sleeping-invert-compose.sleeping-background-contrast-is-dark .character-counter,
+.sleeping-black-compose .composer textarea,
+.sleeping-black-compose .composer--spoiler input,
+.sleeping-black-compose .character-counter {
   background: #000;
   color: #FFF;
 }
-.sleeping-invert-compose.sleeping-background-contrast-is-dark .composer--publisher > .count,
-.sleeping-black-compose .composer--publisher > .count {
-  color: #FFF;
+
+textarea::placeholder, input::placeholder {
+  color: inherit !important;
+  opacity: 0.5;
 }
+
 .sleeping-invert-compose.sleeping-background-contrast-is-dark .emoji-button,
 .sleeping-black-compose .emoji-button {
   background-image: url('/sleeping/emoji.svg') !important;
@@ -1177,12 +1167,10 @@ a[href="/admin/custom_emojis/new"] {
 .setting-meta__label, .setting-radio__label, .setting-toggle__label,
 .account__header__tabs__name h1, .account__header__bio .account__header__content, .account__header__tabs__name h1 small,
 .drawer--account,
-.drawer--account .acct {
+.drawer--account .acct,
+.card__bar .display-name span,
+.card__bar .display-name strong {
   color: inherit !important; /* YOU DO NOT KNOW BETTER THAN YOUR PARENT ABOUT WHAT COLOR YOU SHOULD BE */
-}
-.composer {
-  overflow-y: auto;
-  max-height: 100%;
 }
 
 body {
@@ -1206,4 +1194,95 @@ body {
 .status.status-direct:not(.read) {
     background: transparent;
     border-bottom-color: var(--sleeping-background-minus5);
+}
+
+.recommended {
+	display: none !important;
+}
+
+.admin-wrapper .sidebar-wrapper__inner {
+	background: var(--sleeping-background-plus2h);
+	color: var(--sleeping-background-plus2h-contrast);
+}
+
+.admin-wrapper .sidebar-wrapper {
+	background: none;
+}
+
+.card__bar {
+	background: var(--sleeping-background);
+	color: var(--sleeping-background-contrast);
+}
+
+.dashboard__counters > div > div, .dashboard__counters > div > a {
+	background: var(--sleeping-background-plus2h);
+	color: var(--sleeping-background-plus2h-contrast);
+}
+
+body .neutral-hint, .admin-wrapper .content .neutral-hint {
+	color: inherit;
+	opacity: 0.3;
+}
+
+body .positive-hint, .admin-wrapper .content .positive-hint {
+	color: var(--sleeping-primary-plus10);
+}
+
+.batch-table__toolbar {
+	background: var(--sleeping-primary);
+	color: var(--sleeping-primary-contrast);
+	border: none;
+}
+
+.nothing-here, .batch-table__row, .empty-column-indicator, .error-column {
+	background: var(--sleeping-background-minus5);
+	color: var(--sleeping-background-minus5-contrast);
+	border: none !important;
+}
+
+.batch-table__row__content__extra {
+	color: inherit;
+	opacity: 0.7;
+}
+
+.user_setting_noindex {
+	opacity: 0.5;
+	pointer-events: none;
+	cursor: not-allowed;
+}
+.user_setting_noindex .hint {
+	font-size: 0 !important;
+}
+.user_setting_noindex .hint:after {
+	font-size: 12px;
+	content: "Sleeping Town is not indexable at all"
+}
+.composer--options-wrapper {
+	background: var(--sleeping-primary);
+	color: var(--sleeping-primary-contrast);
+}
+
+.focusable:focus.status.status-direct:not(.read) {
+	background: transparent;
+}
+.focusable:focus.status.status-direct:not(.read):before {
+	opacity: 0.3;
+}
+.activity-stream .entry {
+  background: none;
+}
+
+.sleeping-background-contrast-is-dark .account-role {
+  filter: invert(100%) hue-rotate(180deg);
+}
+
+.character-counter {
+	position: relative;
+	top: -36px;
+	right: -6px;
+	font-size: 10px;
+	opacity: 0.9;
+	background: none !important;
+	font-weight: normal;
+	color: var(--sleeping-background-plus10-contrast);
 }

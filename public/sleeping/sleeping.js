@@ -68,7 +68,7 @@ window.sleepingInit = function(convert) {
 		}
 	},
 	settingsHook: function(idx) {
-		if (idx == 5) {
+		if (idx == 6) {
 			requestAnimationFrame(function() {
 				document.querySelector('.local-settings__page.sleeping').innerHTML = `
 <h1>Sleeping</h1>
