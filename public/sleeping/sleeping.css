@@ -1,5 +1,5 @@
 body:after {
-  content: "z300";
+  content: "z302";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -1177,10 +1177,6 @@ body {
   height: 100vh !important;
 }
 
-.muted .status__content__text, .muted .status__content a, .muted .status__content p, .muted .status__display-name strong {
-    color: inherit;
-}
-
 .poll__chart {
     background: var(--sleeping-primary);
     opacity: 0.5;
@@ -1291,4 +1287,17 @@ body .positive-hint, .admin-wrapper .content .positive-hint {
   border-left-color: var(--sleeping-primary);
   color: var(--sleeping-background-contrast);
   opacity: 0.9;
+}
+.muted .status__content__text {
+	color: var(--sleeping-background-contrast);
+}
+.batch-table__row:nth-child(2n) {
+	background: var(--sleeping-background-plus5);
+	color: var(--sleeping-background-plus5-contrast);
+}
+.nav-left .brand svg {
+	display: none !important;
+}
+.emojione .emojione {
+	margin: 0 !important;
 }
