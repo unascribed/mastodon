@@ -55,6 +55,7 @@ class ComposeForm extends ImmutablePureComponent {
     onChangeSpoilerText: PropTypes.func,
     onPaste: PropTypes.func,
     onPickEmoji: PropTypes.func,
+    onDelete: PropTypes.func,
     showSearch: PropTypes.bool,
     anyMedia: PropTypes.bool,
     singleColumn: PropTypes.bool,
@@ -283,6 +284,8 @@ class ComposeForm extends ImmutablePureComponent {
       spoilersAlwaysOn,
     } = this.props;
 
+    if (window.sleeping) window.sleeping.rerenderComposeHook = () => this.forceUpdate();
+    
     let disabledButton = isSubmitting || isUploading || isChangingUpload || (!text.trim().length && !anyMedia);
 
     const countText = spoilerText.length > 0 ? '' : `${countableText(text)}${advancedOptions && advancedOptions.get('do_not_federate') ? ' 👁️' : ''}`;
@@ -359,6 +362,8 @@ class ComposeForm extends ImmutablePureComponent {
           disabled={disabledButton}
           onSecondarySubmit={handleSecondarySubmit}
           onSubmit={handleSubmit}
+          onDelete={() => this.props.onDelete()}
+          showDeleteButton={localStorage["sleeping-show-delete-button"] === "true"}
           privacy={privacy}
           sideArm={sideArm}
         />

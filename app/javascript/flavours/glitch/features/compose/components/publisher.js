@@ -31,9 +31,11 @@ class Publisher extends ImmutablePureComponent {
   static propTypes = {
     countText: PropTypes.string,
     disabled: PropTypes.bool,
+    showDeleteButton: PropTypes.bool,
     intl: PropTypes.object.isRequired,
     onSecondarySubmit: PropTypes.func,
     onSubmit: PropTypes.func,
+    onDelete: PropTypes.func,
     privacy: PropTypes.oneOf(['direct', 'private', 'unlisted', 'public']),
     sideArm: PropTypes.oneOf(['none', 'direct', 'private', 'unlisted', 'public']),
   };
@@ -53,6 +55,22 @@ class Publisher extends ImmutablePureComponent {
 
     return (
       <div className={computedClass}>
+        {this.props.showDeleteButton ?
+          <Button
+              className='delete_post'
+              disabled={disabled}
+              onClick={() => this.props.onDelete()}
+              style={{ float: 'left', padding: 0, height: 32, width: 32, lineHeight: '33px' }}
+              text={
+                <span>
+                  <Icon
+                    id={"trash"}
+                  />
+                </span>
+              }
+              title='Delete draft'
+            />
+        : null}
         {sideArm && sideArm !== 'none' ? (
           <Button
             className='side_arm'

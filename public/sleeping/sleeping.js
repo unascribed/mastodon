@@ -116,13 +116,51 @@ window.sleepingInit = function(convert) {
 	<small>Automatic chooses a Simple algorithm based on the brightness of the background color. Advanced uses a more complex algorithm based around how the eye perceives color, but can produce unexpected results.</small>
 </section>
 <section>
-	<h2>Misc</h2>
+	<h2>Tweaks</h2>
 	<div class="glitch local-settings__page__item boolean">
 		<label for="sleeping-verbose-handles">
 			<input type="checkbox" id="sleeping-verbose-handles"/> Verbose handles (experimental) (reload to apply changes)
 		</label>
 	</div>
-</section>`;
+	<div class="glitch local-settings__page__item boolean">
+		<label for="sleeping-delete-button">
+			<input type="checkbox" id="sleeping-delete-button"/> Delete draft button under compose box
+		</label>
+	</div>
+	<div class="glitch local-settings__page__item boolean">
+		<label>
+			<input type="checkbox" class="sleeping-css-toggle" data-body-class="sleeping-hide-share-button"/> Hide share button (Mobile only)
+		</label>
+	</div>
+	<div class="glitch local-settings__page__item boolean">
+		<label>
+			<input type="checkbox" class="sleeping-css-toggle" data-body-class="sleeping-use-line-awesome"/> Use line icons by Icons8 (experimental)
+		</label>
+	</div>
+	<div class="glitch local-settings__page__item boolean">
+		<label>
+			<input type="checkbox" class="sleeping-css-toggle" data-body-class="sleeping-disable-media-transitions"/> Disable media lightbox transitions
+		</label>
+	</div>
+	<div class="glitch local-settings__page__item boolean">
+		<label>
+			<input type="checkbox" class="sleeping-css-toggle" data-body-class="sleeping-hide-fake-loaders"/> Hide fake loading bars
+		</label>
+	</div>
+	<div class="glitch local-settings__page__item boolean">
+		<label>
+			<input type="checkbox" class="sleeping-css-toggle" data-body-class="sleeping-time-unclickable"/> Don't allow clicking on time in unexpanded statuses (to avoid unintentional navigations)
+		</label>
+	</div>
+</section>
+<section>
+	<h2>Advanced</h2>
+	Override font<br/>
+	<input type="text" class="sleeping-var" data-var="sleeping-override-font"/><br/>
+	Override monospace font<br/>
+	<input type="text" class="sleeping-var" data-var="sleeping-override-monospace-font"/><br/>
+</section>
+<br/><br/>`;
 					// TODO this is a gigantic mess
 					var primary = document.getElementById("sleeping-primary");
 					var accent = document.getElementById("sleeping-accent");
@@ -131,6 +169,7 @@ window.sleepingInit = function(convert) {
 					var textContrast = document.getElementById("sleeping-text-contrast");
 					var contrast = document.getElementById("sleeping-contrast");
 					var verbose = document.getElementById("sleeping-verbose-handles");
+					var deleteButton = document.getElementById("sleeping-delete-button");
 					var composeColor = document.getElementById("sleeping-compose-color");
 					var algorithm = document.getElementById("sleeping-algorithm");
 					primary.value = getComputedStyle(document.body).getPropertyValue("--sleeping-primary").trim();
@@ -140,8 +179,33 @@ window.sleepingInit = function(convert) {
 					textContrast.value = Number(localStorage["sleeping-text-contrast"] || "1");
 					contrast.value = Number(localStorage["sleeping-contrast"] || "1");
 					verbose.checked = localStorage["sleeping-verbose-handles"] === "true";
+					deleteButton.checked = localStorage["sleeping-show-delete-button"] === "true";
 					composeColor.value = localStorage["sleeping-compose-color"] || (localStorage["sleeping-invert-compose"] === "true" ? "invert" : "default");
 					algorithm.value = localStorage["sleeping-algorithm"] || "auto";
+					document.querySelectorAll('.local-settings__page.sleeping .sleeping-css-toggle').forEach((e) => {
+						e.checked = localStorage["sleeping-extra-classes."+e.dataset.bodyClass] === "true";
+						e.addEventListener('change', () => {
+							if (e.checked) {
+								document.body.classList.add(e.dataset.bodyClass);
+							} else {
+								document.body.classList.remove(e.dataset.bodyClass);
+							}
+							localStorage["sleeping-extra-classes."+e.dataset.bodyClass] = e.checked;
+						});
+					});
+					document.querySelectorAll('.local-settings__page.sleeping .sleeping-var').forEach((e) => {
+						e.value = localStorage["sleeping-extra-vars."+e.dataset.var] || "";
+						e.addEventListener('input', () => {
+							if (!e.value) {
+								document.body.classList.remove(e.dataset.var+"-present");
+								document.body.style.removeProperty("--"+e.dataset.var);
+							} else {
+								document.body.classList.add(e.dataset.var+"-present");
+								document.body.style.setProperty("--"+e.dataset.var, e.value);
+							}
+							localStorage["sleeping-extra-vars."+e.dataset.var] = e.value;
+						});
+					});
 					primary.addEventListener('input', function() {
 						sleeping.setColors("primary", primary.value);
 						localStorage["sleeping-primary-color"] = primary.value;
@@ -175,6 +239,10 @@ window.sleepingInit = function(convert) {
 					});
 					verbose.addEventListener('change', function() {
 						localStorage["sleeping-verbose-handles"] = verbose.checked;
+					});
+					deleteButton.addEventListener('change', function() {
+						localStorage["sleeping-show-delete-button"] = deleteButton.checked;
+						if (window.sleeping.rerenderComposeHook) window.sleeping.rerenderComposeHook();
 					});
 					composeColor.addEventListener('change', function() {
 						document.body.classList.remove("sleeping-invert-compose");
@@ -349,6 +417,14 @@ window.sleepingInit = function(convert) {
 	sleeping.setColors("background", background);
 	document.body.style.setProperty("--sleeping-text-contrast", textContrast);
 	document.body.classList.add("sleeping-"+composeColor+"-compose");
+	Object.keys(localStorage).forEach((k) => {
+		if (k.indexOf("sleeping-extra-vars.") === 0 && localStorage[k]) {
+			document.body.style.setProperty("--"+k.substring(20), localStorage[k]);
+			document.body.classList.add(k.substring(20)+"-present");
+		} else if (k.indexOf("sleeping-extra-classes.") === 0 && localStorage[k] === "true") {
+			document.body.classList.add(k.substring(23));
+		}
+	});
 	
 	var vanillaFlavor = document.querySelector("#flavours #vanilla .fa");
 	var glitchFlavor = document.querySelector("#flavours #glitch .fa");

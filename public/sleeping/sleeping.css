@@ -1,5 +1,7 @@
+@import url("/sleeping/sleeping-line-awesome.css");
+
 body:after {
-  content: "z302";
+  content: "z303";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -54,10 +56,10 @@ body:after {
 .st_custom_emoji_wrapper *:not(.st_moving) {
   opacity: 1;
 }
-.st_custom_emoji_wrapper:hover .st_moving {
+.status:hover .st_custom_emoji_wrapper .st_moving {
   opacity: 1;
 }
-.st_custom_emoji_wrapper:hover *:not(.st_moving) {
+.status:hover .st_custom_emoji_wrapper *:not(.st_moving) {
   opacity: 0;
 }
 
@@ -81,7 +83,7 @@ body .column-header__notif-cleaning-buttons button.active {
   opacity: 0.5;
 }
 
-.wide .column {
+.multi-columns.wide .column {
   max-width: 100%;
 }
 
@@ -189,7 +191,7 @@ body .column-header__notif-cleaning-buttons button.active {
   background: var(--sleeping-accent);
 }
 
-.wide .column {
+.multi-columns .column {
   padding: 0;
   margin: 10px 5px;
 }
@@ -521,7 +523,7 @@ button[aria-label=Favourite].active:active > i {
   border-bottom-width: 8px;
   border-bottom-color: var(--sleeping-background-minus5);
 }
-.wide .column:last-child {
+.multi-columns.wide .column:last-child {
   padding: 0;
 }
 
@@ -598,7 +600,7 @@ button[aria-label=Favourite].active:active > i {
   background: var(--sleeping-background-plus10);
   color: var(--sleeping-background-plus10-contrast);
 }
-.column-link:hover {
+.column-link:hover, .column-link:active, .column-link:focus {
   background: var(--sleeping-background-plus15);
   color: var(--sleeping-background-plus15-contrast);
 }
@@ -779,8 +781,8 @@ button.icon-button i.fa-retweet {
 
 .composer textarea,
 .composer--spoiler input {
-  background: var(--sleeping-background-plus10);
-  color: var(--sleeping-background-plus10-contrast);
+  background: var(--sleeping-background-plus10) !important;
+  color: var(--sleeping-background-plus10-contrast) !important;
 }
 
 .sleeping-invert-compose .composer textarea,
@@ -789,8 +791,8 @@ button.icon-button i.fa-retweet {
 .sleeping-white-compose .composer textarea,
 .sleeping-white-compose .composer--spoiler input,
 .sleeping-white-compose .character-counter {
-  background: #FFF;
-  color: #000;
+  background: #FFF !important;
+  color: #000 !important;
 }
 .sleeping-invert-compose .emoji-button,
 .sleeping-white-compose .emoji-button {
@@ -803,8 +805,8 @@ button.icon-button i.fa-retweet {
 .sleeping-black-compose .composer textarea,
 .sleeping-black-compose .composer--spoiler input,
 .sleeping-black-compose .character-counter {
-  background: #000;
-  color: #FFF;
+  background: #000 !important;
+  color: #FFF !important;
 }
 
 textarea::placeholder, input::placeholder {
@@ -834,15 +836,17 @@ textarea::placeholder, input::placeholder {
   color: inherit;
 }
 .emoji-button img {
-  opacity: 0;
+  opacity: 0 !important;
 }
 .emoji-button {
   background-image: url('/sleeping/emoji.svg');
   background-repeat: no-repeat;
+  padding: 0;
+  margin: 5px 5px 2px 2px;
   opacity: 0.5;
 }
 .emoji-button:hover {
-  opacity: 1;
+  background-image: url('/emoji/1f634.svg');
 }
 .sleeping-background-plus10-contrast-is-dark .emoji-button {
   background-image: url('/sleeping/emoji-dark.svg');
@@ -1300,4 +1304,65 @@ body .positive-hint, .admin-wrapper .content .positive-hint {
 }
 .emojione .emojione {
 	margin: 0 !important;
+}
+
+.dropdown-menu {
+  z-index: 10;
+}
+
+.confirmation-modal__secondary-button, .confirmation-modal__cancel-button, .mute-modal__cancel-button, .block-modal__cancel-button {
+  background-color: transparent !important;
+}
+
+.tabs-bar__link {
+  color: var(--sleeping-primary-contrast) !important;
+}
+.tabs-bar__link.active {
+	color: var(--sleeping-accent) !important;
+	border-bottom-color: var(--sleeping-accent) !important;
+}
+.tabs-bar__wrapper {
+	background: var(--sleeping-background-minus5) !important;
+}
+
+body.sleeping-override-font-present, body.sleeping-override-font-present.system-font {
+  font-family: var(--sleeping-override-font);
+}
+body.sleeping-override-monospace-font-present code, body.sleeping-override-monospace-font-present pre {
+  font-family: var(--sleeping-override-mono-font);
+}
+
+.actions-modal ul li:not(:empty) a {
+	background: var(--sleeping-background);
+	color: var(--sleeping-background-contrast);
+}
+.actions-modal ul li:not(:empty) a.active, .actions-modal ul li:not(:empty) a.active button, .actions-modal ul li:not(:empty) a:hover, .actions-modal ul li:not(:empty) a:hover button, .actions-modal ul li:not(:empty) a:active, .actions-modal ul li:not(:empty) a:active button, .actions-modal ul li:not(:empty) a:focus, .actions-modal ul li:not(:empty) a:focus button {
+	background: var(--sleeping-accent);
+	color: var(--sleeping-accent-contrast);
+}
+.status.light {
+	background: var(--sleeping-background-plus20);
+	color: var(--sleeping-background-plus20-contrast);
+}
+.status.light .display-name {
+	color: inherit;
+}
+.actions-modal .status {
+	border-bottom-color: var(--sleeping-background-minus5);
+}
+
+.sleeping-hide-share-button [aria-label="Share"] {
+	display: none;
+}
+
+.sleeping-disable-media-transitions .react-swipeable-view-container {
+    transition: none !important;
+}
+
+.sleeping-time-unclickable .status__relative-time {
+	pointer-events: none;
+}
+
+.sleeping-hide-fake-loaders .loading-bar {
+	display: none !important;
 }

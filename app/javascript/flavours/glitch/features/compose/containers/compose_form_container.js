@@ -12,6 +12,7 @@ import {
   selectComposeSuggestion,
   submitCompose,
   uploadCompose,
+  resetCompose,
 } from 'flavours/glitch/actions/compose';
 import {
   openModal,
@@ -128,6 +129,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
       onSecondary: () => dispatch(openModal('FOCAL_POINT', { id: mediaId })),
       onDoNotAsk: () => dispatch(changeLocalSetting(['confirm_missing_media_description'], false)),
     }));
+  },
+  
+  onDelete() {
+    dispatch(resetCompose());
   },
 
 });

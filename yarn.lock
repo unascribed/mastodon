@@ -2810,6 +2810,11 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
+chromatism@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/chromatism/-/chromatism-3.0.0.tgz#a7249d353c1e4f3577e444ac41171c4e2e624b12"
+  integrity sha1-pySdNTweTzV35ESsQRccTi5iSxI=
+
 chrome-trace-event@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/chrome-trace-event/-/chrome-trace-event-1.0.2.tgz#234090ee97c7d4ad1a2c4beae27505deffc608a4"
@@ -4626,17 +4631,17 @@ fast-levenshtein@~2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
-favico.js@^0.3.10:
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/favico.js/-/favico.js-0.3.10.tgz#80586e27a117f24a8d51c18a99bdc714d4339301"
-  integrity sha1-gFhuJ6EX8kqNUcGKmb3HFNQzkwE=
-
 fastq@^1.6.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.8.0.tgz#550e1f9f59bbc65fe185cb6a9b4d95357107f481"
   integrity sha512-SMIZoZdLh/fgofivvIkmknUXyPnvxRE3DhtZ5Me3Mrsk5gyPL42F0xr51TdRXskBxHfMp+07bcYzfsYEsSQA9Q==
   dependencies:
     reusify "^1.0.4"
+
+favico.js@^0.3.10:
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/favico.js/-/favico.js-0.3.10.tgz#80586e27a117f24a8d51c18a99bdc714d4339301"
+  integrity sha1-gFhuJ6EX8kqNUcGKmb3HFNQzkwE=
 
 faye-websocket@^0.10.0:
   version "0.10.0"
