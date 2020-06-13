@@ -1366,3 +1366,27 @@ body.sleeping-override-monospace-font-present code, body.sleeping-override-monos
 .sleeping-hide-fake-loaders .loading-bar {
 	display: none !important;
 }
+.composer--options--dropdown--content--item:hover > .content, .composer--options--dropdown--content--item.active > .content, .composer--options--dropdown--content--item:hover > .content strong, .composer--options--dropdown--content--item.active > .content strong {
+	color: inherit;
+}
+
+.column-header__button:hover, .column-header__notif-cleaning-buttons button:hover, .column-header__button:focus, .column-header__notif-cleaning-buttons button:focus {
+	text-shadow: none;
+	color: var(--sleeping-accent);
+}
+
+.status__info__icons {
+	color: var(--sleeping-background-contrast);
+	opacity: 0.7;
+}
+
+.sleeping-use-line-awesome button.icon-button i.fa-retweet {
+	background: none;
+}
+.sleeping-use-line-awesome button.icon-button i.fa-retweet:before {
+	display: inline-block !important;
+}
+
+.icon-button.active:hover:not(.disabled), .icon-button.active:active:not(.disabled), .icon-button.active:focus:not(.disabled) {
+	color: var(--sleeping-accent-plus10);
+}
