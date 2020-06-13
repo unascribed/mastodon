@@ -60,7 +60,7 @@ sk:
         title: Nastala chyba
       new:
         able_to: Bude môcť
-        prompt: Aplikácia %{client_name} žiada prístup k vašemu účtu
+        prompt: Aplikácia %{client_name} vyžaduje prístup k tvojmu účtu
         title: Je potrebná autorizácia
       show:
         title: Skopíruj tento autorizačný kód a vlož ho do aplikácie.
@@ -73,7 +73,7 @@ sk:
         application: Aplikácia
         created_at: Autorizované
         scopes: Oprávnenia
-        title: Vaše autorizované aplikácie
+        title: Tvoje povolené aplikácie
     errors:
       messages:
         access_denied: Prístup zamietnutý.
@@ -124,6 +124,7 @@ sk:
       read: prezri si všetky dáta ohľadom svojho účetu
       read:accounts: prezri si informácie o účte
       read:blocks: prezri svoje bloky
+      read:bookmarks: pozri svoje záložky
       read:favourites: prezri svoje obľúbené
       read:filters: prezri svoje filtrovanie
       read:follows: prezri si svoje sledovania
@@ -136,6 +137,7 @@ sk:
       write: upraviť všetky dáta tvojho účtu
       write:accounts: uprav svoj profil
       write:blocks: blokuj účty a domény
+      write:bookmarks: pridaj si príspevky k záložkám
       write:favourites: obľúbené príspevky
       write:filters: vytvor roztriedenie
       write:follows: následuj ľudí

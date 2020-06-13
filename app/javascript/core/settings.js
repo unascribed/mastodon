@@ -1,7 +1,7 @@
 //  This file will be loaded on settings pages, regardless of theme.
 
 import escapeTextContentForBrowser from 'escape-html';
-const { delegate } = require('rails-ujs');
+const { delegate } = require('@rails/ujs');
 import emojify from '../mastodon/features/emoji/emoji';
 
 delegate(document, '#account_display_name', 'input', ({ target }) => {
@@ -10,7 +10,7 @@ delegate(document, '#account_display_name', 'input', ({ target }) => {
     if (target.value) {
       name.innerHTML = emojify(escapeTextContentForBrowser(target.value));
     } else {
-      name.textContent = document.querySelector('#default_account_display_name').textContent;
+      name.textContent = name.textContent = target.dataset.default;
     }
   }
 });

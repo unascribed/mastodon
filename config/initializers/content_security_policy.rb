@@ -34,9 +34,10 @@ if Rails.env.production?
     p.script_src      :self, assets_host
     p.font_src        :self, assets_host
     p.img_src         :self, :data, :blob, *data_hosts
-    p.style_src       :self, :unsafe_inline, assets_host
+    p.style_src       :self, assets_host
     p.media_src       :self, :data, *data_hosts
     p.frame_src       :self, :https
+    p.child_src       :self, :blob, assets_host
     p.worker_src      :self, :blob, assets_host
     p.connect_src     :self, :blob, :data, Rails.configuration.x.streaming_api_base_url, *data_hosts
     p.manifest_src    :self, assets_host
@@ -47,3 +48,8 @@ end
 # For further information see the following documentation:
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
 # Rails.application.config.content_security_policy_report_only = true
+
+PgHero::HomeController.content_security_policy do |p|
+  p.script_src :self, :unsafe_inline, assets_host
+  p.style_src  :self, :unsafe_inline, assets_host
+end

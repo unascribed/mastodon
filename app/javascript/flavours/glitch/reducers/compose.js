@@ -344,7 +344,6 @@ export default function compose(state = initialState, action) {
     });
   case COMPOSE_SPOILERNESS_CHANGE:
     return state.withMutations(map => {
-      map.set('spoiler_text', '');
       map.set('spoiler', !state.get('spoiler'));
       map.set('idempotencyKey', uuid());
 
@@ -387,7 +386,7 @@ export default function compose(state = initialState, action) {
 
       if (action.status.get('spoiler_text').length > 0) {
         let spoiler_text = action.status.get('spoiler_text');
-        if (!spoiler_text.match(/^re[: ]/i)) {
+        if (action.prependCWRe && !spoiler_text.match(/^re[: ]/i)) {
           spoiler_text = 're: '.concat(spoiler_text);
         }
         map.set('spoiler', true);

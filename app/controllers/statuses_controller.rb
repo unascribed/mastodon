@@ -44,12 +44,12 @@ class StatusesController < ApplicationController
 
   def activity
     expires_in 3.minutes, public: @status.distributable? && public_fetch_mode?
-    render_with_cache json: @status, content_type: 'application/activity+json', serializer: ActivityPub::ActivitySerializer, adapter: ActivityPub::Adapter
+    render_with_cache json: ActivityPub::ActivityPresenter.from_status(@status), content_type: 'application/activity+json', serializer: ActivityPub::ActivitySerializer, adapter: ActivityPub::Adapter
   end
 
   def embed
     use_pack 'embed'
-    raise ActiveRecord::RecordNotFound if @status.hidden?
+    return not_found if @status.hidden? || @status.reblog?
 
     expires_in 180, public: true
     response.headers['X-Frame-Options'] = 'ALLOWALL'
@@ -71,7 +71,7 @@ class StatusesController < ApplicationController
     @status = @account.statuses.find(params[:id])
     authorize @status, :show?
   rescue Mastodon::NotPermittedError
-    raise ActiveRecord::RecordNotFound
+    not_found
   end
 
   def set_instance_presenter

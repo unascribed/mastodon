@@ -62,12 +62,6 @@
 }
 
 .media-gallery__gifv {
-  &.autoplay {
-    .media-gallery__gifv__label {
-      display: none;
-    }
-  }
-
   &:hover {
     .media-gallery__gifv__label {
       opacity: 1;
@@ -695,5 +689,12 @@
         padding-bottom: 10px;
       }
     }
+  }
+}
+
+.gifv {
+  video {
+    max-width: 100vw;
+    max-height: 80vh;
   }
 }

@@ -178,8 +178,8 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     dispatch(openModal('MEDIA', { media, index }));
   },
 
-  onOpenVideo (media, time) {
-    dispatch(openModal('VIDEO', { media, time }));
+  onOpenVideo (media, options) {
+    dispatch(openModal('VIDEO', { media, options }));
   },
 
   onBlock (status) {
@@ -214,7 +214,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
                         title={intl.formatMessage(messages.editFilter)}
                         href={filterEditLink(filter.get('id'))}
                       >
-                        <Icon icon='pencil' />
+                        <Icon id='pencil' />
                       </a>
                     )}
                   </li>

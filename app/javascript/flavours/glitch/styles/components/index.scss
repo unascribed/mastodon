@@ -3,6 +3,14 @@
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
+.animated-number {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+}
+
 .link-button {
   display: block;
   font-size: 15px;
@@ -726,7 +734,6 @@
   overflow-x: hidden;
   flex: 1 1 auto;
   -webkit-overflow-scrolling: touch;
-  will-change: transform; // improves perf in mobile Chrome
 
   &.optionally-scrollable {
     overflow-y: auto;
@@ -1508,6 +1515,7 @@
     padding: 10px;
     padding-top: 12px;
     position: relative;
+    cursor: pointer;
   }
 
   &__unread {
@@ -1650,3 +1658,4 @@ noscript {
 @import 'local_settings';
 @import 'error_boundary';
 @import 'single_column';
+@import 'announcements';

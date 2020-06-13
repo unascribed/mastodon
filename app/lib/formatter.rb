@@ -59,7 +59,7 @@ class Formatter
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog
     html = format_markdown(html) if status.content_type == 'text/markdown'
     html = encode_and_link_urls(html, linkable_accounts, keep_html: %w(text/markdown text/html).include?(status.content_type))
-    html = reformat(html) if %w(text/markdown text/html).include?(status.content_type)
+    html = reformat(html, true) if %w(text/markdown text/html).include?(status.content_type)
     html = encode_custom_emojis(html, status.emojis, options[:autoplay]) if options[:custom_emojify]
 
     unless %w(text/markdown text/html).include?(status.content_type)
@@ -75,8 +75,10 @@ class Formatter
     html.delete("\r").delete("\n")
   end
 
-  def reformat(html)
-    sanitize(html, Sanitize::Config::MASTODON_STRICT)
+  def reformat(html, outgoing = false)
+    sanitize(html, Sanitize::Config::MASTODON_STRICT.merge(outgoing: outgoing))
+  rescue ArgumentError
+    ''
   end
 
   def plaintext(status)
@@ -129,7 +131,7 @@ class Formatter
   end
 
   def link_url(url)
-    "<a href=\"#{encode(url)}\" target=\"blank\" rel=\"nofollow noopener\">#{link_html(url)}</a>"
+    "<a href=\"#{encode(url)}\" target=\"blank\" rel=\"nofollow noopener noreferrer\">#{link_html(url)}</a>"
   end
 
   private
@@ -308,8 +310,9 @@ class Formatter
     end
 
     standard = Extractor.extract_entities_with_indices(text, options)
+    extra = Extractor.extract_extra_uris_with_indices(text, options)
 
-    Extractor.remove_overlapping_entities(special + standard)
+    Extractor.remove_overlapping_entities(special + standard + extra)
   end
 
   def html_friendly_extractor(html, options = {})
@@ -370,7 +373,7 @@ class Formatter
 
   def link_html(url)
     url    = Addressable::URI.parse(url).to_s
-    prefix = url.match(/\Ahttps?:\/\/(www\.)?/).to_s
+    prefix = url.match(/\A(https?:\/\/(www\.)?|xmpp:)/).to_s
     text   = url[prefix.length, 30]
     suffix = url[prefix.length + 30..-1]
     cutoff = url[prefix.length..-1].length > 30

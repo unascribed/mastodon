@@ -316,8 +316,8 @@ class Status extends ImmutablePureComponent {
     this.props.dispatch(openModal('MEDIA', { media, index }));
   }
 
-  handleOpenVideo = (media, time) => {
-    this.props.dispatch(openModal('VIDEO', { media, time }));
+  handleOpenVideo = (media, options) => {
+    this.props.dispatch(openModal('VIDEO', { media, options }));
   }
 
   handleHotkeyOpenMedia = e => {
@@ -329,7 +329,7 @@ class Status extends ImmutablePureComponent {
       if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
         // TODO: toggle play/paused?
       } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
-        this.handleOpenVideo(status.getIn(['media_attachments', 0]), 0);
+        this.handleOpenVideo(status.getIn(['media_attachments', 0]), { startTime: 0 });
       } else {
         this.handleOpenMedia(status.get('media_attachments'), 0);
       }
@@ -568,6 +568,7 @@ class Status extends ImmutablePureComponent {
             <HotKeys handlers={handlers}>
               <div className='focusable' tabIndex='0' aria-label={textForScreenReader(intl, status, false, !status.get('hidden'))}>
                 <DetailedStatus
+                  key={`details-${status.get('id')}`}
                   status={status}
                   settings={settings}
                   onOpenVideo={this.handleOpenVideo}
@@ -580,6 +581,7 @@ class Status extends ImmutablePureComponent {
                 />
 
                 <ActionBar
+                  key={`action-bar-${status.get('id')}`}
                   status={status}
                   onReply={this.handleReplyClick}
                   onFavourite={this.handleFavouriteClick}

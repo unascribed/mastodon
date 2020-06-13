@@ -23,6 +23,7 @@ import {
   deleteStatus,
   hideStatus,
   revealStatus,
+  toggleStatusCollapse,
 } from '../actions/statuses';
 import {
   unmuteAccount,
@@ -149,8 +150,8 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     dispatch(openModal('MEDIA', { media, index }));
   },
 
-  onOpenVideo (media, time) {
-    dispatch(openModal('VIDEO', { media, time }));
+  onOpenVideo (media, options) {
+    dispatch(openModal('VIDEO', { media, options }));
   },
 
   onBlock (status) {
@@ -188,6 +189,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     } else {
       dispatch(hideStatus(status.get('id')));
     }
+  },
+
+  onToggleCollapsed (status, isCollapsed) {
+    dispatch(toggleStatusCollapse(status.get('id'), isCollapsed));
   },
 
   onBlockDomain (domain) {

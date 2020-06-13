@@ -46,7 +46,7 @@ class DropdownMenu extends React.PureComponent {
     document.addEventListener('keydown', this.handleKeyDown, false);
     document.addEventListener('touchend', this.handleDocumentClick, listenerOptions);
     if (this.focusedItem && this.props.openedViaKeyboard) {
-      this.focusedItem.focus();
+      this.focusedItem.focus({ preventScroll: true });
     }
     this.setState({ mounted: true });
   }
@@ -68,20 +68,14 @@ class DropdownMenu extends React.PureComponent {
   handleKeyDown = e => {
     const items = Array.from(this.node.getElementsByTagName('a'));
     const index = items.indexOf(document.activeElement);
-    let element;
+    let element = null;
 
     switch(e.key) {
     case 'ArrowDown':
-      element = items[index+1];
-      if (element) {
-        element.focus();
-      }
+      element = items[index+1] || items[0];
       break;
     case 'ArrowUp':
-      element = items[index-1];
-      if (element) {
-        element.focus();
-      }
+      element = items[index-1] || items[items.length-1];
       break;
     case 'Tab':
       if (e.shiftKey) {
@@ -89,27 +83,22 @@ class DropdownMenu extends React.PureComponent {
       } else {
         element = items[index+1] || items[0];
       }
-      if (element) {
-        element.focus();
-        e.preventDefault();
-        e.stopPropagation();
-      }
       break;
     case 'Home':
       element = items[0];
-      if (element) {
-        element.focus();
-      }
       break;
     case 'End':
       element = items[items.length-1];
-      if (element) {
-        element.focus();
-      }
       break;
     case 'Escape':
       this.props.onClose();
       break;
+    }
+
+    if (element) {
+      element.focus();
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
@@ -184,7 +173,7 @@ export default class Dropdown extends React.PureComponent {
     icon: PropTypes.string.isRequired,
     items: PropTypes.array.isRequired,
     size: PropTypes.number.isRequired,
-    ariaLabel: PropTypes.string,
+    title: PropTypes.string,
     disabled: PropTypes.bool,
     status: ImmutablePropTypes.map,
     isUserTouching: PropTypes.func,
@@ -197,7 +186,7 @@ export default class Dropdown extends React.PureComponent {
   };
 
   static defaultProps = {
-    ariaLabel: 'Menu',
+    title: 'Menu',
   };
 
   state = {
@@ -277,14 +266,14 @@ export default class Dropdown extends React.PureComponent {
   }
 
   render () {
-    const { icon, items, size, ariaLabel, disabled, dropdownPlacement, openDropdownId, openedViaKeyboard } = this.props;
+    const { icon, items, size, title, disabled, dropdownPlacement, openDropdownId, openedViaKeyboard } = this.props;
     const open = this.state.id === openDropdownId;
 
     return (
       <div>
         <IconButton
           icon={icon}
-          title={ariaLabel}
+          title={title}
           active={open}
           disabled={disabled}
           size={size}

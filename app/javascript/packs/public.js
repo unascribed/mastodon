@@ -8,7 +8,7 @@ start();
 function main() {
   const IntlMessageFormat = require('intl-messageformat').default;
   const { timeAgoString } = require('../mastodon/components/relative_timestamp');
-  const { delegate } = require('rails-ujs');
+  const { delegate } = require('@rails/ujs');
   const emojify = require('../mastodon/features/emoji/emoji').default;
   const { getLocale } = require('../mastodon/locales');
   const { messages } = getLocale();
@@ -65,7 +65,7 @@ function main() {
       content.textContent = timeAgoString({
         formatMessage: ({ id, defaultMessage }, values) => (new IntlMessageFormat(messages[id] || defaultMessage, locale)).format(values),
         formatDate: (date, options) => (new Intl.DateTimeFormat(locale, options)).format(date),
-      }, datetime, now, now.getFullYear());
+      }, datetime, now, now.getFullYear(), content.getAttribute('datetime').includes('T'));
     });
 
     const reactComponents = document.querySelectorAll('[data-component]');
@@ -102,13 +102,24 @@ function main() {
     delegate(document, '.custom-emoji', 'mouseover', getEmojiAnimationHandler('data-original'));
     delegate(document, '.custom-emoji', 'mouseout', getEmojiAnimationHandler('data-static'));
 
-    delegate(document, '.blocks-table button.icon-button', 'click', function(e) {
-      e.preventDefault();
+    delegate(document, '.status__content__spoiler-link', 'click', function() {
+      const statusEl = this.parentNode.parentNode;
 
-      const classList = this.firstElementChild.classList;
-      classList.toggle('fa-chevron-down');
-      classList.toggle('fa-chevron-up');
-      this.parentElement.parentElement.nextElementSibling.classList.toggle('hidden');
+      if (statusEl.dataset.spoiler === 'expanded') {
+        statusEl.dataset.spoiler = 'folded';
+        this.textContent = (new IntlMessageFormat(messages['status.show_more'] || 'Show more', locale)).format();
+      } else {
+        statusEl.dataset.spoiler = 'expanded';
+        this.textContent = (new IntlMessageFormat(messages['status.show_less'] || 'Show less', locale)).format();
+      }
+
+      return false;
+    });
+
+    [].forEach.call(document.querySelectorAll('.status__content__spoiler-link'), (spoilerLink) => {
+      const statusEl = spoilerLink.parentNode.parentNode;
+      const message = (statusEl.dataset.spoiler === 'expanded') ? (messages['status.show_less'] || 'Show less') : (messages['status.show_more'] || 'Show more');
+      spoilerLink.textContent = (new IntlMessageFormat(message, locale)).format();
     });
   });
 

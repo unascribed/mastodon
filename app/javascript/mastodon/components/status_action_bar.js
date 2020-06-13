@@ -36,8 +36,8 @@ const messages = defineMessages({
   admin_account: { id: 'status.admin_account', defaultMessage: 'Open moderation interface for @{name}' },
   admin_status: { id: 'status.admin_status', defaultMessage: 'Open this status in the moderation interface' },
   copy: { id: 'status.copy', defaultMessage: 'Copy link to status' },
-  blockDomain: { id: 'account.block_domain', defaultMessage: 'Hide everything from {domain}' },
-  unblockDomain: { id: 'account.unblock_domain', defaultMessage: 'Unhide {domain}' },
+  blockDomain: { id: 'account.block_domain', defaultMessage: 'Block domain {domain}' },
+  unblockDomain: { id: 'account.unblock_domain', defaultMessage: 'Unblock domain {domain}' },
   unmute: { id: 'account.unmute', defaultMessage: 'Unmute @{name}' },
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
 });
@@ -173,9 +173,9 @@ class StatusActionBar extends ImmutablePureComponent {
     const account = status.get('account');
 
     if (relationship && relationship.get('blocking')) {
-      onBlock(status);
-    } else {
       onUnblock(account);
+    } else {
+      onBlock(status);
     }
   }
 
@@ -319,7 +319,7 @@ class StatusActionBar extends ImmutablePureComponent {
       replyTitle = intl.formatMessage(messages.replyAll);
     }
 
-    const shareButton = ('share' in navigator) && status.get('visibility') === 'public' && (
+    const shareButton = ('share' in navigator) && publicStatus && (
       <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
     );
 

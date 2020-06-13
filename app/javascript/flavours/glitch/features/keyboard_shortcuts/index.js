@@ -106,12 +106,20 @@ class KeyboardShortcuts extends ImmutablePureComponent {
                 <td><FormattedMessage id='keyboard_shortcuts.toot' defaultMessage='to start a brand new toot' /></td>
               </tr>
               <tr>
+                <td><kbd>alt</kbd>+<kbd>x</kbd></td>
+                <td><FormattedMessage id='keyboard_shortcuts.spoilers' defaultMessage='to show/hide CW field' /></td>
+              </tr>
+              <tr>
                 <td><kbd>backspace</kbd></td>
                 <td><FormattedMessage id='keyboard_shortcuts.back' defaultMessage='to navigate back' /></td>
               </tr>
               <tr>
                 <td><kbd>s</kbd></td>
                 <td><FormattedMessage id='keyboard_shortcuts.search' defaultMessage='to focus search' /></td>
+              </tr>
+              <tr>
+                <td><kbd>alt</kbd>+<kbd>enter</kbd></td>
+                <td><FormattedMessage id='keyboard_shortcuts.secondary_toot' defaultMessage='to send toot using secondary privacy setting' /></td>
               </tr>
               <tr>
                 <td><kbd>esc</kbd></td>

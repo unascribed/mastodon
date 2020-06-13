@@ -232,7 +232,9 @@
 }
 
 .notif-cleaning {
-  .status, .notification-follow {
+  .status,
+  .notification-follow,
+  .notification-follow-request {
     padding-right: ($dismiss-overlay-width + 0.5rem);
   }
 }
@@ -256,7 +258,8 @@
   position: absolute;
 }
 
-.notification-follow {
+.notification-follow,
+.notification-follow-request {
   position: relative;
 
   // same like Status
@@ -328,12 +331,10 @@
     }
 
     .display-name {
+      color: $light-text-color;
+
       strong {
         color: $inverted-text-color;
-      }
-
-      span {
-        color: $lighter-text-color;
       }
     }
 
@@ -507,6 +508,7 @@
   .status-check-box__status {
     margin: 10px 0 10px 10px;
     flex: 1;
+    overflow: hidden;
 
     .media-gallery {
       max-width: 250px;
@@ -872,6 +874,11 @@ a.status-card {
   flex: 1 1 auto;
   overflow: hidden;
   padding: 14px 14px 14px 8px;
+
+  &--blurred {
+    filter: blur(2px);
+    pointer-events: none;
+  }
 }
 
 .status-card__description {
@@ -909,7 +916,8 @@ a.status-card {
     width: 100%;
   }
 
-  .status-card__image-image {
+  .status-card__image-image,
+  .status-card__image-preview {
     border-radius: 4px 4px 0 0;
   }
 
@@ -952,6 +960,24 @@ a.status-card.compact:hover {
   object-fit: cover;
   background-size: cover;
   background-position: center center;
+}
+
+.status-card__image-preview {
+  border-radius: 4px 0 0 4px;
+  display: block;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  background: $base-overlay-background;
+
+  &--hidden {
+    display: none;
+  }
 }
 
 .attachment-list {

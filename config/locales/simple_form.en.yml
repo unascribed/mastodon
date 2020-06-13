@@ -8,12 +8,19 @@ en:
         acct: Specify the username@domain of the account you want to move to
       account_warning_preset:
         text: You can use toot syntax, such as URLs, hashtags and mentions
+        title: Optional. Not visible to the recipient
       admin_account_action:
         include_statuses: The user will see which toots have caused the moderation action or warning
         send_email_notification: The user will receive an explanation of what happened with their account
         text_html: Optional. You can use toot syntax. You can <a href="%{path}">add warning presets</a> to save time
         type_html: Choose what to do with <strong>%{acct}</strong>
         warning_preset_id: Optional. You can still add custom text to end of the preset
+      announcement:
+        all_day: When checked, only the dates of the time range will be displayed
+        ends_at: Optional. Announcement will be automatically unpublished at this time
+        scheduled_at: Leave blank to publish the announcement immediately
+        starts_at: Optional. In case your announcement is bound to a specific time range
+        text: You can use toot syntax. Please be mindful of the space the announcement will take up on the user's screen
       defaults:
         autofollow: People who sign up through the invite will automatically follow you
         avatar: PNG, GIF or JPG. At most %{size}. Will be downscaled to %{dimensions}px
@@ -34,24 +41,22 @@ en:
         phrase: Will be matched regardless of casing in text or content warning of a toot
         scopes: Which APIs the application will be allowed to access. If you select a top-level scope, you don't need to select individual ones.
         setting_aggregate_reblogs: Do not show new boosts for toots that have been recently boosted (only affects newly-received boosts)
-        setting_default_content_type_html: When writing toots, assume they are written in raw HTML, unless specified otherwise
-        setting_default_content_type_markdown: When writing toots, assume they are using Markdown for rich text formatting, unless specified otherwise
-        setting_default_content_type_plain: When writing toots, assume they are plain text with no special formatting, unless specified otherwise (default Mastodon behavior)
-        setting_default_language: The language of your toots can be detected automatically, but it's not always accurate
         setting_default_sensitive: Sensitive media is hidden by default and can be revealed with a click
         setting_display_media_default: Hide media marked as sensitive
-        setting_display_media_hide_all: Always hide all media
-        setting_display_media_show_all: Always show media marked as sensitive
+        setting_display_media_hide_all: Always hide media
+        setting_display_media_show_all: Always show media
         setting_hide_network: Who you follow and who follows you will not be shown on your profile
         setting_noindex: Affects your public profile and status pages
         setting_show_application: The application you use to toot will be displayed in the detailed view of your toots
-        setting_skin: Reskins the selected Mastodon flavour
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: Your username will be unique on %{domain}
         whole_word: When the keyword or phrase is alphanumeric only, it will only be applied if it matches the whole word
       domain_allow:
         domain: This domain will be able to fetch data from this server and incoming data from it will be processed and stored
+      email_domain_block:
+        domain: This can be the domain name that shows up in the e-mail address, the MX record that domain resolves to, or IP of the server that MX record resolves to. Those will be checked upon user sign-up and the sign-up will be rejected.
+        with_dns_records: An attempt to resolve the given domain's DNS records will be made and the results will also be blacklisted
       featured_tag:
         name: 'You might want to use one of these:'
       form_challenge:
@@ -77,6 +82,7 @@ en:
         acct: Handle of the new account
       account_warning_preset:
         text: Preset text
+        title: Title
       admin_account_action:
         include_statuses: Include reported toots in the e-mail
         send_email_notification: Notify the user per e-mail
@@ -88,6 +94,12 @@ en:
           silence: Silence
           suspend: Suspend and irreversibly delete account data
         warning_preset_id: Use a warning preset
+      announcement:
+        all_day: All-day event
+        ends_at: End of event
+        scheduled_at: Schedule publication
+        starts_at: Start of event
+        text: Announcement
       defaults:
         autofollow: Invite to follow your account
         avatar: Avatar
@@ -119,10 +131,6 @@ en:
         setting_auto_play_gif: Auto-play animated GIFs
         setting_boost_modal: Show confirmation dialog before boosting
         setting_crop_images: Crop images in non-expanded toots to 16x9
-        setting_default_content_type: Default format for toots
-        setting_default_content_type_html: HTML
-        setting_default_content_type_markdown: Markdown
-        setting_default_content_type_plain: Plain text
         setting_default_language: Posting language
         setting_default_privacy: Posting privacy
         setting_default_sensitive: Always mark media as sensitive
@@ -132,14 +140,10 @@ en:
         setting_display_media_hide_all: Hide all
         setting_display_media_show_all: Show all
         setting_expand_spoilers: Always expand toots marked with content warnings
-        setting_favourite_modal: Show confirmation dialog before favouriting (applies to Glitch flavour only)
-        setting_hide_followers_count: Hide your followers count
         setting_hide_network: Hide your network
         setting_noindex: Opt-out of search engine indexing
         setting_reduce_motion: Reduce motion in animations
         setting_show_application: Disclose application used to send toots
-        setting_skin: Skin
-        setting_system_emoji_font: Use system's default font for emojis (applies to Glitch flavour only)
         setting_system_font_ui: Use system's default font
         setting_theme: Site theme
         setting_trends: Show today's trends
@@ -148,10 +152,13 @@ en:
         setting_st_avatar_as_favicon: Use avatar as tab icon
         setting_use_pending_items: Slow mode
         severity: Severity
+        sign_in_token_attempt: Security code
         type: Import type
         username: Username
         username_or_email: Username or Email
         whole_word: Whole word
+      email_domain_block:
+        with_dns_records: Include MX records and IPs of the domain
       featured_tag:
         name: Hashtag
       interactions:

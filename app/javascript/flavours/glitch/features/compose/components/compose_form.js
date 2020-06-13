@@ -81,19 +81,7 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onChange(e.target.value);
   }
 
-  handleKeyDown = ({ ctrlKey, keyCode, metaKey, altKey }) => {
-    //  We submit the status on control/meta + enter.
-    if (keyCode === 13 && (ctrlKey || metaKey)) {
-      this.handleSubmit();
-    }
-
-    // Submit the status with secondary visibility on alt + enter.
-    if (keyCode === 13 && altKey) {
-      this.handleSecondarySubmit();
-    }
-  }
-
-  handleSubmit = () => {
+  handleSubmit = (overriddenVisibility = null) => {
     const { textarea: { value }, uploadForm } = this;
     const {
       onChange,
@@ -106,6 +94,7 @@ class ComposeForm extends ImmutablePureComponent {
       text,
       mediaDescriptionConfirmation,
       onMediaDescriptionConfirm,
+      onChangeVisibility,
     } = this.props;
 
     //  If something changes inside the textarea, then we update the
@@ -122,8 +111,11 @@ class ComposeForm extends ImmutablePureComponent {
     // Submit unless there are media with missing descriptions
     if (mediaDescriptionConfirmation && onMediaDescriptionConfirm && media && media.some(item => !item.get('description'))) {
       const firstWithoutDescription = media.find(item => !item.get('description'));
-      onMediaDescriptionConfirm(this.context.router ? this.context.router.history : null, firstWithoutDescription.get('id'));
+      onMediaDescriptionConfirm(this.context.router ? this.context.router.history : null, firstWithoutDescription.get('id'), overriddenVisibility);
     } else if (onSubmit) {
+      if (onChangeVisibility && overriddenVisibility) {
+        onChangeVisibility(overriddenVisibility);
+      }
       onSubmit(this.context.router ? this.context.router.history : null);
     }
   }
@@ -152,13 +144,9 @@ class ComposeForm extends ImmutablePureComponent {
   //  Handles the secondary submit button.
   handleSecondarySubmit = () => {
     const {
-      onChangeVisibility,
       sideArm,
     } = this.props;
-    if (sideArm !== 'none' && onChangeVisibility) {
-      onChangeVisibility(sideArm);
-    }
-    this.handleSubmit();
+    this.handleSubmit(sideArm === 'none' ? null : sideArm);
   }
 
   //  Selects a suggestion from the autofill.
@@ -170,10 +158,13 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onSuggestionSelected(tokenStart, token, value, ['spoiler_text']);
   }
 
-  //  When the escape key is released, we focus the UI.
-  handleKeyUp = ({ key }) => {
-    if (key === 'Escape') {
-      document.querySelector('.ui').parentElement.focus();
+  handleKeyDown = (e) => {
+    if (e.keyCode === 13 && (e.ctrlKey || e.metaKey)) {
+      this.handleSubmit();
+    }
+
+    if (e.keyCode == 13 && e.altKey) {
+      this.handleSecondarySubmit();
     }
   }
 
@@ -308,7 +299,6 @@ class ComposeForm extends ImmutablePureComponent {
             value={spoilerText}
             onChange={this.handleChangeSpoiler}
             onKeyDown={this.handleKeyDown}
-            onKeyUp={this.handleKeyUp}
             disabled={!spoiler}
             ref={this.handleRefSpoilerText}
             suggestions={this.props.suggestions}
@@ -328,9 +318,9 @@ class ComposeForm extends ImmutablePureComponent {
           disabled={isSubmitting}
           value={this.props.text}
           onChange={this.handleChange}
+          onKeyDown={this.handleKeyDown}
           suggestions={this.props.suggestions}
           onFocus={this.handleFocus}
-          onKeyDown={this.handleKeyDown}
           onSuggestionsFetchRequested={onFetchSuggestions}
           onSuggestionsClearRequested={onClearSuggestions}
           onSuggestionSelected={this.onSuggestionSelected}
