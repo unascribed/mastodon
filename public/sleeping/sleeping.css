@@ -1,7 +1,7 @@
 @import url("/sleeping/sleeping-line-awesome.css");
 
 body:after {
-  content: "z303";
+  content: "z305";
   position: fixed;
   opacity: 0.5;
   left: 18px;
@@ -1329,7 +1329,7 @@ body.sleeping-override-font-present, body.sleeping-override-font-present.system-
   font-family: var(--sleeping-override-font);
 }
 body.sleeping-override-monospace-font-present code, body.sleeping-override-monospace-font-present pre {
-  font-family: var(--sleeping-override-mono-font);
+  font-family: var(--sleeping-override-monospace-font);
 }
 
 .actions-modal ul li:not(:empty) a {
@@ -1389,4 +1389,54 @@ body.sleeping-override-monospace-font-present code, body.sleeping-override-monos
 
 .icon-button.active:hover:not(.disabled), .icon-button.active:active:not(.disabled), .icon-button.active:focus:not(.disabled) {
 	color: var(--sleeping-accent-plus10);
+}
+.icon-with-badge__badge {
+	background: var(--sleeping-accent);
+	color: var(--sleeping-accent-contrast);
+	box-shadow: none;
+	border-color: var(--sleeping-primary-contrast);
+}
+
+.column-header__button.active, .column-header__button.active:hover, .column-header__notif-cleaning-buttons button.active, .column-header__notif-cleaning-buttons button.active:hover, .announcements {
+	background: var(--sleeping-background-plus5);
+	color: var(--sleeping-background-plus5-contrast);
+}
+.reactions-bar .emoji-button {
+	color: inherit;
+}
+.reactions-bar__item {
+	background: none !important;
+	position: relative;
+}
+.reactions-bar__item:before {
+	content: "";
+	position: absolute;
+	top: 0; left: 0; bottom: 0; right: 0;
+	background: var(--sleeping-background-plus5-contrast);
+	opacity: 0.4;
+	z-index: -1;
+	transition: opacity 0.6s, background 0.6s;
+	border-radius: 2px;
+}
+.reactions-bar__item:hover:before {
+	opacity: 0.7;
+}
+.reactions-bar__item.active:before {
+	background: var(--sleeping-accent);
+	opacity: 0.6;
+}
+.reactions-bar__item.active {
+	color: var(--sleeping-accent-contrast);
+}
+.reactions-bar__item.active .reactions-bar__item__count {
+	color: inherit;
+}
+.sleeping-background-plus5-contrast-is-dark .reactions-bar__item__count {
+	color: #FFF;
+}
+.reactions-bar__item__count {
+	color: #000;
+}
+.reactions-bar .emoji-button {
+	background: none !important;
 }
