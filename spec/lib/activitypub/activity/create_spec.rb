@@ -18,6 +18,7 @@ RSpec.describe ActivityPub::Activity::Create do
 
     stub_request(:get, 'http://example.com/attachment.png').to_return(request_fixture('avatar.txt'))
     stub_request(:get, 'http://example.com/emoji.png').to_return(body: attachment_fixture('emojo.png'))
+    stub_request(:get, 'http://example.com/emojib.png').to_return(body: attachment_fixture('emojo.png'), headers: { 'Content-Type' => 'application/octet-stream' })
   end
 
   describe '#perform' do
@@ -120,6 +121,28 @@ RSpec.describe ActivityPub::Activity::Create do
         end
       end
 
+      context 'private with inlined Collection in audience' do
+        let(:object_json) do
+          {
+            id: [ActivityPub::TagManager.instance.uri_for(sender), '#bar'].join,
+            type: 'Note',
+            content: 'Lorem ipsum',
+            to: {
+              'type': 'OrderedCollection',
+              'id': 'http://example.com/followers',
+              'first': 'http://example.com/followers?page=true',
+            }
+          }
+        end
+
+        it 'creates status' do
+          status = sender.statuses.first
+
+          expect(status).to_not be_nil
+          expect(status.visibility).to eq 'private'
+        end
+      end
+
       context 'limited' do
         let(:recipient) { Fabricate(:account) }
 
@@ -145,6 +168,31 @@ RSpec.describe ActivityPub::Activity::Create do
         end
       end
 
+      context 'limited when direct message assertion is false' do
+        let(:recipient) { Fabricate(:account) }
+
+        let(:object_json) do
+          {
+            id: [ActivityPub::TagManager.instance.uri_for(sender), '#bar'].join,
+            type: 'Note',
+            content: 'Lorem ipsum',
+            directMessage: false,
+            to: ActivityPub::TagManager.instance.uri_for(recipient),
+            tag: {
+              type: 'Mention',
+              href: ActivityPub::TagManager.instance.uri_for(recipient),
+            },
+          }
+        end
+
+        it 'creates status' do
+          status = sender.statuses.first
+
+          expect(status).to_not be_nil
+          expect(status.visibility).to eq 'limited'
+        end
+      end
+
       context 'direct' do
         let(:recipient) { Fabricate(:account) }
 
@@ -158,6 +206,27 @@ RSpec.describe ActivityPub::Activity::Create do
               type: 'Mention',
               href: ActivityPub::TagManager.instance.uri_for(recipient),
             },
+          }
+        end
+
+        it 'creates status' do
+          status = sender.statuses.first
+
+          expect(status).to_not be_nil
+          expect(status.visibility).to eq 'direct'
+        end
+      end
+
+      context 'direct when direct message assertion is true' do
+        let(:recipient) { Fabricate(:account) }
+
+        let(:object_json) do
+          {
+            id: [ActivityPub::TagManager.instance.uri_for(sender), '#bar'].join,
+            type: 'Note',
+            content: 'Lorem ipsum',
+            to: ActivityPub::TagManager.instance.uri_for(recipient),
+            directMessage: true,
           }
         end
 
@@ -448,6 +517,32 @@ RSpec.describe ActivityPub::Activity::Create do
 
           expect(status).to_not be_nil
           expect(status.emojis.map(&:shortcode)).to include('tinking')
+        end
+      end
+
+      context 'with emojis served with invalid content-type' do
+        let(:object_json) do
+          {
+            id: [ActivityPub::TagManager.instance.uri_for(sender), '#bar'].join,
+            type: 'Note',
+            content: 'Lorem ipsum :tinkong:',
+            tag: [
+              {
+                type: 'Emoji',
+                icon: {
+                  url: 'http://example.com/emojib.png',
+                },
+                name: 'tinkong',
+              },
+            ],
+          }
+        end
+
+        it 'creates status' do
+          status = sender.statuses.first
+
+          expect(status).to_not be_nil
+          expect(status.emojis.map(&:shortcode)).to include('tinkong')
         end
       end
 

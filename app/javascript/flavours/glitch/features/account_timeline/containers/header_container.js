@@ -19,6 +19,7 @@ import { initBlockModal } from 'flavours/glitch/actions/blocks';
 import { initReport } from 'flavours/glitch/actions/reports';
 import { openModal } from 'flavours/glitch/actions/modal';
 import { blockDomain, unblockDomain } from 'flavours/glitch/actions/domain_blocks';
+import { initEditAccountNote } from 'flavours/glitch/actions/account_notes';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { unfollowModal } from 'flavours/glitch/util/initial_state';
 import { List as ImmutableList } from 'immutable';
@@ -80,9 +81,9 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onReblogToggle (account) {
     if (account.getIn(['relationship', 'showing_reblogs'])) {
-      dispatch(followAccount(account.get('id'), false));
+      dispatch(followAccount(account.get('id'), { reblogs: false }));
     } else {
-      dispatch(followAccount(account.get('id'), true));
+      dispatch(followAccount(account.get('id'), { reblogs: true }));
     }
   },
 
@@ -91,6 +92,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
       dispatch(unpinAccount(account.get('id')));
     } else {
       dispatch(pinAccount(account.get('id')));
+    }
+  },
+
+  onNotifyToggle (account) {
+    if (account.getIn(['relationship', 'notifying'])) {
+      dispatch(followAccount(account.get('id'), { notify: false }));
+    } else {
+      dispatch(followAccount(account.get('id'), { notify: true }));
     }
   },
 
@@ -104,6 +113,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     } else {
       dispatch(initMuteModal(account));
     }
+  },
+
+  onEditAccountNote (account) {
+    dispatch(initEditAccountNote(account));
   },
 
   onBlockDomain (domain) {

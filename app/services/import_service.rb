@@ -18,6 +18,8 @@ class ImportService < BaseService
       import_mutes!
     when 'domain_blocking'
       import_domain_blocks!
+    when 'bookmarks'
+      import_bookmarks!
     end
   end
 
@@ -25,7 +27,7 @@ class ImportService < BaseService
 
   def import_follows!
     parse_import_data!(['Account address'])
-    import_relationships!('follow', 'unfollow', @account.following, follow_limit, reblogs: 'Show boosts')
+    import_relationships!('follow', 'unfollow', @account.following, follow_limit, reblogs: { header: 'Show boosts', default: true })
   end
 
   def import_blocks!
@@ -35,7 +37,7 @@ class ImportService < BaseService
 
   def import_mutes!
     parse_import_data!(['Account address'])
-    import_relationships!('mute', 'unmute', @account.muting, ROWS_PROCESSING_LIMIT, notifications: 'Hide notifications')
+    import_relationships!('mute', 'unmute', @account.muting, ROWS_PROCESSING_LIMIT, notifications: { header: 'Hide notifications', default: true })
   end
 
   def import_domain_blocks!
@@ -65,7 +67,7 @@ class ImportService < BaseService
 
   def import_relationships!(action, undo_action, overwrite_scope, limit, extra_fields = {})
     local_domain_suffix = "@#{Rails.configuration.x.local_domain}"
-    items = @data.take(limit).map { |row| [row['Account address']&.strip&.delete_suffix(local_domain_suffix), Hash[extra_fields.map { |key, header| [key, row[header]&.strip] }]] }.reject { |(id, _)| id.blank? }
+    items = @data.take(limit).map { |row| [row['Account address']&.strip&.delete_suffix(local_domain_suffix), Hash[extra_fields.map { |key, field_settings| [key, row[field_settings[:header]]&.strip || field_settings[:default]] }]] }.reject { |(id, _)| id.blank? }
 
     if @import.overwrite?
       presence_hash = items.each_with_object({}) { |(id, extra), mapping| mapping[id] = [true, extra] }
@@ -88,6 +90,39 @@ class ImportService < BaseService
     end
   end
 
+  def import_bookmarks!
+    parse_import_data!(['#uri'])
+    items = @data.take(ROWS_PROCESSING_LIMIT).map { |row| row['#uri'].strip }
+
+    if @import.overwrite?
+      presence_hash = items.each_with_object({}) { |id, mapping| mapping[id] = true }
+
+      @account.bookmarks.find_each do |bookmark|
+        if presence_hash[bookmark.status.uri]
+          items.delete(bookmark.status.uri)
+        else
+          bookmark.destroy!
+        end
+      end
+    end
+
+    statuses = items.map do |uri|
+      status = ActivityPub::TagManager.instance.uri_to_resource(uri, Status)
+      next if status.nil? && ActivityPub::TagManager.instance.local_uri?(uri)
+
+      status || ActivityPub::FetchRemoteStatusService.new.call(uri)
+    end.compact
+
+    account_ids         = statuses.map(&:account_id)
+    preloaded_relations = relations_map_for_account(@account, account_ids)
+
+    statuses.keep_if { |status| StatusPolicy.new(@account, status, preloaded_relations).show? }
+
+    statuses.each do |status|
+      @account.bookmarks.find_or_create_by!(account: @account, status: status)
+    end
+  end
+
   def parse_import_data!(default_headers)
     data = CSV.parse(import_data, headers: true)
     data = CSV.parse(import_data, headers: default_headers) unless data.headers&.first&.strip&.include?(' ')
@@ -100,5 +135,15 @@ class ImportService < BaseService
 
   def follow_limit
     FollowLimitValidator.limit_for_account(@account)
+  end
+
+  def relations_map_for_account(account, account_ids)
+    {
+      blocking: {},
+      blocked_by: Account.blocked_by_map(account_ids, account.id),
+      muting: {},
+      following: Account.following_map(account_ids, account.id),
+      domain_blocking_by_domain: {},
+    }
   end
 end

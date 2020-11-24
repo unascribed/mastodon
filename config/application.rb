@@ -7,17 +7,23 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 require_relative '../app/lib/exceptions'
+require_relative '../lib/redis/namespace_extensions'
 require_relative '../lib/paperclip/url_generator_extensions'
 require_relative '../lib/paperclip/attachment_extensions'
+require_relative '../lib/paperclip/media_type_spoof_detector_extensions'
+require_relative '../lib/paperclip/transcoder_extensions'
 require_relative '../lib/paperclip/lazy_thumbnail'
 require_relative '../lib/paperclip/gif_transcoder'
 require_relative '../lib/paperclip/video_transcoder'
 require_relative '../lib/paperclip/type_corrector'
+require_relative '../lib/paperclip/response_with_limit_adapter'
 require_relative '../lib/mastodon/snowflake'
 require_relative '../lib/mastodon/version'
 require_relative '../lib/devise/two_factor_ldap_authenticatable'
 require_relative '../lib/devise/two_factor_pam_authenticatable'
 require_relative '../lib/chewy/strategy/custom_sidekiq'
+require_relative '../lib/webpacker/manifest_extensions'
+require_relative '../lib/webpacker/helper_extensions'
 
 Dotenv::Railtie.load
 
@@ -79,6 +85,7 @@ module Mastodon
       :kk,
       :kn,
       :ko,
+      :ku,
       :lt,
       :lv,
       :mk,
@@ -94,6 +101,8 @@ module Mastodon
       :'pt-PT',
       :ro,
       :ru,
+      :sa,
+      :sc,
       :sk,
       :sl,
       :sq,
@@ -107,6 +116,7 @@ module Mastodon
       :uk,
       :ur,
       :vi,
+      :zgh,
       :'zh-CN',
       :'zh-HK',
       :'zh-TW',
@@ -130,6 +140,7 @@ module Mastodon
       Doorkeeper::AuthorizationsController.layout 'modal'
       Doorkeeper::AuthorizedApplicationsController.layout 'admin'
       Doorkeeper::Application.send :include, ApplicationExtension
+      Doorkeeper::AccessToken.send :include, AccessTokenExtension
       Devise::FailureApp.send :include, AbstractController::Callbacks
       Devise::FailureApp.send :include, HttpAcceptLanguage::EasyAccess
       Devise::FailureApp.send :include, Localized

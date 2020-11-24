@@ -18,6 +18,7 @@ class Sanitize
       gopher
       xmpp
       magnet
+      gemini
     ).freeze
 
     CLASS_WHITELIST_TRANSFORMER = lambda do |env|
@@ -90,6 +91,8 @@ class Sanitize
         'span'       => %w(class),
         'abbr'       => %w(title),
         'blockquote' => %w(cite),
+        'ol'         => %w(start reversed),
+        'li'         => %w(value),
       },
 
       add_attributes: {

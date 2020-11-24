@@ -4,13 +4,14 @@ class MediaController < ApplicationController
   include Authorization
 
   skip_before_action :store_current_location
-  skip_before_action :require_functional!
+  skip_before_action :require_functional!, unless: :whitelist_mode?
 
   before_action :authenticate_user!, if: :whitelist_mode?
   before_action :set_media_attachment
   before_action :verify_permitted_status!
   before_action :check_playable, only: :player
   before_action :allow_iframing, only: :player
+  before_action :set_pack, only: :player
 
   content_security_policy only: :player do |p|
     p.frame_ancestors(false)
@@ -42,5 +43,9 @@ class MediaController < ApplicationController
 
   def allow_iframing
     response.headers['X-Frame-Options'] = 'ALLOWALL'
+  end
+
+  def set_pack
+    use_pack 'public'
   end
 end

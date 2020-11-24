@@ -2,18 +2,12 @@
 
 module Settings
   class PicturesController < BaseController
-    before_action :authenticate_user!
     before_action :set_account
     before_action :set_picture
 
     def destroy
-      if valid_picture
-        account_params = {
-          @picture => nil,
-          (@picture + '_remote_url') => nil,
-        }
-
-        msg = UpdateAccountService.new.call(@account, account_params) ? I18n.t('generic.changes_saved_msg') : nil
+      if valid_picture?
+        msg = I18n.t('generic.changes_saved_msg') if UpdateAccountService.new.call(@account, { @picture => nil, "#{@picture}_remote_url" => '' })
         redirect_to settings_profile_path, notice: msg, status: 303
       else
         bad_request
@@ -30,8 +24,8 @@ module Settings
       @picture = params[:id]
     end
 
-    def valid_picture
-      @picture == 'avatar' || @picture == 'header'
+    def valid_picture?
+      %w(avatar header).include?(@picture)
     end
   end
 end

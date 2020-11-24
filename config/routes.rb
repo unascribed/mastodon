@@ -37,6 +37,7 @@ Rails.application.routes.draw do
 
   resource :instance_actor, path: 'actor', only: [:show] do
     resource :inbox, only: [:create], module: :activitypub
+    resource :outbox, only: [:show], module: :activitypub
   end
 
   devise_scope :user do
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
     namespace :auth do
       resource :setup, only: [:show, :update], controller: :setup
       resource :challenge, only: [:create], controller: :challenges
+      get 'sessions/security_key_options', to: 'sessions#webauthn_options'
     end
   end
 
@@ -81,6 +83,7 @@ Rails.application.routes.draw do
     resource :inbox, only: [:create], module: :activitypub
     resource :claim, only: [:create], module: :activitypub
     resources :collections, only: [:show], module: :activitypub
+    resource :followers_synchronization, only: [:show], module: :activitypub
   end
 
   resource :inbox, only: [:create], module: :activitypub
@@ -122,9 +125,25 @@ Rails.application.routes.draw do
       resources :mutes, only: :index, controller: :muted_accounts
       resources :lists, only: :index, controller: :lists
       resources :domain_blocks, only: :index, controller: :blocked_domains
+      resources :bookmarks, only: :index, controller: :bookmarks
     end
 
-    resource :two_factor_authentication, only: [:show, :create, :destroy]
+    resources :two_factor_authentication_methods, only: [:index] do
+      collection do
+        post :disable
+      end
+    end
+
+    resource :otp_authentication, only: [:show, :create], controller: 'two_factor_authentication/otp_authentication'
+
+    resources :webauthn_credentials, only: [:index, :new, :create, :destroy],
+              path: 'security_keys',
+              controller: 'two_factor_authentication/webauthn_credentials' do
+
+      collection do
+        get :options
+      end
+    end
 
     namespace :two_factor_authentication do
       resources :recovery_codes, only: [:create]
@@ -173,11 +192,7 @@ Rails.application.routes.draw do
     get '/dashboard', to: 'dashboard#index'
 
     resources :domain_allows, only: [:new, :create, :show, :destroy]
-    resources :domain_blocks, only: [:new, :create, :show, :destroy, :update] do
-      member do
-        get :edit
-      end
-    end
+    resources :domain_blocks, only: [:new, :create, :show, :destroy, :update, :edit]
 
     resources :email_domain_blocks, only: [:index, :new, :create, :destroy]
     resources :action_logs, only: [:index]
@@ -221,9 +236,10 @@ Rails.application.routes.draw do
 
     resources :report_notes, only: [:create, :destroy]
 
-    resources :accounts, only: [:index, :show] do
+    resources :accounts, only: [:index, :show, :destroy] do
       member do
         post :enable
+        post :unsensitive
         post :unsilence
         post :unsuspend
         post :redownload
@@ -267,6 +283,12 @@ Rails.application.routes.draw do
     end
 
     resources :custom_emojis, only: [:index, :new, :create] do
+      collection do
+        post :batch
+      end
+    end
+
+    resources :ip_blocks, only: [:index, :new, :create] do
       collection do
         post :batch
       end
@@ -343,22 +365,22 @@ Rails.application.routes.draw do
         end
       end
 
-#      namespace :crypto do
-#        resources :deliveries, only: :create
-#
-#        namespace :keys do
-#          resource :upload, only: [:create]
-#          resource :query,  only: [:create]
-#          resource :claim,  only: [:create]
-#          resource :count,  only: [:show]
-#        end
-#
-#        resources :encrypted_messages, only: [:index] do
-#          collection do
-#            post :clear
-#          end
-#        end
-#      end
+      # namespace :crypto do
+      #   resources :deliveries, only: :create
+
+      #   namespace :keys do
+      #     resource :upload, only: [:create]
+      #     resource :query,  only: [:create]
+      #     resource :claim,  only: [:create]
+      #     resource :count,  only: [:show]
+      #   end
+
+      #   resources :encrypted_messages, only: [:index] do
+      #     collection do
+      #       post :clear
+      #     end
+      #   end
+      # end
 
       resources :conversations, only: [:index, :destroy] do
         member do
@@ -368,11 +390,7 @@ Rails.application.routes.draw do
 
       resources :media,        only: [:create, :update, :show]
       resources :blocks,       only: [:index]
-      resources :mutes,        only: [:index] do
-        collection do
-          get 'details'
-        end
-      end
+      resources :mutes,        only: [:index]
       resources :favourites,   only: [:index]
       resources :bookmarks,    only: [:index]
       resources :reports,      only: [:create]
@@ -426,6 +444,7 @@ Rails.application.routes.draw do
         resources :following, only: :index, controller: 'accounts/following_accounts'
         resources :lists, only: :index, controller: 'accounts/lists'
         resources :identity_proofs, only: :index, controller: 'accounts/identity_proofs'
+        resources :featured_tags, only: :index, controller: 'accounts/featured_tags'
 
         member do
           post :follow
@@ -438,6 +457,7 @@ Rails.application.routes.draw do
 
         resource :pin, only: :create, controller: 'accounts/pins'
         post :unpin, to: 'accounts/pins#destroy'
+        resource :note, only: :create, controller: 'accounts/notes'
       end
 
       resources :lists, only: [:index, :create, :show, :update, :destroy] do
@@ -459,9 +479,10 @@ Rails.application.routes.draw do
       end
 
       namespace :admin do
-        resources :accounts, only: [:index, :show] do
+        resources :accounts, only: [:index, :show, :destroy] do
           member do
             post :enable
+            post :unsensitive
             post :unsilence
             post :unsuspend
             post :approve

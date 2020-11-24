@@ -41,8 +41,10 @@ ro:
       domain: Server
       reason: Motiv
       rejecting_media: 'Fişierele media de pe aceste servere nu vor fi procesate sau stocate şi nici o miniatură nu va fi afişată, necesitând click manual la fişierul original:'
+      rejecting_media_title: Fișiere media filtrate
       silenced: 'Postările de pe aceste servere vor fi ascunse în cronologii și conversații publice, și nici o notificare nu va fi generată de interacțiunile utilizatorilor lor decât dacă le urmărești:'
       suspended: 'Nici o informație de pe aceste servere nu va fi procesată, stocată sau schimbată, ceea ce face imposibilă orice interacțiune sau comunicare cu utilizatorii de pe aceste servere:'
+      suspended_title: Servere suspendate
     unavailable_content_html: Mastodon vă permite în general să vedeți conținutul din orice alt server și să interacționați cu utilizatorii din rețea. Acestea sunt excepţiile care au fost făcute pe acest server.
     user_count_after:
       few: utilizatori
@@ -214,6 +216,27 @@ ro:
         destroy_custom_emoji: Ștergere Zâmbet Personalizat
         destroy_domain_allow: Ștergere Permitere Domeniu
         destroy_domain_block: Ștergere Blocare Domeniu
+        destroy_status: Șterge starea
+        disable_2fa_user: Dezactivează 2FA
+        disable_custom_emoji: Dezactivează Emoji-urile Personalizate
+        disable_user: Dezactivează Utilizator
+        enable_custom_emoji: Activează Emoji Personalizat
+        enable_user: Activează Utilizator
+        promote_user: Promovează utilizator
+        remove_avatar_user: Elimină avatar
+        reopen_report: Redeschide Raport
+        reset_password_user: Resetează Parola
+        resolve_report: Rezolvă Raport
+        suspend_account: Suspendă Cont
+        unassigned_report: Raport Neasignat
+        unsuspend_account: Anulează Suspendarea Contului
+        update_announcement: Actualizare Anunț
+        update_custom_emoji: Actualizare Emoji Personalizat
+        update_status: Actualizează Starea
+    announcements:
+      live: În direct
+      new:
+        create: Creează Anunț
   aliases:
     add_new: Creează un alias
     created_msg: A fost creat cu succes un alias nou. Acum puteţi iniţia mutarea din vechiul cont.
@@ -358,6 +381,7 @@ ro:
     storage: Depozitare media
   filters:
     contexts:
+      account: Profiluri
       home: Fluxul Acasă
       notifications: Notificări
       public: Fluxul public
@@ -506,6 +530,13 @@ ro:
       firefox: Firefox
       generic: Navigator necunoscut
       ie: Internet Explorer
+  settings:
+    account: Cont
+    back: Înapoi la Mastodon
+    edit_profile: Editați profilul
+    import_and_export: Import și export
+    profile: Profil
+    relationships: Urmăriri și urmăritori
   statuses:
     attached:
       image:
@@ -649,21 +680,14 @@ ro:
       default: "%d %m, %Y, %H:%M"
       month: "%m %Y"
   two_factor_authentication:
-    code_hint: Introduceți codul generat de aplicația dvs de autentificare pentru a confirma
-    description_html: Dacă activați <strong>autentificarea în doi pași</strong>, autentificarea va necesita ca tu să fii în posesia telefonului tău, ceea ce va genera token-uri pentru ca tu să intri.
     disable: Dezactivează
-    enable: Activează
     enabled: Autentificare în doi pași este activată
     enabled_success: Autentificarea în doi pași activată cu succes
     generate_recovery_codes: Generează coduri de recuperare
-    instructions_html: "<strong>Scanați acest cod QR în Google Authenticator sau o aplicație TOTP similiară de pe telefonul dvs.</strong>. De acum înainte, acea aplicație va genera token-uri pe care va trebui să îi introduceți atunci când vă conectați."
     lost_recovery_codes: Codurile de recuperare vă permit să redobândiți accesul la contul dvs. dacă vă pierdeți telefonul. Dacă ți-ai pierdut codurile de recuperare, le poți regenera aici. Codurile tale vechi de recuperare vor fi invalidate.
-    manual_instructions: 'Dacă nu puteți scana codul QR și trebuie să-l introduceți manual, aici este textul simplu pentru cheia secretă:'
     recovery_codes: Copie a codurilor de recuperare
     recovery_codes_regenerated: Coduri de recuperare regenerate cu succes
     recovery_instructions_html: Dacă îți pierzi vreodată accesul la telefon, poți folosi unul dintre codurile de recuperare de mai jos pentru a recâștiga accesul la contul tău. <strong>Păstrați codurile de recuperare în condiții de siguranță</strong>. De exemplu, le puteți tipări și stoca cu alte documente importante.
-    setup: Configurare
-    wrong_code: Codul introdus nu a fost valid! Orele serverului și timpul dispozitivului sunt corecte?
   user_mailer:
     backup_ready:
       explanation: Ai solicitat o copie de rezervă completă a contului tău. Acum este gata pentru descărcare!

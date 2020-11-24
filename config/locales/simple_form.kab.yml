@@ -26,6 +26,10 @@ kab:
         name: 'Ahat ad tebγuḍ ad tesqedceḍ yiwen gar-asen:'
       imports:
         data: Afaylu CSV id yusan seg uqeddac-nniḍen n Maṣṭudun
+      ip_block:
+        comment: D afrayan. Cfu ɣef wayɣer i terniḍ alugen-a.
+        severities:
+          no_access: Sewḥel anekcu ɣer akk tiɣbula
     labels:
       account:
         fields:
@@ -33,6 +37,8 @@ kab:
           value: Agbur
       account_migration:
         acct: Tansa n umiḍan amaynut
+      account_warning_preset:
+        title: Azwel
       admin_account_action:
         send_email_notification: Sileɣ aseqdac s imaylen
         type: Tigawt
@@ -40,9 +46,12 @@ kab:
           disable: Sens anekcum
           none: Ur teg kra
           silence: Sgugem
+          suspend: Ḥbes di leεḍil
       announcement:
         ends_at: Tagara n tedyant
+        text: Alɣu
       defaults:
+        avatar: Avaṭar
         bot: Wagi d amiḍan aṛubut
         chosen_languages: Sizdeg tutlayin
         confirm_new_password: Sentem awal uffir amaynut
@@ -53,20 +62,22 @@ kab:
         display_name: Isem ara d-yettwaskanen
         email: Tansa imayl
         header: Ixef
-        locale: Tutlayt n ugrudem
+        locale: Tutlayt n wegrudem
         locked: Rgel amiḍan
         max_uses: Amḍan afellay n iseqdacen
         new_password: Awal uffir amaynut
+        note: Tameddurt
         otp_attempt: Tangalt n snat n tarayin
         password: Awal uffir
         setting_default_language: Tutlayt n tira
         setting_default_privacy: Tabaḍnit n tira
         setting_display_media_default: Akk-a kan
         setting_display_media_hide_all: Ffer kullec
-        setting_display_media_show_all: Sken kullec
+        setting_display_media_show_all: Ssken kullec
         setting_hide_network: Ffer azetta-k·m
         setting_theme: Asental n wesmel
         setting_use_pending_items: Askar aleγwayan
+        sign_in_token_attempt: Tangalt n tɣellist
         username: Isem n useqdac
         username_or_email: Isem n useqdac neγ imal
         whole_word: Awal akk
@@ -76,6 +87,15 @@ kab:
         comment: Awennit
       invite_request:
         text: Acimi tebγiḍ ad ternuḍ iman-ik?
+      ip_block:
+        comment: Awennit
+        ip: IP
+        severities:
+          no_access: Sewḥel anekcum
+        severity: Alugen
+      notification_emails:
+        mention: Yuder-ik·em-id walbɛaḍ
+        reblog: Yella win yesselhan adda-dik·im
       tag:
         name: Ahacṭag
     'no': Ala

@@ -37,6 +37,9 @@ oc:
       domain: Servidor
       reason: 'Motiu :'
       rejecting_media: 'Los fichièrs mèdias d’aquestes servidors estant seràn pas tractats o gardats e pas cap de miniatura serà pas mostrada, demanda de clicar sul fichièr original :'
+      rejecting_media_title: Mèdias filtrats
+      silenced_title: Servidors muts
+      suspended_title: Servidors suspenduts
     user_count_after:
       one: utilizaire
       other: utilizaires
@@ -85,6 +88,7 @@ oc:
       delete: Suprimir
       destroyed_msg: Nòta de moderacion ben suprimida !
     accounts:
+      add_email_domain_block: Metre lo domeni del corrièl en lista negra
       approve: Aprovar
       approve_all: O validar tot
       are_you_sure: Sètz segur ?
@@ -100,6 +104,7 @@ oc:
       confirm: Confirmar
       confirmed: Confirmat
       confirming: Confirmacion
+      delete: Suprimir donadas
       deleted: Suprimits
       demote: Retrogradar
       disable: Desactivar
@@ -208,8 +213,10 @@ oc:
         reopen_report: Tornar dobrir lo rapòrt
         reset_password_user: Reïnicializar lo senhal
         resolve_report: Resòlver lo rapòrt
+        silence_account: " Metre en silenci lo compte"
         suspend_account: Suspendre lo compte
         unassigned_report: Desafectar lo rapòrt
+        unsilence_account: Levar lo silenci del compte
         update_announcement: Actualizar l’anóncia
         update_custom_emoji: Actualizar l’emoji personalizat
         update_status: Actualizar l’estatut
@@ -380,6 +387,7 @@ oc:
       destroyed_msg: Blocatge del domeni de corrièl ben levat
       domain: Domeni
       empty: Cap de domeni de corrièl es pas en lista negra actualament.
+      from_html: de %{domain}
       new:
         create: Crear un blocatge
         title: Nòu blocatge de domeni de corrièl
@@ -410,6 +418,14 @@ oc:
         expired: Expirats
         title: Filtre
       title: Convits
+    ip_blocks:
+      expires_in:
+        '1209600': 2 setmanas
+        '15778476': 6 meses
+        '2629746': 1 mes
+        '31556952': 1 an
+        '86400': 1 jorn
+        '94670856': 3 ans
     pending_accounts:
       title: Comptes en espèra (%{count})
     relationships:
@@ -553,6 +569,8 @@ oc:
       title: Paramètres del site
       trends:
         title: Etiquetas tendéncia
+    site_uploads:
+      delete: Suprimir lo fichièr enviat
     statuses:
       back_to_account: Tornar a la pagina Compte
       batch:
@@ -663,6 +681,7 @@ oc:
       account_status: Estat del compte
       functional: Vòstre compte es complètament foncional.
     trouble_logging_in: Problèmas de connexion ?
+    use_security_key: Utilizar clau de seguretat
   authorize_follow:
     already_following: Seguètz ja aqueste compte
     error: O planhèm, i a agut una error al moment de cercar lo compte
@@ -805,6 +824,7 @@ oc:
     inactive: Inactiu
     publicize_checkbox: 'E enviatz lo tut seguent :'
     publicize_toot: 'Es provat ! Soi %{username} de %{service} : %{url}'
+    remove: Tirar la pròva del compte
     status: Estatut de verificacion
     view_proof: Veire la pròva
   imports:
@@ -921,6 +941,8 @@ oc:
           quadrillion: Q
           thousand: K
           trillion: T
+  otp_authentication:
+    enable: Activar
   pagination:
     newer: Mai recents
     next: Seguent
@@ -1188,21 +1210,14 @@ oc:
       default: Lo %d %b de %Y a %Ho%M
       month: "%b de %Y"
   two_factor_authentication:
-    code_hint: Picatz lo còdi generat per vòstra aplicacion d’autentificacion per confirmar
-    description_html: S’activatz <strong> l’autentificacion two-factor</strong>, vos caldrà vòstre mobil per vos connectar perque generarà un geton per vos daissar dintrar.
     disable: Desactivar
-    enable: Activar
     enabled: Autentificacion en dos temps activada
     enabled_success: L’autentificacion en dos temps es ben activada
     generate_recovery_codes: Generar los còdis de recuperacion
-    instructions_html: "<strong>Escanatz aqueste còdi QR amb Google Authenticator o una aplicacion similària sus vòstre mobil</strong>. A partir d’ara, aquesta aplicacion generarà un geton que vos caldrà picar per vos connectar."
     lost_recovery_codes: Los còdi de recuperacion vos permeton d’accedir a vòstre compte se perdètz vòstre mobil. S’avètz perdut vòstres còdis de recuperacion los podètz tornar generar aquí. Los ancians còdis seràn pas mai valides.
-    manual_instructions: 'Se podètz pas numerizar lo còdi QR e que vos cal picar lo còdi a la man, vaquí lo còdi en clar :'
     recovery_codes: Salvar los còdis de recuperacion
     recovery_codes_regenerated: Los còdis de recuperacion son ben estats tornats generar
     recovery_instructions_html: Se vos arriba de perdre vòstre mobil, podètz utilizar un dels còdis de recuperacion cai-jos per poder tornar accedir a vòstre compte. <strong>Gardatz los còdis en seguretat</strong>, per exemple, imprimissètz los e gardatz los amb vòstres documents importants.
-    setup: Parametrar
-    wrong_code: Lo còdi picat es invalid ! L’ora es bona sul servidor e lo mobil ?
   user_mailer:
     backup_ready:
       explanation: Avètz demandat una salvagarda complèta de vòstre compte Mastodon. Es prèsta per telecargament !
@@ -1247,6 +1262,7 @@ oc:
     follow_limit_reached: Podètz pas sègre mai de %{limit} personas
     invalid_email: L’adreça de corrièl es invalida
     invalid_otp_token: Còdi d’autentificacion en dos temps invalid
+    invalid_sign_in_token: Còdi de seguretat invalid
     otp_lost_help_html: Se perdatz l’accès al dos, podètz benlèu contactar %{email}
     seamless_external_login: Sètz connectat via un servici extèrn, los paramètres de senhal e de corrièl son doncas pas disponibles.
     signed_in_as: 'Session a :'

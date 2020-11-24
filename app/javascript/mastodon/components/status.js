@@ -10,13 +10,14 @@ import StatusContent from './status_content';
 import StatusActionBar from './status_action_bar';
 import AttachmentList from './attachment_list';
 import Card from '../features/status/components/card';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { injectIntl, defineMessages, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { MediaGallery, Video, Audio } from '../features/ui/util/async-components';
 import { HotKeys } from 'react-hotkeys';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
+import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -50,6 +51,13 @@ export const defaultMediaVisibility = (status) => {
 
   return (displayMedia !== 'hide_all' && !status.get('sensitive') || displayMedia === 'show_all');
 };
+
+const messages = defineMessages({
+  public_short: { id: 'privacy.public.short', defaultMessage: 'Public' },
+  unlisted_short: { id: 'privacy.unlisted.short', defaultMessage: 'Unlisted' },
+  private_short: { id: 'privacy.private.short', defaultMessage: 'Followers-only' },
+  direct_short: { id: 'privacy.direct.short', defaultMessage: 'Direct' },
+});
 
 export default @injectIntl
 class Status extends ImmutablePureComponent {
@@ -87,6 +95,12 @@ class Status extends ImmutablePureComponent {
     updateScrollBottom: PropTypes.func,
     cacheMediaWidth: PropTypes.func,
     cachedMediaWidth: PropTypes.number,
+    scrollKey: PropTypes.string,
+    deployPictureInPicture: PropTypes.func,
+    pictureInPicture: PropTypes.shape({
+      inUse: PropTypes.bool,
+      available: PropTypes.bool,
+    }),
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -96,6 +110,8 @@ class Status extends ImmutablePureComponent {
     'account',
     'muted',
     'hidden',
+    'unread',
+    'pictureInPicture',
   ];
 
   state = {
@@ -197,6 +213,13 @@ class Status extends ImmutablePureComponent {
     }
   }
 
+  handleDeployPictureInPicture = (type, mediaProps) => {
+    const { deployPictureInPicture } = this.props;
+    const status = this._properStatus();
+
+    deployPictureInPicture(status, type, mediaProps);
+  }
+
   handleHotkeyReply = e => {
     e.preventDefault();
     this.props.onReply(this._properStatus(), this.context.router.history);
@@ -257,7 +280,7 @@ class Status extends ImmutablePureComponent {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
 
-    const { intl, hidden, featured, otherAccounts, unread, showThread } = this.props;
+    const { intl, hidden, featured, otherAccounts, unread, showThread, scrollKey, pictureInPicture } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -328,7 +351,9 @@ class Status extends ImmutablePureComponent {
       status  = status.get('reblog');
     }
 
-    if (status.get('media_attachments').size > 0) {
+    if (pictureInPicture.inUse) {
+      media = <PictureInPicturePlaceholder width={this.props.cachedMediaWidth} />;
+    } else if (status.get('media_attachments').size > 0) {
       if (this.props.muted) {
         media = (
           <AttachmentList
@@ -345,9 +370,15 @@ class Status extends ImmutablePureComponent {
               <Component
                 src={attachment.get('url')}
                 alt={attachment.get('description')}
+                poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+                backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+                foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+                accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
                 duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-                peaks={[0]}
-                height={70}
+                width={this.props.cachedMediaWidth}
+                height={110}
+                cacheWidth={this.props.cacheMediaWidth}
+                deployPictureInPicture={pictureInPicture.available ? this.handleDeployPictureInPicture : undefined}
               />
             )}
           </Bundle>
@@ -369,6 +400,7 @@ class Status extends ImmutablePureComponent {
                 sensitive={status.get('sensitive')}
                 onOpenVideo={this.handleOpenVideo}
                 cacheWidth={this.props.cacheMediaWidth}
+                deployPictureInPicture={pictureInPicture.available ? this.handleDeployPictureInPicture : undefined}
                 visible={this.state.showMedia}
                 onToggleVisibility={this.handleToggleMediaVisibility}
               />
@@ -414,15 +446,27 @@ class Status extends ImmutablePureComponent {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
+    const visibilityIconInfo = {
+      'public': { icon: 'globe', text: intl.formatMessage(messages.public_short) },
+      'unlisted': { icon: 'unlock', text: intl.formatMessage(messages.unlisted_short) },
+      'private': { icon: 'lock', text: intl.formatMessage(messages.private_short) },
+      'direct': { icon: 'envelope', text: intl.formatMessage(messages.direct_short) },
+    };
+
+    const visibilityIcon = visibilityIconInfo[status.get('visibility')];
+
     return (
       <HotKeys handlers={handlers}>
-        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
+        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
 
-          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')}>
+          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted })} data-id={status.get('id')}>
             <div className='status__expand' onClick={this.handleExpandClick} role='presentation' />
             <div className='status__info'>
-              <a href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener noreferrer'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
+              <a href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
+                <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
+                <RelativeTimestamp timestamp={status.get('created_at')} />
+              </a>
 
               <a onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
                 <div className='status__avatar'>
@@ -437,7 +481,7 @@ class Status extends ImmutablePureComponent {
 
             {media}
 
-            <StatusActionBar status={status} account={account} {...other} />
+            <StatusActionBar scrollKey={scrollKey} status={status} account={account} {...other} />
           </div>
         </div>
       </HotKeys>
